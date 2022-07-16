@@ -3,3 +3,5 @@ requests
 pandas
 pymysql
 python-dotenv
+pynput
+psutil
