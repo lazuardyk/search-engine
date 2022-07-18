@@ -41,7 +41,7 @@ class Database:
         self.exec_query(connection, "CREATE TABLE IF NOT EXISTS page_images (id_image INT PRIMARY KEY AUTO_INCREMENT, url TEXT, image TEXT)")
         self.exec_query(connection, "CREATE TABLE IF NOT EXISTS page_linking (id_linking INT PRIMARY KEY AUTO_INCREMENT, crawl_id INT, url TEXT, outgoing_link TEXT)")
         self.exec_query(connection, "CREATE TABLE IF NOT EXISTS page_list (id_list INT PRIMARY KEY AUTO_INCREMENT, url TEXT, list TEXT)")
-        self.exec_query(connection, "CREATE TABLE IF NOT EXISTS page_information (id_information INT PRIMARY KEY AUTO_INCREMENT, url TEXT, html5 TINYINT, title TEXT, description TEXT, keywords TEXT, content_text TEXT, hot_url TINYINT, model_crawl TEXT)")
+        self.exec_query(connection, "CREATE TABLE IF NOT EXISTS page_information (id_information INT PRIMARY KEY AUTO_INCREMENT, crawl_id INT, url TEXT, html5 TINYINT, title TEXT, description TEXT, keywords TEXT, content_text TEXT, hot_url TINYINT, model_crawl TEXT, created_at TIMESTAMP)")
         self.exec_query(connection, "CREATE TABLE IF NOT EXISTS page_scripts (id_script INT PRIMARY KEY AUTO_INCREMENT, url TEXT, script TEXT)")
         self.exec_query(connection, "CREATE TABLE IF NOT EXISTS page_styles (id_style INT PRIMARY KEY AUTO_INCREMENT, url TEXT, style TEXT)")
         self.exec_query(connection, "CREATE TABLE IF NOT EXISTS page_tables (id_table INT PRIMARY KEY AUTO_INCREMENT, url TEXT, table_str TEXT)")

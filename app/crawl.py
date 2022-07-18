@@ -10,15 +10,16 @@ import re
 from urllib.parse import urljoin, urlparse
 import threading
 from concurrent.futures import ThreadPoolExecutor
+import concurrent.futures.thread
 from functools import partial
-from pynput import keyboard
 import psutil
 import os
 
 class Crawl:
-    def __init__(self, start_urls, max_threads):
+    def __init__(self, start_urls, max_threads, duration_sec):
         self.start_urls = start_urls
         self.max_threads = int(max_threads)
+        self.duration_sec = int(duration_sec)
         self.db = Database()
         self.page_content = PageContent()
         self.util = Util()
@@ -38,23 +39,7 @@ class Crawl:
             print(e)
             return
     
-    def on_press(self, key):
-        if key == keyboard.Key.esc:
-            print("Crawler killed.")
-            self.process.kill()
-        try:
-            k = key.char
-        except:
-            k = key.name 
-        if k in ['p', 'r']: 
-            if k == "p":
-                self.status = "paused"
-                print("Crawler paused.")
-            else:
-                self.status = "running"
-                print("Crawler resumed.")
-    
-    def scrape_page(self, url, future):
+    def scrape_page(self, crawl_id, url, future):
         result = future.result()
         if result and result.status_code == 200:
             db_connection = self.db.connect()
@@ -116,10 +101,11 @@ class Crawl:
             # check table if exist at crawldb  
             if not self.db.check_value_in_table(db_connection, "page_information", "url", url):
                 # Create a new record
-                self.page_content.insert_page_information(db_connection, url, html5, title, description, keywords, complete_text, hot_link, "BFS crawling")
+                self.page_content.insert_page_information(db_connection, url, crawl_id, html5, title, description, keywords, complete_text, hot_link, "BFS crawling")
             else:
                 # update database
-                self.page_content.set_hot_url(db_connection, url, hot_link)
+                self.db.close_connection(db_connection)
+                return
 
             # extract style
             for style in soup.findAll('style'):
@@ -160,7 +146,7 @@ class Crawl:
                 complete_url = urljoin(url, i["href"]).rstrip('/')
 
                 # Create a new record
-                self.page_content.insert_page_linking(db_connection, 1, url, complete_url)
+                self.page_content.insert_page_linking(db_connection, crawl_id, url, complete_url)
 
                 self.lock.acquire()
                 if self.is_valid_url(complete_url) and complete_url not in self.visited_url:
@@ -170,87 +156,50 @@ class Crawl:
             self.db.close_connection(db_connection)
     
     def run(self):
-        db_connection = self.db.connect()
-        self.db.create_crawler_tables(db_connection)
-        db_connection.close()
-
         self.url_queue = queue.Queue()
         self.visited_url = []
         self.start_time = time.time()
         self.lock = threading.Lock()
         self.event_stop = threading.Event()
 
+        urls_string = ""
         for url in self.start_urls:
             if self.is_valid_url(url):
                 self.url_queue.put(url)
+                urls_string += url + ", "
+
+        urls_string = urls_string[0:len(urls_string) - 2]
         
-        listener = keyboard.Listener(on_press=self.on_press)
-        listener.start()
+        db_connection = self.db.connect()
+        self.db.create_crawler_tables(db_connection)
+        crawl_id = self.page_content.insert_crawling(db_connection, urls_string, "", 0, 0)
+        db_connection.close()
 
         executor = ThreadPoolExecutor(max_workers=self.max_threads)
 
         while True:
             try:
-                if self.status == "paused":
-                    time.sleep(1)
-                    continue
+                time_now = time.time() - self.start_time
+                time_now_int = int(time_now)
+                if time_now_int >= self.duration_sec:
+                    print(time_now_int)
+                    break
                 target_url = self.url_queue.get(timeout=60)
                 if target_url not in self.visited_url:
                     self.visited_url.append(target_url)
-                    # with ThreadPoolExecutor(self.max_threads) as executor:
                     future = executor.submit(self.get_page, target_url)
-                    future.add_done_callback(partial(self.scrape_page, target_url))
+                    future.add_done_callback(partial(self.scrape_page, crawl_id, target_url))
             except queue.Empty:
-                return
+                break
             except Exception as e:
                 print(e)
                 continue
-
-        # crawler_threads = []
-
-        # for i in range(int(self.core_total)):
-        #     db_connection = self.db.connect()
-        #     t = threading.Thread(target=self.bfs_crawling, args=(db_connection, ))
-        #     t.start()
-        #     crawler_threads.append(t)
-        #     time.sleep(10)
         
-        # for crawler in crawler_threads:
-        #     crawler.join()
-        
-        # print("bfs kelar")
-        # self.url_queue = self.reorder_queue(self.url_queue)
-        # self.hot_queue = Queue()
-        # print("reorder kelar")
-        # self.start_time_2 = time.time()
-        # crawler2_threads = []
-
-        # for i in range(int(self.core_total)):
-        #     db_connection = self.db.connect()
-        #     t = threading.Thread(target=self.modified_crawling, args=(db_connection, ))
-        #     t.start()
-        #     crawler2_threads.append(t)
-        #     time.sleep(10)
-        
-        # for crawler in crawler2_threads:
-        #     crawler.join()
-        
-        # print("modified kelar")
-        
-        time_now = time.time() - self.start_time
-        time_now_int = int(time_now)
+        executor._threads.clear()
+        concurrent.futures.thread._threads_queues.clear()
         db_connection = self.db.connect()
-        self.page_content.insert_crawling(db_connection, self.start_url, self.keyword, len(self.visited_url), time_now_int)
+        self.page_content.update_crawling(db_connection, crawl_id, len(self.visited_url))
         db_connection.close()
-        # self.bfs_crawling(self.start_url)
-
-        # self.url_queue = self.reorder_queue(self.url_queue)
-        # self.hot_queue = deque([])
-        # self.start_time_2 = time.time()
-        # self.modified_crawling(self.url_queue.popleft())
-        # time_now = time.time() - self.start_time
-        # time_now_int = int(time_now)
-        # self.page_content.insert_crawling(self.start_url, self.keyword, len(self.visited_url), time_now_int)
     
     def tag_visible(self, element):
         """Function untuk merapihkan content text."""
