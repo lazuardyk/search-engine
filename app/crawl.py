@@ -39,6 +39,17 @@ class Crawl:
             print(e)
             return
     
+    def scrape_links_for_resume(self, urls):
+        for url in urls:
+            result = self.get_page(url)
+            if result and result.status_code == 200:
+                soup = bs4.BeautifulSoup(result.text, 'html.parser')
+                links = soup.findAll("a", href=True)
+                for i in links:
+                    complete_url = urljoin(url, i["href"]).rstrip('/')
+                    if self.is_valid_url(complete_url) and complete_url not in self.visited_urls:
+                        self.url_queue.put(complete_url)
+    
     def scrape_page(self, crawl_id, url, future):
         result = future.result()
         if result and result.status_code == 200:
@@ -98,80 +109,75 @@ class Crawl:
             # isHotURL
             hot_link = "no"
 
-            # check table if exist at crawldb  
+            # check if the page information already exist
             if not self.db.check_value_in_table(db_connection, "page_information", "url", url):
-                # Create a new record
                 self.page_content.insert_page_information(db_connection, url, crawl_id, html5, title, description, keywords, complete_text, hot_link, "BFS crawling")
             else:
-                # update database
                 self.db.close_connection(db_connection)
                 return
 
             # extract style
             for style in soup.findAll('style'):
-                # Create a new record
                 self.page_content.insert_page_style(db_connection, url, style)
 
             # extract script
             for script in soup.findAll('script'):
-                # Create a new record
                 self.page_content.insert_page_script(db_connection, url, script)
 
             # extract lists
             for lists in soup.findAll('li'):
-                # Create a new record
                 self.page_content.insert_page_list(db_connection, url, lists)
 
             # extract forms
             for form in soup.findAll('form'):
-                # Create a new record
                 self.page_content.insert_page_form(db_connection, url, form)
 
             # extract tables
             for table in soup.findAll('table'):
-                # Create a new record
                 self.page_content.insert_page_table(db_connection, url, table)
 
             # extract images
             for image in soup.findAll('img'):
-                # Create a new record
                 self.page_content.insert_page_image(db_connection, url, image)
 
             # extract outgoing link
             links = soup.findAll("a", href=True)
-
-            # memasukan outgoing link kedalam queue
             for i in links:
                 # Complete relative URLs and strip trailing slash
                 complete_url = urljoin(url, i["href"]).rstrip('/')
 
-                # Create a new record
                 self.page_content.insert_page_linking(db_connection, crawl_id, url, complete_url)
 
                 self.lock.acquire()
-                if self.is_valid_url(complete_url) and complete_url not in self.visited_url:
+                if self.is_valid_url(complete_url) and complete_url not in self.visited_urls:
                     self.url_queue.put(complete_url)
                 self.lock.release()
 
             self.db.close_connection(db_connection)
     
     def run(self):
+        db_connection = self.db.connect()
         self.url_queue = queue.Queue()
-        self.visited_url = []
         self.start_time = time.time()
         self.lock = threading.Lock()
         self.event_stop = threading.Event()
+        self.db.create_crawler_tables(db_connection)
+        self.visited_urls = self.page_content.get_visited_urls(db_connection)
+        self.page_count_start = self.db.count_rows(db_connection, "page_information")
 
         urls_string = ""
-        for url in self.start_urls:
-            if self.is_valid_url(url):
-                self.url_queue.put(url)
+        if len(self.visited_urls) < 1:
+            for url in self.start_urls:
+                if self.is_valid_url(url):
+                    self.url_queue.put(url)
+                    urls_string += url + ", "
+        else:
+            last_urls = self.visited_urls[-3:]
+            for url in last_urls:
                 urls_string += url + ", "
-
+            self.scrape_links_for_resume(last_urls)
         urls_string = urls_string[0:len(urls_string) - 2]
         
-        db_connection = self.db.connect()
-        self.db.create_crawler_tables(db_connection)
         crawl_id = self.page_content.insert_crawling(db_connection, urls_string, "", 0, self.duration_sec)
         db_connection.close()
 
@@ -185,8 +191,8 @@ class Crawl:
                     print(time_now_int)
                     break
                 target_url = self.url_queue.get(timeout=60)
-                if target_url not in self.visited_url:
-                    self.visited_url.append(target_url)
+                if target_url not in self.visited_urls:
+                    self.visited_urls.append(target_url)
                     future = executor.submit(self.get_page, target_url)
                     future.add_done_callback(partial(self.scrape_page, crawl_id, target_url))
             except queue.Empty:
@@ -197,8 +203,10 @@ class Crawl:
         
         executor._threads.clear()
         concurrent.futures.thread._threads_queues.clear()
+        
         db_connection = self.db.connect()
-        page_count = self.db.count_rows(db_connection, "page_information")
+        self.page_count_end = self.db.count_rows(db_connection, "page_information")
+        page_count = self.page_count_end - self.page_count_start
         self.page_content.update_crawling(db_connection, crawl_id, page_count)
         db_connection.close()
     

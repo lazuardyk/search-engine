@@ -80,3 +80,14 @@ class PageContent:
         query = "UPDATE `crawling` SET `total_page` = %s WHERE `id_crawling` = %s"
         db_cursor.execute(query, (total_page, crawl_id))
         db_cursor.close()
+    
+    def get_visited_urls(self, db_connection):
+        db_connection.ping()
+        db_cursor = db_connection.cursor()
+        query = "SELECT url FROM `page_information`"
+        db_cursor.execute(query)
+        row_arr = []
+        for row in db_cursor.fetchall():
+            row_arr.append(row[0])
+        db_cursor.close()
+        return row_arr
