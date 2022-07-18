@@ -172,7 +172,7 @@ class Crawl:
         
         db_connection = self.db.connect()
         self.db.create_crawler_tables(db_connection)
-        crawl_id = self.page_content.insert_crawling(db_connection, urls_string, "", 0, 0)
+        crawl_id = self.page_content.insert_crawling(db_connection, urls_string, "", 0, self.duration_sec)
         db_connection.close()
 
         executor = ThreadPoolExecutor(max_workers=self.max_threads)
@@ -198,7 +198,8 @@ class Crawl:
         executor._threads.clear()
         concurrent.futures.thread._threads_queues.clear()
         db_connection = self.db.connect()
-        self.page_content.update_crawling(db_connection, crawl_id, len(self.visited_url))
+        page_count = self.db.count_rows(db_connection, "page_information")
+        self.page_content.update_crawling(db_connection, crawl_id, page_count)
         db_connection.close()
     
     def tag_visible(self, element):

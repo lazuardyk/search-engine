@@ -28,6 +28,14 @@ class Database:
         if row_count < 1:
             return False
         return True
+    
+    def count_rows(self, connection, table_name):
+        connection.ping()
+        db_cursor = connection.cursor()
+        db_cursor.execute("SELECT COUNT(*) FROM {table}".format(table=table_name))
+        row_count = db_cursor.fetchone()[0]
+        db_cursor.close()
+        return row_count
 
     def exec_query(self, connection, query):
         connection.ping()

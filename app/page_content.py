@@ -68,7 +68,7 @@ class PageContent:
     def insert_crawling(self, db_connection, url, keyword, total_page, duration):
         db_connection.ping()
         db_cursor = db_connection.cursor()
-        query = "INSERT INTO `crawling` (`start_url`, `keyword`, `total_page`, `duration_crawl`) VALUES (%s, %s, %s, %s)"
+        query = "INSERT INTO `crawling` (`start_url`, `keyword`, `total_page`, `duration_crawl`) VALUES (%s, %s, %s, SEC_TO_TIME(%s))"
         db_cursor.execute(query, (url, keyword, total_page, duration))
         inserted_id = db_cursor.lastrowid
         db_cursor.close()
