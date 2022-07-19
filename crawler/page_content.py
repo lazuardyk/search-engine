@@ -1,4 +1,4 @@
-from app.database import Database
+from crawler.database import Database
 
 class PageContent:
     

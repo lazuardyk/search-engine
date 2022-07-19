@@ -1,6 +1,6 @@
-from app.database import Database
-from app.page_content import PageContent
-from app.util import Util
+from crawler.database import Database
+from crawler.page_content import PageContent
+from crawler.util import Util
 import queue
 import time
 import requests
