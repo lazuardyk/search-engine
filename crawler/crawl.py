@@ -167,11 +167,13 @@ class Crawl:
 
         urls_string = ""
         if len(self.visited_urls) < 1:
+            print("Starting the crawler from the start urls...")
             for url in self.start_urls:
                 if self.is_valid_url(url):
                     self.url_queue.put(url)
                     urls_string += url + ", "
         else:
+            print("Resuming the crawler from the last urls...")
             last_urls = self.visited_urls[-3:]
             for url in last_urls:
                 urls_string += url + ", "
@@ -196,6 +198,8 @@ class Crawl:
                     future = executor.submit(self.get_page, target_url)
                     future.add_done_callback(partial(self.scrape_page, crawl_id, target_url))
             except queue.Empty:
+                break
+            except KeyboardInterrupt:
                 break
             except Exception as e:
                 print(e)
