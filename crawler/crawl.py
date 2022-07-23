@@ -9,6 +9,7 @@ import bs4
 from urllib.parse import urljoin
 import psutil
 import os
+import warnings
 
 class Crawl:
     def __init__(self, start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword):
@@ -21,6 +22,7 @@ class Crawl:
         self.page_content = PageContent()
         self.util = Util()
         self.process = psutil.Process(os.getpid())
+        warnings.filterwarnings('ignore', message='Unverified HTTPS request')
     
     def scrape_links_for_resume(self, urls):
         for url in urls:
@@ -63,10 +65,12 @@ class Crawl:
         print("Running breadth first search crawler...")
         bfs = BreadthFirstSearch(crawl_id, self.url_queue, self.visited_urls, self.bfs_duration_sec, self.max_threads)
         bfs.run()
-
+        print("Finished breadth first search crawler...")
+        print(len(bfs.list_urls))
         print("Running modified similarity based crawler...")
         msb = ModifiedSimilarityBased(crawl_id, bfs.url_queue, bfs.visited_urls, bfs.list_urls, self.msb_keyword, self.msb_duration_sec, self.max_threads)
         msb.run()
+        print("Finished modified similarity based crawler...")
 
         db_connection = self.db.connect()
         self.page_count_end = self.db.count_rows(db_connection, "page_information")

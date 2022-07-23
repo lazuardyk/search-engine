@@ -15,7 +15,6 @@ import re
 class ModifiedSimilarityBased:
     def __init__(self, crawl_id, url_queue, visited_urls, list_urls, keyword, duration_sec, max_threads):
         self.crawl_id = crawl_id
-        self.url_queue = self.reorder_queue(url_queue)
         self.visited_urls = visited_urls
         self.keyword = keyword
         self.duration_sec = duration_sec
@@ -27,16 +26,18 @@ class ModifiedSimilarityBased:
         self.start_time = time.time()
         self.list_urls = list_urls
         self.hot_queue = queue.Queue()
+        self.url_queue = self.reorder_queue(url_queue)
     
     def run(self):
         executor = ThreadPoolExecutor(max_workers=self.max_threads)
 
+        futures = []
         while True:
             try:
                 time_now = time.time() - self.start_time
                 time_now_int = int(time_now)
                 if time_now_int >= self.duration_sec:
-                    print(time_now_int)
+                    print("Stopped because exceeded time limit...")
                     break
                 if self.hot_queue.qsize() > 0:
                     target_url = self.hot_queue.get()
@@ -44,13 +45,18 @@ class ModifiedSimilarityBased:
                     target_url = self.url_queue.get()
                 if target_url not in self.visited_urls:
                     self.visited_urls.append(target_url)
-                    executor.submit(self.scrape_page, target_url)
+                    futures.append(executor.submit(self.scrape_page, target_url))
                 
                 self.hot_queue = self.reorder_queue(self.hot_queue)
                 self.url_queue = self.reorder_queue(self.url_queue)
             except queue.Empty:
-                break
+                if self.util.running_thread_count(futures) > 0:
+                    continue
+                else:
+                    print("Stopped because empty queue...")
+                    break
             except KeyboardInterrupt:
+                print("Stopped because keyboard interrupt...")
                 break
             except Exception as e:
                 print(e)
@@ -60,113 +66,119 @@ class ModifiedSimilarityBased:
         concurrent.futures.thread._threads_queues.clear()
 
     def scrape_page(self, url):
-        response = self.util.get_page(url)
-        if response and response.status_code == 200:
-            db_connection = self.db.connect()
-            self.lock.acquire()
-            now = datetime.now()
-            print(url, "| MSB |", now.strftime("%d/%m/%Y %H:%M:%S"))
-            self.lock.release()
-            soup = bs4.BeautifulSoup(response.text, 'html.parser')
-            title = soup.title.string
-            article_html5 = soup.find('article')
-            if article_html5 is None:
-                # extract text content from html4
-                html5 = "no"
-                texts = soup.find('body').findAll(text=True)
-                visible_texts = filter(self.tag_visible, texts)
-                text = u" ".join(t.strip() for t in visible_texts)
-                text = text.lstrip().rstrip()
-                text = text.split(',')
-                clean_text = ''
-                for sen in text:
-                    if sen:
-                        sen = sen.rstrip().lstrip()
-                        clean_text += sen+','
-                complete_text = clean_text
-            else:
-                # extract text content from html5
-                html5 = "yes"
-                texts = article_html5.findAll(text=True)
-                visible_texts = filter(self.tag_visible, texts)
-                text = u" ".join(t.strip() for t in visible_texts)
-                text = text.lstrip().rstrip()
-                text = text.split(',')
-                clean_text = ''
-                for sen in text:
-                    if sen:
-                        sen = sen.rstrip().lstrip()
-                        clean_text += sen+','
-                complete_text = clean_text
+        try:
+            response = self.util.get_page(url)
+            if response and response.status_code == 200:
+                db_connection = self.db.connect()
+                self.lock.acquire()
+                now = datetime.now()
+                print(url, "| MSB |", now.strftime("%d/%m/%Y %H:%M:%S"))
+                self.lock.release()
+                soup = bs4.BeautifulSoup(response.text, 'html.parser')
+                title = soup.title.string
+                article_html5 = soup.find('article')
+                if article_html5 is None:
+                    # extract text content from html4
+                    html5 = 0
+                    texts = soup.find('body').findAll(text=True)
+                    visible_texts = filter(self.tag_visible, texts)
+                    text = u" ".join(t.strip() for t in visible_texts)
+                    text = text.lstrip().rstrip()
+                    text = text.split(',')
+                    clean_text = ''
+                    for sen in text:
+                        if sen:
+                            sen = sen.rstrip().lstrip()
+                            clean_text += sen+','
+                    complete_text = clean_text
+                else:
+                    # extract text content from html5
+                    html5 = 1
+                    texts = article_html5.findAll(text=True)
+                    visible_texts = filter(self.tag_visible, texts)
+                    text = u" ".join(t.strip() for t in visible_texts)
+                    text = text.lstrip().rstrip()
+                    text = text.split(',')
+                    clean_text = ''
+                    for sen in text:
+                        if sen:
+                            sen = sen.rstrip().lstrip()
+                            clean_text += sen+','
+                    complete_text = clean_text
 
-            # get meta description
-            description = soup.find("meta",attrs={"name":"description"})
-            if description is None:
-                description = "-"
-            else:
-                description = description.get("content")
+                # get meta description
+                description = soup.find("meta",attrs={"name":"description"})
+                if description is None:
+                    description = "-"
+                else:
+                    description = description.get("content")
 
-            # get meta keywords
-            keywords = soup.find("meta",attrs={"name":"keywords"})
-            if keywords is None:
-                keywords = "-"
-            else:
-                keywords = keywords.get("content")
+                # get meta keywords
+                keywords = soup.find("meta",attrs={"name":"keywords"})
+                if keywords is None:
+                    keywords = "-"
+                else:
+                    keywords = keywords.get("content")
 
-            # check hot_url
-            hot_link = "no"
-            if (self.util.count_keyword_in_text(complete_text, self.keyword) >= 10) or (self.util.count_keyword_in_text(title, self.keyword) >= 1):
-                hot_link = "yes"
+                # check hot_url
+                hot_link = 0
+                if (self.util.count_keyword_in_text(complete_text, self.keyword) >= 10) or (self.util.count_keyword_in_text(title, self.keyword) >= 1):
+                    hot_link = 1
 
-            # check if the page information already exist
-            if not self.db.check_value_in_table(db_connection, "page_information", "url", url):
-                self.page_content.insert_page_information(db_connection, url, self.crawl_id, html5, title, description, keywords, complete_text, hot_link, "MSB crawling")
-            else:
+                # check if the page information already exist
+                if not self.db.check_value_in_table(db_connection, "page_information", "url", url):
+                    self.page_content.insert_page_information(db_connection, url, self.crawl_id, html5, title, description, keywords, complete_text, hot_link, "MSB crawling")
+                else:
+                    self.db.close_connection(db_connection)
+                    return
+
+                # extract style
+                for style in soup.findAll('style'):
+                    self.page_content.insert_page_style(db_connection, url, style)
+
+                # extract script
+                for script in soup.findAll('script'):
+                    self.page_content.insert_page_script(db_connection, url, script)
+
+                # extract lists
+                for lists in soup.findAll('li'):
+                    self.page_content.insert_page_list(db_connection, url, lists)
+
+                # extract forms
+                for form in soup.findAll('form'):
+                    self.page_content.insert_page_form(db_connection, url, form)
+
+                # extract tables
+                for table in soup.findAll('table'):
+                    self.page_content.insert_page_table(db_connection, url, table)
+
+                # extract images
+                for image in soup.findAll('img'):
+                    self.page_content.insert_page_image(db_connection, url, image)
+
+                # extract outgoing link
+                links = soup.findAll("a", href=True)
+                for i in links:
+                    # Complete relative URLs and strip trailing slash
+                    complete_url = urljoin(url, i["href"]).rstrip('/')
+
+                    self.list_urls.append(complete_url)
+                    self.page_content.insert_page_linking(db_connection, self.crawl_id, url, complete_url)
+
+                    self.lock.acquire()
+                    if self.util.is_valid_url(complete_url) and complete_url not in self.visited_urls:
+                        if hot_link == 1 or self.keyword in url:
+                            self.hot_queue.put(complete_url)
+                        else:
+                            self.url_queue.put(complete_url)
+                    self.lock.release()
+
                 self.db.close_connection(db_connection)
                 return
-
-            # extract style
-            for style in soup.findAll('style'):
-                self.page_content.insert_page_style(db_connection, url, style)
-
-            # extract script
-            for script in soup.findAll('script'):
-                self.page_content.insert_page_script(db_connection, url, script)
-
-            # extract lists
-            for lists in soup.findAll('li'):
-                self.page_content.insert_page_list(db_connection, url, lists)
-
-            # extract forms
-            for form in soup.findAll('form'):
-                self.page_content.insert_page_form(db_connection, url, form)
-
-            # extract tables
-            for table in soup.findAll('table'):
-                self.page_content.insert_page_table(db_connection, url, table)
-
-            # extract images
-            for image in soup.findAll('img'):
-                self.page_content.insert_page_image(db_connection, url, image)
-
-            # extract outgoing link
-            links = soup.findAll("a", href=True)
-            for i in links:
-                # Complete relative URLs and strip trailing slash
-                complete_url = urljoin(url, i["href"]).rstrip('/')
-
-                self.list_urls.append(complete_url)
-                self.page_content.insert_page_linking(db_connection, self.crawl_id, url, complete_url)
-
-                self.lock.acquire()
-                if self.util.is_valid_url(complete_url) and complete_url not in self.visited_urls:
-                    if hot_link == "yes" or self.keyword in url:
-                        self.hot_queue.put(complete_url)
-                    else:
-                        self.url_queue.put(complete_url)
-                self.lock.release()
-
-            self.db.close_connection(db_connection)
+            return
+        except Exception as e:
+            print(e, "~ Error in thread")
+            return
     
     def tag_visible(self, element):
         """Function untuk merapihkan content text."""

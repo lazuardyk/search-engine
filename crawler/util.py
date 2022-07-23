@@ -11,9 +11,17 @@ class Util:
     
     def get_page(self, url):
         try:
-            res = requests.get(url)
+            res = requests.get(url, verify=False, timeout=300)
             res.raise_for_status()
             return res
         except Exception as e:
             print(e)
             return
+    
+    def running_thread_count(self, futures):
+        r = 0
+        for future in futures:
+            if future.running():
+                r += 1
+        print(f'{r} threads running')
+        return r
