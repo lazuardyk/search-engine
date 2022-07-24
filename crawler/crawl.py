@@ -66,11 +66,14 @@ class Crawl:
         bfs = BreadthFirstSearch(crawl_id, self.url_queue, self.visited_urls, self.bfs_duration_sec, self.max_threads)
         bfs.run()
         print("Finished breadth first search crawler...")
-        print(len(bfs.list_urls))
-        print("Running modified similarity based crawler...")
-        msb = ModifiedSimilarityBased(crawl_id, bfs.url_queue, bfs.visited_urls, bfs.list_urls, self.msb_keyword, self.msb_duration_sec, self.max_threads)
-        msb.run()
-        print("Finished modified similarity based crawler...")
+
+        # Disable Modified Similarity Based Crawler
+        
+        # print(len(bfs.list_urls))
+        # print("Running modified similarity based crawler...")
+        # msb = ModifiedSimilarityBased(crawl_id, bfs.url_queue, bfs.visited_urls, bfs.list_urls, self.msb_keyword, self.msb_duration_sec, self.max_threads)
+        # msb.run()
+        # print("Finished modified similarity based crawler...")
 
         db_connection = self.db.connect()
         self.page_count_end = self.db.count_rows(db_connection, "page_information")
