@@ -3,7 +3,7 @@ Description=Crawl service
 After=multi-user.target
 [Service]
 Type=simple
-Restart=always
+Restart=on-failure
 ExecStart=/opt/rh/rh-python38/root/usr/bin/python /root/search-engine/crawl.py
 [Install]
 WantedBy=multi-user.target
