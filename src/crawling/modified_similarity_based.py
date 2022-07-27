@@ -1,7 +1,7 @@
 from matplotlib.pyplot import hot
-from crawler.database import Database
-from crawler.page_content import PageContent
-from crawler.util import Util
+from src.database.database import Database
+from src.crawling.page_content import PageContent
+from src.crawling.util import Util
 from datetime import datetime
 from urllib.parse import urljoin
 import bs4

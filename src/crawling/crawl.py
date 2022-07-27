@@ -1,8 +1,8 @@
-from crawler.database import Database
-from crawler.modified_similarity_based import ModifiedSimilarityBased
-from crawler.page_content import PageContent
-from crawler.util import Util
-from crawler.breadth_first_search import BreadthFirstSearch
+from src.database.database import Database
+from src.crawling.modified_similarity_based import ModifiedSimilarityBased
+from src.crawling.page_content import PageContent
+from src.crawling.util import Util
+from src.crawling.breadth_first_search import BreadthFirstSearch
 import queue
 import time
 import bs4

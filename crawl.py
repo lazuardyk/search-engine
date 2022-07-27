@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from crawler.crawl import Crawl
+from src.crawling.crawl import Crawl
 
 if __name__ == "__main__":
     load_dotenv()
