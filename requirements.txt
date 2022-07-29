@@ -4,3 +4,5 @@ pandas
 pymysql
 python-dotenv
 psutil
+sklearn
+numpy
