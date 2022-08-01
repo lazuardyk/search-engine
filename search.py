@@ -5,4 +5,4 @@ if __name__ == "__main__":
     load_dotenv()
 
     tfIdf = TfIdf()
-    tfIdf.run(keyword="barcelona")
+    tfIdf.run(keyword="real madrid")
