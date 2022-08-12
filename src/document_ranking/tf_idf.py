@@ -24,7 +24,7 @@ class TfIdf:
     
     def run(self, keyword):
         db_connection = self.db.connect()
-        query = "SELECT * FROM page_information"
+        query = "SELECT * FROM `page_information`"
         df = pd.read_sql(query, db_connection)
         # print(df)
 
@@ -39,3 +39,4 @@ class TfIdf:
 
         result = self.search(tfidf, vector, keyword, top_n = 5)
         self.print_result(keyword, result, df)
+        self.db.close_connection(db_connection)
