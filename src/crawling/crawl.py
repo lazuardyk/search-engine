@@ -45,7 +45,6 @@ class Crawl:
         self.start_time = time.time()
 
         db_connection = self.db.connect()
-        self.db.create_tables(db_connection)
         self.visited_urls = self.page_content.get_visited_urls(db_connection)
         self.page_count_start = self.db.count_rows(db_connection, "page_information")
 

@@ -10,6 +10,9 @@ class Database:
         self.username = os.getenv("DB_USERNAME")
         self.password = os.getenv("DB_PASSWORD")
         self.db_name = os.getenv("DB_NAME")
+        db_connection = self.connect()
+        self.create_tables(db_connection)
+        self.close_connection(db_connection)
 
     def connect(self):
         """Fungsi untuk melakukan koneksi ke database."""
