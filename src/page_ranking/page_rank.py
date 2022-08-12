@@ -1,4 +1,3 @@
-# Reference: https://www.kaggle.com/code/yclaudel/find-similar-articles-with-tf-idf
 # Reference: https://github.com/nicholaskajoh/devsearch/blob/f6d51fc478e5bae68e4ba32f3299ab20c0ffa033/devsearch/pagerank.py#L2
 
 from src.database.database import Database
@@ -11,7 +10,29 @@ class PageRank:
 
     def __init__(self):
         self.db = Database()
-        self.max_iterations = 1
+        self.max_iterations = 20
+
+    def save_pagerank(self, db_connection, url, pagerank, is_exist):
+        """Fungsi untuk menyimpan ranking dan nilai Page Rank yang sudah dihitung ke dalam database."""
+        db_connection.ping()
+        db_cursor = db_connection.cursor()
+
+        if is_exist:
+            query = "INSERT INTO `page_rank` (`url`, `pagerank_score`) VALUES (%s, %s)"
+            db_cursor.execute(query, (url, pagerank))
+        else:
+            query = "UPDATE `page_rank` SET `pagerank_score` = %s WHERE `url` = %s"
+            db_cursor.execute(query, (pagerank, url))
+
+        db_cursor.close()
+
+    # def get_pagerank_of_url(self, db_connection, url):
+    #     db_connection.ping()
+    #     db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
+    #     db_cursor2.execute(&#34;SELECT COUNT(*) FROM `page_linking` WHERE `url` = %s&#34;, (backlink_url))
+    # #     outlink_count = db_cursor2.fetchone()[&#34;COUNT(*)&#34;]
+    # #     new_pagerank += (initial_pr / outlink_count)
+    # #     print(new_pagerank)
 
     def run(self):
         """Fungsi utama yang digunakan untuk melakukan perangkingan halaman Page Rank."""
@@ -26,9 +47,17 @@ class PageRank:
             db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
             db_cursor.execute("SELECT * FROM `page_information`")
             for page_row in db_cursor.fetchall():
-                db_cursor2 = db_connection.cursor(pymysql.cursors.DictCursor)
-                new_pagerank = 0
+                db_connection.ping()
                 page_url = page_row["url"]
+
+                db_cursor2 = db_connection.cursor(pymysql.cursors.DictCursor)
+                db_cursor2.execute("SELECT pagerank_score FROM `page_rank` WHERE `url` = %s", (page_url))
+                is_exist = db_cursor2.fetchone()
+                if is_exist:
+                    current_pagerank = is_exist["pagerank_score"]
+                else:
+                    current_pagerank = 0
+                new_pagerank = 0
                 backlink_urls = set()
 
                 db_cursor2.execute("SELECT * FROM `page_linking` WHERE `outgoing_link` = %s", (page_url))
@@ -38,20 +67,21 @@ class PageRank:
                 db_cursor2.execute(
                     "SELECT url, COUNT(*) FROM `page_linking` WHERE `url` IN %s GROUP by url", [backlink_urls]
                 )
-                # print(db_cursor2.fetchall())
                 for backlink_link_count in db_cursor2.fetchall():
                     new_pagerank += initial_pr / backlink_link_count["COUNT(*)"]
-                    # print(new_pagerank)
-                # for backlink_url in backlink_urls:
-                #     db_cursor2.execute("SELECT COUNT(*) FROM `page_linking` WHERE `url` = %s", (backlink_url))
-                #     outlink_count = db_cursor2.fetchone()["COUNT(*)"]
-                #     new_pagerank += (initial_pr / outlink_count)
-                #     print(new_pagerank)
 
                 damping_factor = 0.85
                 new_pagerank = ((1 - damping_factor) / N) + (damping_factor * new_pagerank)
 
                 print(page_url, new_pagerank)
+                self.save_pagerank(db_connection, page_url, new_pagerank, is_exist)
+
+                if current_pagerank == 0:
+                    pr_change = 0
+                else:
+                    pr_change = abs(new_pagerank - current_pagerank) / current_pagerank
+                pr_change_sum += pr_change
+
                 db_cursor2.close()
             db_cursor.close()
             self.db.close_connection(db_connection)
