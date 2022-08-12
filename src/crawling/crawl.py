@@ -11,7 +11,10 @@ import psutil
 import os
 import warnings
 
+
 class Crawl:
+    """Kelas utama untuk melakukan proses crawling."""
+
     def __init__(self, start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword):
         self.start_urls = start_urls
         self.max_threads = int(max_threads)
@@ -22,25 +25,27 @@ class Crawl:
         self.page_content = PageContent()
         self.util = Util()
         self.process = psutil.Process(os.getpid())
-        warnings.filterwarnings('ignore', message='Unverified HTTPS request')
-    
+        warnings.filterwarnings("ignore", message="Unverified HTTPS request")
+
     def scrape_links_for_resume(self, urls):
+        """Fungsi untuk mengambil semua link pada halaman yang dilakukan pada saat resume proses crawling."""
         for url in urls:
             result = self.util.get_page(url)
             if result and result.status_code == 200:
-                soup = bs4.BeautifulSoup(result.text, 'html.parser')
+                soup = bs4.BeautifulSoup(result.text, "html.parser")
                 links = soup.findAll("a", href=True)
                 for i in links:
-                    complete_url = urljoin(url, i["href"]).rstrip('/')
+                    complete_url = urljoin(url, i["href"]).rstrip("/")
                     if self.util.is_valid_url(complete_url) and complete_url not in self.visited_urls:
                         self.url_queue.put(complete_url)
-    
+
     def run(self):
+        """Fungsi utama yang berfungsi untuk menjalankan proses crawling."""
         self.url_queue = queue.Queue()
         self.start_time = time.time()
-        
+
         db_connection = self.db.connect()
-        self.db.create_crawler_tables(db_connection)
+        self.db.create_tables(db_connection)
         self.visited_urls = self.page_content.get_visited_urls(db_connection)
         self.page_count_start = self.db.count_rows(db_connection, "page_information")
 
@@ -57,9 +62,11 @@ class Crawl:
             for url in last_urls:
                 urls_string += url + ", "
             self.scrape_links_for_resume(last_urls)
-        urls_string = urls_string[0:len(urls_string) - 2]
-        
-        crawl_id = self.page_content.insert_crawling(db_connection, urls_string, "", 0, (self.bfs_duration_sec + self.msb_duration_sec))
+        urls_string = urls_string[0 : len(urls_string) - 2]
+
+        crawl_id = self.page_content.insert_crawling(
+            db_connection, urls_string, "", 0, (self.bfs_duration_sec + self.msb_duration_sec)
+        )
         db_connection.close()
 
         print("Running breadth first search crawler...")
@@ -68,7 +75,7 @@ class Crawl:
         print("Finished breadth first search crawler...")
 
         # Disable Modified Similarity Based Crawler
-        
+
         # print(len(bfs.list_urls))
         # print("Running modified similarity based crawler...")
         # msb = ModifiedSimilarityBased(crawl_id, bfs.url_queue, bfs.visited_urls, bfs.list_urls, self.msb_keyword, self.msb_duration_sec, self.max_threads)
