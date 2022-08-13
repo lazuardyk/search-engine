@@ -38,6 +38,9 @@ class Database:
         self.username = os.getenv(&#34;DB_USERNAME&#34;)
         self.password = os.getenv(&#34;DB_PASSWORD&#34;)
         self.db_name = os.getenv(&#34;DB_NAME&#34;)
+        db_connection = self.connect()
+        self.create_tables(db_connection)
+        self.close_connection(db_connection)
 
     def connect(self):
         &#34;&#34;&#34;Fungsi untuk melakukan koneksi ke database.&#34;&#34;&#34;
@@ -125,11 +128,11 @@ class Database:
         )
         self.exec_query(
             connection,
-            &#34;CREATE TABLE IF NOT EXISTS tf_idf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, ranking INT, tfidf DOUBLE)&#34;,
+            &#34;CREATE TABLE IF NOT EXISTS tf_idf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, ranking INT, tfidf_score DOUBLE)&#34;,
         )
         self.exec_query(
             connection,
-            &#34;CREATE TABLE IF NOT EXISTS page_rank (id_pagerank INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, ranking INT, pagerank DOUBLE)&#34;,
+            &#34;CREATE TABLE IF NOT EXISTS page_rank (id_pagerank INT PRIMARY KEY AUTO_INCREMENT, url TEXT, pagerank_score DOUBLE)&#34;,
         )</code></pre>
 </details>
 </section>
@@ -159,6 +162,9 @@ class Database:
         self.username = os.getenv(&#34;DB_USERNAME&#34;)
         self.password = os.getenv(&#34;DB_PASSWORD&#34;)
         self.db_name = os.getenv(&#34;DB_NAME&#34;)
+        db_connection = self.connect()
+        self.create_tables(db_connection)
+        self.close_connection(db_connection)
 
     def connect(self):
         &#34;&#34;&#34;Fungsi untuk melakukan koneksi ke database.&#34;&#34;&#34;
@@ -246,11 +252,11 @@ class Database:
         )
         self.exec_query(
             connection,
-            &#34;CREATE TABLE IF NOT EXISTS tf_idf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, ranking INT, tfidf DOUBLE)&#34;,
+            &#34;CREATE TABLE IF NOT EXISTS tf_idf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, ranking INT, tfidf_score DOUBLE)&#34;,
         )
         self.exec_query(
             connection,
-            &#34;CREATE TABLE IF NOT EXISTS page_rank (id_pagerank INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, ranking INT, pagerank DOUBLE)&#34;,
+            &#34;CREATE TABLE IF NOT EXISTS page_rank (id_pagerank INT PRIMARY KEY AUTO_INCREMENT, url TEXT, pagerank_score DOUBLE)&#34;,
         )</code></pre>
 </details>
 <h3>Methods</h3>
@@ -383,11 +389,11 @@ class Database:
     )
     self.exec_query(
         connection,
-        &#34;CREATE TABLE IF NOT EXISTS tf_idf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, ranking INT, tfidf DOUBLE)&#34;,
+        &#34;CREATE TABLE IF NOT EXISTS tf_idf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, ranking INT, tfidf_score DOUBLE)&#34;,
     )
     self.exec_query(
         connection,
-        &#34;CREATE TABLE IF NOT EXISTS page_rank (id_pagerank INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, ranking INT, pagerank DOUBLE)&#34;,
+        &#34;CREATE TABLE IF NOT EXISTS page_rank (id_pagerank INT PRIMARY KEY AUTO_INCREMENT, url TEXT, pagerank_score DOUBLE)&#34;,
     )</code></pre>
 </details>
 </dd>
