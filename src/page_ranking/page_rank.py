@@ -26,14 +26,6 @@ class PageRank:
 
         db_cursor.close()
 
-    # def get_pagerank_of_url(self, db_connection, url):
-    #     db_connection.ping()
-    #     db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-    #     db_cursor2.execute(&#34;SELECT COUNT(*) FROM `page_linking` WHERE `url` = %s&#34;, (backlink_url))
-    # #     outlink_count = db_cursor2.fetchone()[&#34;COUNT(*)&#34;]
-    # #     new_pagerank += (initial_pr / outlink_count)
-    # #     print(new_pagerank)
-
     def run(self):
         """Fungsi utama yang digunakan untuk melakukan perangkingan halaman Page Rank."""
         db_connection = self.db.connect()
