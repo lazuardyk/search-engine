@@ -27,10 +27,10 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from src.database.database import Database
-from src.crawling.modified_similarity_based import ModifiedSimilarityBased
+from src.crawling.methods.modified_similarity_based import ModifiedSimilarityBased
 from src.crawling.page_content import PageContent
 from src.crawling.util import Util
-from src.crawling.breadth_first_search import BreadthFirstSearch
+from src.crawling.methods.breadth_first_search import BreadthFirstSearch
 import queue
 import time
 import bs4
@@ -41,9 +41,20 @@ import warnings
 
 
 class Crawl:
-    &#34;&#34;&#34;Kelas utama untuk melakukan proses crawling.&#34;&#34;&#34;
+    &#34;&#34;&#34;
+    Kelas utama untuk melakukan proses crawling.
 
-    def __init__(self, start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword):
+    Args:
+        start_urls (list): Kumpulan URL awal yang ingin dicrawl
+        max_threads (str): Maksimal threads yang akan digunakan
+        bfs_duration_sec (str): Durasi untuk crawler BFS dalam detik
+        msb_duration_sec (str): Durasi untuk crawler MSB dalam detik
+        msb_keyword (str): Keyword yang digunakan untuk crawler MSB
+    &#34;&#34;&#34;
+
+    def __init__(
+        self, start_urls: list, max_threads: str, bfs_duration_sec: str, msb_duration_sec: str, msb_keyword: str
+    ) -&gt; None:
         self.start_urls = start_urls
         self.max_threads = int(max_threads)
         self.bfs_duration_sec = int(bfs_duration_sec)
@@ -55,8 +66,13 @@ class Crawl:
         self.process = psutil.Process(os.getpid())
         warnings.filterwarnings(&#34;ignore&#34;, message=&#34;Unverified HTTPS request&#34;)
 
-    def scrape_links_for_resume(self, urls):
-        &#34;&#34;&#34;Fungsi untuk mengambil semua link pada halaman yang dilakukan pada saat resume proses crawling.&#34;&#34;&#34;
+    def scrape_links_for_resume(self, urls: list) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk mengambil semua link pada halaman yang dilakukan pada saat resume proses crawling.
+
+        Args:
+            urls (list): Kumpulan URL halaman yang akan diekstrak linknya
+        &#34;&#34;&#34;
         for url in urls:
             result = self.util.get_page(url)
             if result and result.status_code == 200:
@@ -67,8 +83,10 @@ class Crawl:
                     if self.util.is_valid_url(complete_url) and complete_url not in self.visited_urls:
                         self.url_queue.put(complete_url)
 
-    def run(self):
-        &#34;&#34;&#34;Fungsi utama yang berfungsi untuk menjalankan proses crawling.&#34;&#34;&#34;
+    def run(self) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi utama yang berfungsi untuk menjalankan proses crawling.
+        &#34;&#34;&#34;
         self.url_queue = queue.Queue()
         self.start_time = time.time()
 
@@ -103,11 +121,19 @@ class Crawl:
 
         # Disable Modified Similarity Based Crawler
 
-        # print(len(bfs.list_urls))
-        # print(&#34;Running modified similarity based crawler...&#34;)
-        # msb = ModifiedSimilarityBased(crawl_id, bfs.url_queue, bfs.visited_urls, bfs.list_urls, self.msb_keyword, self.msb_duration_sec, self.max_threads)
-        # msb.run()
-        # print(&#34;Finished modified similarity based crawler...&#34;)
+        print(len(bfs.list_urls))
+        print(&#34;Running modified similarity based crawler...&#34;)
+        msb = ModifiedSimilarityBased(
+            crawl_id,
+            bfs.url_queue,
+            bfs.visited_urls,
+            bfs.list_urls,
+            self.msb_keyword,
+            self.msb_duration_sec,
+            self.max_threads,
+        )
+        msb.run()
+        print(&#34;Finished modified similarity based crawler...&#34;)
 
         db_connection = self.db.connect()
         self.page_count_end = self.db.count_rows(db_connection, &#34;page_information&#34;)
@@ -127,18 +153,42 @@ class Crawl:
 <dl>
 <dt id="search-engine.src.crawling.crawl.Crawl"><code class="flex name class">
 <span>class <span class="ident">Crawl</span></span>
-<span>(</span><span>start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword)</span>
+<span>(</span><span>start_urls: list, max_threads: str, bfs_duration_sec: str, msb_duration_sec: str, msb_keyword: str)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Kelas utama untuk melakukan proses crawling.</p></div>
+<div class="desc"><p>Kelas utama untuk melakukan proses crawling.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>start_urls</code></strong> :&ensp;<code>list</code></dt>
+<dd>Kumpulan URL awal yang ingin dicrawl</dd>
+<dt><strong><code>max_threads</code></strong> :&ensp;<code>str</code></dt>
+<dd>Maksimal threads yang akan digunakan</dd>
+<dt><strong><code>bfs_duration_sec</code></strong> :&ensp;<code>str</code></dt>
+<dd>Durasi untuk crawler BFS dalam detik</dd>
+<dt><strong><code>msb_duration_sec</code></strong> :&ensp;<code>str</code></dt>
+<dd>Durasi untuk crawler MSB dalam detik</dd>
+<dt><strong><code>msb_keyword</code></strong> :&ensp;<code>str</code></dt>
+<dd>Keyword yang digunakan untuk crawler MSB</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Crawl:
-    &#34;&#34;&#34;Kelas utama untuk melakukan proses crawling.&#34;&#34;&#34;
+    &#34;&#34;&#34;
+    Kelas utama untuk melakukan proses crawling.
 
-    def __init__(self, start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword):
+    Args:
+        start_urls (list): Kumpulan URL awal yang ingin dicrawl
+        max_threads (str): Maksimal threads yang akan digunakan
+        bfs_duration_sec (str): Durasi untuk crawler BFS dalam detik
+        msb_duration_sec (str): Durasi untuk crawler MSB dalam detik
+        msb_keyword (str): Keyword yang digunakan untuk crawler MSB
+    &#34;&#34;&#34;
+
+    def __init__(
+        self, start_urls: list, max_threads: str, bfs_duration_sec: str, msb_duration_sec: str, msb_keyword: str
+    ) -&gt; None:
         self.start_urls = start_urls
         self.max_threads = int(max_threads)
         self.bfs_duration_sec = int(bfs_duration_sec)
@@ -150,8 +200,13 @@ class Crawl:
         self.process = psutil.Process(os.getpid())
         warnings.filterwarnings(&#34;ignore&#34;, message=&#34;Unverified HTTPS request&#34;)
 
-    def scrape_links_for_resume(self, urls):
-        &#34;&#34;&#34;Fungsi untuk mengambil semua link pada halaman yang dilakukan pada saat resume proses crawling.&#34;&#34;&#34;
+    def scrape_links_for_resume(self, urls: list) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk mengambil semua link pada halaman yang dilakukan pada saat resume proses crawling.
+
+        Args:
+            urls (list): Kumpulan URL halaman yang akan diekstrak linknya
+        &#34;&#34;&#34;
         for url in urls:
             result = self.util.get_page(url)
             if result and result.status_code == 200:
@@ -162,8 +217,10 @@ class Crawl:
                     if self.util.is_valid_url(complete_url) and complete_url not in self.visited_urls:
                         self.url_queue.put(complete_url)
 
-    def run(self):
-        &#34;&#34;&#34;Fungsi utama yang berfungsi untuk menjalankan proses crawling.&#34;&#34;&#34;
+    def run(self) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi utama yang berfungsi untuk menjalankan proses crawling.
+        &#34;&#34;&#34;
         self.url_queue = queue.Queue()
         self.start_time = time.time()
 
@@ -198,11 +255,19 @@ class Crawl:
 
         # Disable Modified Similarity Based Crawler
 
-        # print(len(bfs.list_urls))
-        # print(&#34;Running modified similarity based crawler...&#34;)
-        # msb = ModifiedSimilarityBased(crawl_id, bfs.url_queue, bfs.visited_urls, bfs.list_urls, self.msb_keyword, self.msb_duration_sec, self.max_threads)
-        # msb.run()
-        # print(&#34;Finished modified similarity based crawler...&#34;)
+        print(len(bfs.list_urls))
+        print(&#34;Running modified similarity based crawler...&#34;)
+        msb = ModifiedSimilarityBased(
+            crawl_id,
+            bfs.url_queue,
+            bfs.visited_urls,
+            bfs.list_urls,
+            self.msb_keyword,
+            self.msb_duration_sec,
+            self.max_threads,
+        )
+        msb.run()
+        print(&#34;Finished modified similarity based crawler...&#34;)
 
         db_connection = self.db.connect()
         self.page_count_end = self.db.count_rows(db_connection, &#34;page_information&#34;)
@@ -213,7 +278,7 @@ class Crawl:
 <h3>Methods</h3>
 <dl>
 <dt id="search-engine.src.crawling.crawl.Crawl.run"><code class="name flex">
-<span>def <span class="ident">run</span></span>(<span>self)</span>
+<span>def <span class="ident">run</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Fungsi utama yang berfungsi untuk menjalankan proses crawling.</p></div>
@@ -221,8 +286,10 @@ class Crawl:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def run(self):
-    &#34;&#34;&#34;Fungsi utama yang berfungsi untuk menjalankan proses crawling.&#34;&#34;&#34;
+<pre><code class="python">def run(self) -&gt; None:
+    &#34;&#34;&#34;
+    Fungsi utama yang berfungsi untuk menjalankan proses crawling.
+    &#34;&#34;&#34;
     self.url_queue = queue.Queue()
     self.start_time = time.time()
 
@@ -257,11 +324,19 @@ class Crawl:
 
     # Disable Modified Similarity Based Crawler
 
-    # print(len(bfs.list_urls))
-    # print(&#34;Running modified similarity based crawler...&#34;)
-    # msb = ModifiedSimilarityBased(crawl_id, bfs.url_queue, bfs.visited_urls, bfs.list_urls, self.msb_keyword, self.msb_duration_sec, self.max_threads)
-    # msb.run()
-    # print(&#34;Finished modified similarity based crawler...&#34;)
+    print(len(bfs.list_urls))
+    print(&#34;Running modified similarity based crawler...&#34;)
+    msb = ModifiedSimilarityBased(
+        crawl_id,
+        bfs.url_queue,
+        bfs.visited_urls,
+        bfs.list_urls,
+        self.msb_keyword,
+        self.msb_duration_sec,
+        self.max_threads,
+    )
+    msb.run()
+    print(&#34;Finished modified similarity based crawler...&#34;)
 
     db_connection = self.db.connect()
     self.page_count_end = self.db.count_rows(db_connection, &#34;page_information&#34;)
@@ -271,16 +346,26 @@ class Crawl:
 </details>
 </dd>
 <dt id="search-engine.src.crawling.crawl.Crawl.scrape_links_for_resume"><code class="name flex">
-<span>def <span class="ident">scrape_links_for_resume</span></span>(<span>self, urls)</span>
+<span>def <span class="ident">scrape_links_for_resume</span></span>(<span>self, urls: list) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk mengambil semua link pada halaman yang dilakukan pada saat resume proses crawling.</p></div>
+<div class="desc"><p>Fungsi untuk mengambil semua link pada halaman yang dilakukan pada saat resume proses crawling.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>urls</code></strong> :&ensp;<code>list</code></dt>
+<dd>Kumpulan URL halaman yang akan diekstrak linknya</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def scrape_links_for_resume(self, urls):
-    &#34;&#34;&#34;Fungsi untuk mengambil semua link pada halaman yang dilakukan pada saat resume proses crawling.&#34;&#34;&#34;
+<pre><code class="python">def scrape_links_for_resume(self, urls: list) -&gt; None:
+    &#34;&#34;&#34;
+    Fungsi untuk mengambil semua link pada halaman yang dilakukan pada saat resume proses crawling.
+
+    Args:
+        urls (list): Kumpulan URL halaman yang akan diekstrak linknya
+    &#34;&#34;&#34;
     for url in urls:
         result = self.util.get_page(url)
         if result and result.status_code == 200:

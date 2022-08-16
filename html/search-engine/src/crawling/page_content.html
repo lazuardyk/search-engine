@@ -26,20 +26,39 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from src.database.database import Database
+<pre><code class="python">import pymysql
+from src.database.database import Database
 
 
 class PageContent:
-    def insert_page_form(self, db_connection, url, form):
-        &#34;&#34;&#34;Fungsi untuk menyimpan form yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    &#34;&#34;&#34;
+    Kelas yang berisi fungsi-fungsi untuk menyimpan konten halaman web ke database.
+    &#34;&#34;&#34;
+
+    def insert_page_form(self, db_connection: pymysql.Connection, url: str, form: str) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan form yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            form (str): Form halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_forms` (`url`, `form`) VALUES (%s, %s)&#34;
         db_cursor.execute(query, (url, form))
         db_cursor.close()
 
-    def insert_page_image(self, db_connection, url, image):
-        &#34;&#34;&#34;Fungsi untuk menyimpan gambar yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    def insert_page_image(self, db_connection: pymysql.Connection, url: str, image: str) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan gambar yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            image (str): Image halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_images` (`url`, `image`) VALUES (%s, %s)&#34;
@@ -47,9 +66,33 @@ class PageContent:
         db_cursor.close()
 
     def insert_page_information(
-        self, db_connection, url, crawl_id, html5, title, description, keywords, content_text, hot_url, model_crawl
-    ):
-        &#34;&#34;&#34;Fungsi untuk menyimpan konten seperti teks, judul, deskripsi yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+        self,
+        db_connection: pymysql.Connection,
+        url: str,
+        crawl_id: int,
+        html5: bool,
+        title: str,
+        description: str,
+        keywords: str,
+        content_text: str,
+        hot_url: bool,
+        model_crawl: str,
+    ) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan konten seperti teks, judul, deskripsi yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            crawl_id (int): ID crawling
+            html5 (bool): Versi html5, 1 jika ya, 0 jika tidak
+            title (str): Judul halaman
+            description (str): Deskripsi  halaman
+            keywords (str): Keyword halaman
+            content_text (str): Konten teks halaman
+            hot_url (bool): Hot URL, 1 jika ya, 0 jika tidak
+            model_crawl (str): Model crawling yaitu BFS atau MSB
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_information` (`url`, `crawl_id`, `html5`, `title`, `description`, `keywords`, `content_text`, `hot_url`, `model_crawl`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)&#34;
@@ -58,56 +101,115 @@ class PageContent:
         )
         db_cursor.close()
 
-    def set_hot_url(self, db_connection, url, hot_link):
-        &#34;&#34;&#34;Fungsi untuk menandakan hot URL pada halaman web ke dalam database.&#34;&#34;&#34;
+    def set_hot_url(self, db_connection: pymysql.Connection, url: str, hot_link: bool) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menandakan hot URL pada halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            hot_link (bool): Hot URL, 1 jika ya, 0 jika tidak
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;UPDATE `page_information` SET `hot_url` = %s WHERE `url` = %s&#34;
         db_cursor.execute(query, (url, hot_link))
         db_cursor.close()
 
-    def insert_page_linking(self, db_connection, crawl_id, url, outgoing_link):
-        &#34;&#34;&#34;Fungsi untuk menyimpan url linking yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    def insert_page_linking(
+        self, db_connection: pymysql.Connection, crawl_id: int, url: str, outgoing_link: str
+    ) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan url linking yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            crawl_id (int): ID crawling
+            url (str): URL halaman
+            outgoing_link (str): Outgoing link
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_linking` (`crawl_id`, `url`, `outgoing_link`) VALUES (%s, %s, %s)&#34;
         db_cursor.execute(query, (crawl_id, url, outgoing_link))
         db_cursor.close()
 
-    def insert_page_list(self, db_connection, url, list):
-        &#34;&#34;&#34;Fungsi untuk menyimpan list yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    def insert_page_list(self, db_connection: pymysql.Connection, url: str, list: str) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan list yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            list (str): List halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_list` (`url`, `list`) VALUES (%s, %s)&#34;
         db_cursor.execute(query, (url, list))
         db_cursor.close()
 
-    def insert_page_script(self, db_connection, url, script):
-        &#34;&#34;&#34;Fungsi untuk menyimpan script yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    def insert_page_script(self, db_connection: pymysql.Connection, url: str, script: str) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan script yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            script (str): Script halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_scripts` (`url`, `script`) VALUES (%s, %s)&#34;
         db_cursor.execute(query, (url, script))
         db_cursor.close()
 
-    def insert_page_style(self, db_connection, url, style):
-        &#34;&#34;&#34;Fungsi untuk menyimpan style yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    def insert_page_style(self, db_connection: pymysql.Connection, url: str, style: str) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan style yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            style (str): Style halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_styles` (`url`, `style`) VALUES (%s, %s)&#34;
         db_cursor.execute(query, (url, style))
         db_cursor.close()
 
-    def insert_page_table(self, db_connection, url, table):
-        &#34;&#34;&#34;Fungsi untuk menyimpan table yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    def insert_page_table(self, db_connection: pymysql.Connection, url: str, table: str) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan table yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            table (str): Table halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_tables` (`url`, `table_str`) VALUES (%s, %s)&#34;
         db_cursor.execute(query, (url, table))
         db_cursor.close()
 
-    def insert_crawling(self, db_connection, url, keyword, total_page, duration):
-        &#34;&#34;&#34;Fungsi untuk menyimpan data crawling yang sudah dilakukan ke dalam database.&#34;&#34;&#34;
+    def insert_crawling(
+        self, db_connection: pymysql.Connection, url: str, keyword: str, total_page: int, duration: int
+    ) -&gt; int:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan data crawling yang sudah dilakukan ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            keyword (str): Keyword yang dipakai
+            total_page (int): Jumlah halaman
+            duration (int): Total durasi
+
+        Returns:
+            int: ID crawling dari baris yang disimpan
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `crawling` (`start_url`, `keyword`, `total_page`, `duration_crawl`) VALUES (%s, %s, %s, SEC_TO_TIME(%s))&#34;
@@ -116,16 +218,31 @@ class PageContent:
         db_cursor.close()
         return inserted_id
 
-    def update_crawling(self, db_connection, crawl_id, total_page):
-        &#34;&#34;&#34;Fungsi untuk memperbarui data crawling ke dalam database.&#34;&#34;&#34;
+    def update_crawling(self, db_connection: pymysql.Connection, crawl_id: int, total_page: int) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk memperbarui data crawling ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            crawl_id (int): ID crawling
+            total_page (int): Jumlah halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;UPDATE `crawling` SET `total_page` = %s WHERE `id_crawling` = %s&#34;
         db_cursor.execute(query, (total_page, crawl_id))
         db_cursor.close()
 
-    def get_visited_urls(self, db_connection):
-        &#34;&#34;&#34;Fungsi untuk mendapatkan kumpulan URL yang sudah pernah di crawl dari database.&#34;&#34;&#34;
+    def get_visited_urls(self, db_connection: pymysql.Connection) -&gt; list:
+        &#34;&#34;&#34;
+        Fungsi untuk mendapatkan kumpulan URL yang sudah pernah di crawl dari database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+
+        Returns:
+            list: Kumpulan URL yang pernah dicrawl
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;SELECT url FROM `page_information`&#34;
@@ -150,22 +267,40 @@ class PageContent:
 <span>class <span class="ident">PageContent</span></span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Kelas yang berisi fungsi-fungsi untuk menyimpan konten halaman web ke database.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class PageContent:
-    def insert_page_form(self, db_connection, url, form):
-        &#34;&#34;&#34;Fungsi untuk menyimpan form yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    &#34;&#34;&#34;
+    Kelas yang berisi fungsi-fungsi untuk menyimpan konten halaman web ke database.
+    &#34;&#34;&#34;
+
+    def insert_page_form(self, db_connection: pymysql.Connection, url: str, form: str) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan form yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            form (str): Form halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_forms` (`url`, `form`) VALUES (%s, %s)&#34;
         db_cursor.execute(query, (url, form))
         db_cursor.close()
 
-    def insert_page_image(self, db_connection, url, image):
-        &#34;&#34;&#34;Fungsi untuk menyimpan gambar yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    def insert_page_image(self, db_connection: pymysql.Connection, url: str, image: str) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan gambar yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            image (str): Image halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_images` (`url`, `image`) VALUES (%s, %s)&#34;
@@ -173,9 +308,33 @@ class PageContent:
         db_cursor.close()
 
     def insert_page_information(
-        self, db_connection, url, crawl_id, html5, title, description, keywords, content_text, hot_url, model_crawl
-    ):
-        &#34;&#34;&#34;Fungsi untuk menyimpan konten seperti teks, judul, deskripsi yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+        self,
+        db_connection: pymysql.Connection,
+        url: str,
+        crawl_id: int,
+        html5: bool,
+        title: str,
+        description: str,
+        keywords: str,
+        content_text: str,
+        hot_url: bool,
+        model_crawl: str,
+    ) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan konten seperti teks, judul, deskripsi yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            crawl_id (int): ID crawling
+            html5 (bool): Versi html5, 1 jika ya, 0 jika tidak
+            title (str): Judul halaman
+            description (str): Deskripsi  halaman
+            keywords (str): Keyword halaman
+            content_text (str): Konten teks halaman
+            hot_url (bool): Hot URL, 1 jika ya, 0 jika tidak
+            model_crawl (str): Model crawling yaitu BFS atau MSB
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_information` (`url`, `crawl_id`, `html5`, `title`, `description`, `keywords`, `content_text`, `hot_url`, `model_crawl`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)&#34;
@@ -184,56 +343,115 @@ class PageContent:
         )
         db_cursor.close()
 
-    def set_hot_url(self, db_connection, url, hot_link):
-        &#34;&#34;&#34;Fungsi untuk menandakan hot URL pada halaman web ke dalam database.&#34;&#34;&#34;
+    def set_hot_url(self, db_connection: pymysql.Connection, url: str, hot_link: bool) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menandakan hot URL pada halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            hot_link (bool): Hot URL, 1 jika ya, 0 jika tidak
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;UPDATE `page_information` SET `hot_url` = %s WHERE `url` = %s&#34;
         db_cursor.execute(query, (url, hot_link))
         db_cursor.close()
 
-    def insert_page_linking(self, db_connection, crawl_id, url, outgoing_link):
-        &#34;&#34;&#34;Fungsi untuk menyimpan url linking yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    def insert_page_linking(
+        self, db_connection: pymysql.Connection, crawl_id: int, url: str, outgoing_link: str
+    ) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan url linking yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            crawl_id (int): ID crawling
+            url (str): URL halaman
+            outgoing_link (str): Outgoing link
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_linking` (`crawl_id`, `url`, `outgoing_link`) VALUES (%s, %s, %s)&#34;
         db_cursor.execute(query, (crawl_id, url, outgoing_link))
         db_cursor.close()
 
-    def insert_page_list(self, db_connection, url, list):
-        &#34;&#34;&#34;Fungsi untuk menyimpan list yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    def insert_page_list(self, db_connection: pymysql.Connection, url: str, list: str) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan list yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            list (str): List halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_list` (`url`, `list`) VALUES (%s, %s)&#34;
         db_cursor.execute(query, (url, list))
         db_cursor.close()
 
-    def insert_page_script(self, db_connection, url, script):
-        &#34;&#34;&#34;Fungsi untuk menyimpan script yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    def insert_page_script(self, db_connection: pymysql.Connection, url: str, script: str) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan script yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            script (str): Script halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_scripts` (`url`, `script`) VALUES (%s, %s)&#34;
         db_cursor.execute(query, (url, script))
         db_cursor.close()
 
-    def insert_page_style(self, db_connection, url, style):
-        &#34;&#34;&#34;Fungsi untuk menyimpan style yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    def insert_page_style(self, db_connection: pymysql.Connection, url: str, style: str) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan style yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            style (str): Style halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_styles` (`url`, `style`) VALUES (%s, %s)&#34;
         db_cursor.execute(query, (url, style))
         db_cursor.close()
 
-    def insert_page_table(self, db_connection, url, table):
-        &#34;&#34;&#34;Fungsi untuk menyimpan table yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    def insert_page_table(self, db_connection: pymysql.Connection, url: str, table: str) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan table yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            table (str): Table halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `page_tables` (`url`, `table_str`) VALUES (%s, %s)&#34;
         db_cursor.execute(query, (url, table))
         db_cursor.close()
 
-    def insert_crawling(self, db_connection, url, keyword, total_page, duration):
-        &#34;&#34;&#34;Fungsi untuk menyimpan data crawling yang sudah dilakukan ke dalam database.&#34;&#34;&#34;
+    def insert_crawling(
+        self, db_connection: pymysql.Connection, url: str, keyword: str, total_page: int, duration: int
+    ) -&gt; int:
+        &#34;&#34;&#34;
+        Fungsi untuk menyimpan data crawling yang sudah dilakukan ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): URL halaman
+            keyword (str): Keyword yang dipakai
+            total_page (int): Jumlah halaman
+            duration (int): Total durasi
+
+        Returns:
+            int: ID crawling dari baris yang disimpan
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;INSERT INTO `crawling` (`start_url`, `keyword`, `total_page`, `duration_crawl`) VALUES (%s, %s, %s, SEC_TO_TIME(%s))&#34;
@@ -242,16 +460,31 @@ class PageContent:
         db_cursor.close()
         return inserted_id
 
-    def update_crawling(self, db_connection, crawl_id, total_page):
-        &#34;&#34;&#34;Fungsi untuk memperbarui data crawling ke dalam database.&#34;&#34;&#34;
+    def update_crawling(self, db_connection: pymysql.Connection, crawl_id: int, total_page: int) -&gt; None:
+        &#34;&#34;&#34;
+        Fungsi untuk memperbarui data crawling ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            crawl_id (int): ID crawling
+            total_page (int): Jumlah halaman
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;UPDATE `crawling` SET `total_page` = %s WHERE `id_crawling` = %s&#34;
         db_cursor.execute(query, (total_page, crawl_id))
         db_cursor.close()
 
-    def get_visited_urls(self, db_connection):
-        &#34;&#34;&#34;Fungsi untuk mendapatkan kumpulan URL yang sudah pernah di crawl dari database.&#34;&#34;&#34;
+    def get_visited_urls(self, db_connection: pymysql.Connection) -&gt; list:
+        &#34;&#34;&#34;
+        Fungsi untuk mendapatkan kumpulan URL yang sudah pernah di crawl dari database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+
+        Returns:
+            list: Kumpulan URL yang pernah dicrawl
+        &#34;&#34;&#34;
         db_connection.ping()
         db_cursor = db_connection.cursor()
         query = &#34;SELECT url FROM `page_information`&#34;
@@ -265,16 +498,34 @@ class PageContent:
 <h3>Methods</h3>
 <dl>
 <dt id="search-engine.src.crawling.page_content.PageContent.get_visited_urls"><code class="name flex">
-<span>def <span class="ident">get_visited_urls</span></span>(<span>self, db_connection)</span>
+<span>def <span class="ident">get_visited_urls</span></span>(<span>self, db_connection: pymysql.connections.Connection) ‑> list</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk mendapatkan kumpulan URL yang sudah pernah di crawl dari database.</p></div>
+<div class="desc"><p>Fungsi untuk mendapatkan kumpulan URL yang sudah pernah di crawl dari database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_connection</code></strong> :&ensp;<code>pymysql.Connection</code></dt>
+<dd>Koneksi database MySQL</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>Kumpulan URL yang pernah dicrawl</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_visited_urls(self, db_connection):
-    &#34;&#34;&#34;Fungsi untuk mendapatkan kumpulan URL yang sudah pernah di crawl dari database.&#34;&#34;&#34;
+<pre><code class="python">def get_visited_urls(self, db_connection: pymysql.Connection) -&gt; list:
+    &#34;&#34;&#34;
+    Fungsi untuk mendapatkan kumpulan URL yang sudah pernah di crawl dari database.
+
+    Args:
+        db_connection (pymysql.Connection): Koneksi database MySQL
+
+    Returns:
+        list: Kumpulan URL yang pernah dicrawl
+    &#34;&#34;&#34;
     db_connection.ping()
     db_cursor = db_connection.cursor()
     query = &#34;SELECT url FROM `page_information`&#34;
@@ -287,16 +538,48 @@ class PageContent:
 </details>
 </dd>
 <dt id="search-engine.src.crawling.page_content.PageContent.insert_crawling"><code class="name flex">
-<span>def <span class="ident">insert_crawling</span></span>(<span>self, db_connection, url, keyword, total_page, duration)</span>
+<span>def <span class="ident">insert_crawling</span></span>(<span>self, db_connection: pymysql.connections.Connection, url: str, keyword: str, total_page: int, duration: int) ‑> int</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk menyimpan data crawling yang sudah dilakukan ke dalam database.</p></div>
+<div class="desc"><p>Fungsi untuk menyimpan data crawling yang sudah dilakukan ke dalam database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_connection</code></strong> :&ensp;<code>pymysql.Connection</code></dt>
+<dd>Koneksi database MySQL</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL halaman</dd>
+<dt><strong><code>keyword</code></strong> :&ensp;<code>str</code></dt>
+<dd>Keyword yang dipakai</dd>
+<dt><strong><code>total_page</code></strong> :&ensp;<code>int</code></dt>
+<dd>Jumlah halaman</dd>
+<dt><strong><code>duration</code></strong> :&ensp;<code>int</code></dt>
+<dd>Total durasi</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>ID crawling dari baris yang disimpan</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_crawling(self, db_connection, url, keyword, total_page, duration):
-    &#34;&#34;&#34;Fungsi untuk menyimpan data crawling yang sudah dilakukan ke dalam database.&#34;&#34;&#34;
+<pre><code class="python">def insert_crawling(
+    self, db_connection: pymysql.Connection, url: str, keyword: str, total_page: int, duration: int
+) -&gt; int:
+    &#34;&#34;&#34;
+    Fungsi untuk menyimpan data crawling yang sudah dilakukan ke dalam database.
+
+    Args:
+        db_connection (pymysql.Connection): Koneksi database MySQL
+        url (str): URL halaman
+        keyword (str): Keyword yang dipakai
+        total_page (int): Jumlah halaman
+        duration (int): Total durasi
+
+    Returns:
+        int: ID crawling dari baris yang disimpan
+    &#34;&#34;&#34;
     db_connection.ping()
     db_cursor = db_connection.cursor()
     query = &#34;INSERT INTO `crawling` (`start_url`, `keyword`, `total_page`, `duration_crawl`) VALUES (%s, %s, %s, SEC_TO_TIME(%s))&#34;
@@ -307,16 +590,32 @@ class PageContent:
 </details>
 </dd>
 <dt id="search-engine.src.crawling.page_content.PageContent.insert_page_form"><code class="name flex">
-<span>def <span class="ident">insert_page_form</span></span>(<span>self, db_connection, url, form)</span>
+<span>def <span class="ident">insert_page_form</span></span>(<span>self, db_connection: pymysql.connections.Connection, url: str, form: str) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk menyimpan form yang ada di halaman web ke dalam database.</p></div>
+<div class="desc"><p>Fungsi untuk menyimpan form yang ada di halaman web ke dalam database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_connection</code></strong> :&ensp;<code>pymysql.Connection</code></dt>
+<dd>Koneksi database MySQL</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL halaman</dd>
+<dt><strong><code>form</code></strong> :&ensp;<code>str</code></dt>
+<dd>Form halaman</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_page_form(self, db_connection, url, form):
-    &#34;&#34;&#34;Fungsi untuk menyimpan form yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+<pre><code class="python">def insert_page_form(self, db_connection: pymysql.Connection, url: str, form: str) -&gt; None:
+    &#34;&#34;&#34;
+    Fungsi untuk menyimpan form yang ada di halaman web ke dalam database.
+
+    Args:
+        db_connection (pymysql.Connection): Koneksi database MySQL
+        url (str): URL halaman
+        form (str): Form halaman
+    &#34;&#34;&#34;
     db_connection.ping()
     db_cursor = db_connection.cursor()
     query = &#34;INSERT INTO `page_forms` (`url`, `form`) VALUES (%s, %s)&#34;
@@ -325,16 +624,32 @@ class PageContent:
 </details>
 </dd>
 <dt id="search-engine.src.crawling.page_content.PageContent.insert_page_image"><code class="name flex">
-<span>def <span class="ident">insert_page_image</span></span>(<span>self, db_connection, url, image)</span>
+<span>def <span class="ident">insert_page_image</span></span>(<span>self, db_connection: pymysql.connections.Connection, url: str, image: str) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk menyimpan gambar yang ada di halaman web ke dalam database.</p></div>
+<div class="desc"><p>Fungsi untuk menyimpan gambar yang ada di halaman web ke dalam database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_connection</code></strong> :&ensp;<code>pymysql.Connection</code></dt>
+<dd>Koneksi database MySQL</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL halaman</dd>
+<dt><strong><code>image</code></strong> :&ensp;<code>str</code></dt>
+<dd>Image halaman</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_page_image(self, db_connection, url, image):
-    &#34;&#34;&#34;Fungsi untuk menyimpan gambar yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+<pre><code class="python">def insert_page_image(self, db_connection: pymysql.Connection, url: str, image: str) -&gt; None:
+    &#34;&#34;&#34;
+    Fungsi untuk menyimpan gambar yang ada di halaman web ke dalam database.
+
+    Args:
+        db_connection (pymysql.Connection): Koneksi database MySQL
+        url (str): URL halaman
+        image (str): Image halaman
+    &#34;&#34;&#34;
     db_connection.ping()
     db_cursor = db_connection.cursor()
     query = &#34;INSERT INTO `page_images` (`url`, `image`) VALUES (%s, %s)&#34;
@@ -343,18 +658,66 @@ class PageContent:
 </details>
 </dd>
 <dt id="search-engine.src.crawling.page_content.PageContent.insert_page_information"><code class="name flex">
-<span>def <span class="ident">insert_page_information</span></span>(<span>self, db_connection, url, crawl_id, html5, title, description, keywords, content_text, hot_url, model_crawl)</span>
+<span>def <span class="ident">insert_page_information</span></span>(<span>self, db_connection: pymysql.connections.Connection, url: str, crawl_id: int, html5: bool, title: str, description: str, keywords: str, content_text: str, hot_url: bool, model_crawl: str) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk menyimpan konten seperti teks, judul, deskripsi yang ada di halaman web ke dalam database.</p></div>
+<div class="desc"><p>Fungsi untuk menyimpan konten seperti teks, judul, deskripsi yang ada di halaman web ke dalam database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_connection</code></strong> :&ensp;<code>pymysql.Connection</code></dt>
+<dd>Koneksi database MySQL</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL halaman</dd>
+<dt><strong><code>crawl_id</code></strong> :&ensp;<code>int</code></dt>
+<dd>ID crawling</dd>
+<dt><strong><code>html5</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Versi html5, 1 jika ya, 0 jika tidak</dd>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>Judul halaman</dd>
+<dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
+<dd>Deskripsi
+halaman</dd>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>str</code></dt>
+<dd>Keyword halaman</dd>
+<dt><strong><code>content_text</code></strong> :&ensp;<code>str</code></dt>
+<dd>Konten teks halaman</dd>
+<dt><strong><code>hot_url</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Hot URL, 1 jika ya, 0 jika tidak</dd>
+<dt><strong><code>model_crawl</code></strong> :&ensp;<code>str</code></dt>
+<dd>Model crawling yaitu BFS atau MSB</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def insert_page_information(
-    self, db_connection, url, crawl_id, html5, title, description, keywords, content_text, hot_url, model_crawl
-):
-    &#34;&#34;&#34;Fungsi untuk menyimpan konten seperti teks, judul, deskripsi yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+    self,
+    db_connection: pymysql.Connection,
+    url: str,
+    crawl_id: int,
+    html5: bool,
+    title: str,
+    description: str,
+    keywords: str,
+    content_text: str,
+    hot_url: bool,
+    model_crawl: str,
+) -&gt; None:
+    &#34;&#34;&#34;
+    Fungsi untuk menyimpan konten seperti teks, judul, deskripsi yang ada di halaman web ke dalam database.
+
+    Args:
+        db_connection (pymysql.Connection): Koneksi database MySQL
+        url (str): URL halaman
+        crawl_id (int): ID crawling
+        html5 (bool): Versi html5, 1 jika ya, 0 jika tidak
+        title (str): Judul halaman
+        description (str): Deskripsi  halaman
+        keywords (str): Keyword halaman
+        content_text (str): Konten teks halaman
+        hot_url (bool): Hot URL, 1 jika ya, 0 jika tidak
+        model_crawl (str): Model crawling yaitu BFS atau MSB
+    &#34;&#34;&#34;
     db_connection.ping()
     db_cursor = db_connection.cursor()
     query = &#34;INSERT INTO `page_information` (`url`, `crawl_id`, `html5`, `title`, `description`, `keywords`, `content_text`, `hot_url`, `model_crawl`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)&#34;
@@ -365,16 +728,37 @@ class PageContent:
 </details>
 </dd>
 <dt id="search-engine.src.crawling.page_content.PageContent.insert_page_linking"><code class="name flex">
-<span>def <span class="ident">insert_page_linking</span></span>(<span>self, db_connection, crawl_id, url, outgoing_link)</span>
+<span>def <span class="ident">insert_page_linking</span></span>(<span>self, db_connection: pymysql.connections.Connection, crawl_id: int, url: str, outgoing_link: str) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk menyimpan url linking yang ada di halaman web ke dalam database.</p></div>
+<div class="desc"><p>Fungsi untuk menyimpan url linking yang ada di halaman web ke dalam database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_connection</code></strong> :&ensp;<code>pymysql.Connection</code></dt>
+<dd>Koneksi database MySQL</dd>
+<dt><strong><code>crawl_id</code></strong> :&ensp;<code>int</code></dt>
+<dd>ID crawling</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL halaman</dd>
+<dt><strong><code>outgoing_link</code></strong> :&ensp;<code>str</code></dt>
+<dd>Outgoing link</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_page_linking(self, db_connection, crawl_id, url, outgoing_link):
-    &#34;&#34;&#34;Fungsi untuk menyimpan url linking yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+<pre><code class="python">def insert_page_linking(
+    self, db_connection: pymysql.Connection, crawl_id: int, url: str, outgoing_link: str
+) -&gt; None:
+    &#34;&#34;&#34;
+    Fungsi untuk menyimpan url linking yang ada di halaman web ke dalam database.
+
+    Args:
+        db_connection (pymysql.Connection): Koneksi database MySQL
+        crawl_id (int): ID crawling
+        url (str): URL halaman
+        outgoing_link (str): Outgoing link
+    &#34;&#34;&#34;
     db_connection.ping()
     db_cursor = db_connection.cursor()
     query = &#34;INSERT INTO `page_linking` (`crawl_id`, `url`, `outgoing_link`) VALUES (%s, %s, %s)&#34;
@@ -383,16 +767,32 @@ class PageContent:
 </details>
 </dd>
 <dt id="search-engine.src.crawling.page_content.PageContent.insert_page_list"><code class="name flex">
-<span>def <span class="ident">insert_page_list</span></span>(<span>self, db_connection, url, list)</span>
+<span>def <span class="ident">insert_page_list</span></span>(<span>self, db_connection: pymysql.connections.Connection, url: str, list: str) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk menyimpan list yang ada di halaman web ke dalam database.</p></div>
+<div class="desc"><p>Fungsi untuk menyimpan list yang ada di halaman web ke dalam database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_connection</code></strong> :&ensp;<code>pymysql.Connection</code></dt>
+<dd>Koneksi database MySQL</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL halaman</dd>
+<dt><strong><code>list</code></strong> :&ensp;<code>str</code></dt>
+<dd>List halaman</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_page_list(self, db_connection, url, list):
-    &#34;&#34;&#34;Fungsi untuk menyimpan list yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+<pre><code class="python">def insert_page_list(self, db_connection: pymysql.Connection, url: str, list: str) -&gt; None:
+    &#34;&#34;&#34;
+    Fungsi untuk menyimpan list yang ada di halaman web ke dalam database.
+
+    Args:
+        db_connection (pymysql.Connection): Koneksi database MySQL
+        url (str): URL halaman
+        list (str): List halaman
+    &#34;&#34;&#34;
     db_connection.ping()
     db_cursor = db_connection.cursor()
     query = &#34;INSERT INTO `page_list` (`url`, `list`) VALUES (%s, %s)&#34;
@@ -401,16 +801,32 @@ class PageContent:
 </details>
 </dd>
 <dt id="search-engine.src.crawling.page_content.PageContent.insert_page_script"><code class="name flex">
-<span>def <span class="ident">insert_page_script</span></span>(<span>self, db_connection, url, script)</span>
+<span>def <span class="ident">insert_page_script</span></span>(<span>self, db_connection: pymysql.connections.Connection, url: str, script: str) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk menyimpan script yang ada di halaman web ke dalam database.</p></div>
+<div class="desc"><p>Fungsi untuk menyimpan script yang ada di halaman web ke dalam database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_connection</code></strong> :&ensp;<code>pymysql.Connection</code></dt>
+<dd>Koneksi database MySQL</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL halaman</dd>
+<dt><strong><code>script</code></strong> :&ensp;<code>str</code></dt>
+<dd>Script halaman</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_page_script(self, db_connection, url, script):
-    &#34;&#34;&#34;Fungsi untuk menyimpan script yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+<pre><code class="python">def insert_page_script(self, db_connection: pymysql.Connection, url: str, script: str) -&gt; None:
+    &#34;&#34;&#34;
+    Fungsi untuk menyimpan script yang ada di halaman web ke dalam database.
+
+    Args:
+        db_connection (pymysql.Connection): Koneksi database MySQL
+        url (str): URL halaman
+        script (str): Script halaman
+    &#34;&#34;&#34;
     db_connection.ping()
     db_cursor = db_connection.cursor()
     query = &#34;INSERT INTO `page_scripts` (`url`, `script`) VALUES (%s, %s)&#34;
@@ -419,16 +835,32 @@ class PageContent:
 </details>
 </dd>
 <dt id="search-engine.src.crawling.page_content.PageContent.insert_page_style"><code class="name flex">
-<span>def <span class="ident">insert_page_style</span></span>(<span>self, db_connection, url, style)</span>
+<span>def <span class="ident">insert_page_style</span></span>(<span>self, db_connection: pymysql.connections.Connection, url: str, style: str) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk menyimpan style yang ada di halaman web ke dalam database.</p></div>
+<div class="desc"><p>Fungsi untuk menyimpan style yang ada di halaman web ke dalam database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_connection</code></strong> :&ensp;<code>pymysql.Connection</code></dt>
+<dd>Koneksi database MySQL</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL halaman</dd>
+<dt><strong><code>style</code></strong> :&ensp;<code>str</code></dt>
+<dd>Style halaman</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_page_style(self, db_connection, url, style):
-    &#34;&#34;&#34;Fungsi untuk menyimpan style yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+<pre><code class="python">def insert_page_style(self, db_connection: pymysql.Connection, url: str, style: str) -&gt; None:
+    &#34;&#34;&#34;
+    Fungsi untuk menyimpan style yang ada di halaman web ke dalam database.
+
+    Args:
+        db_connection (pymysql.Connection): Koneksi database MySQL
+        url (str): URL halaman
+        style (str): Style halaman
+    &#34;&#34;&#34;
     db_connection.ping()
     db_cursor = db_connection.cursor()
     query = &#34;INSERT INTO `page_styles` (`url`, `style`) VALUES (%s, %s)&#34;
@@ -437,16 +869,32 @@ class PageContent:
 </details>
 </dd>
 <dt id="search-engine.src.crawling.page_content.PageContent.insert_page_table"><code class="name flex">
-<span>def <span class="ident">insert_page_table</span></span>(<span>self, db_connection, url, table)</span>
+<span>def <span class="ident">insert_page_table</span></span>(<span>self, db_connection: pymysql.connections.Connection, url: str, table: str) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk menyimpan table yang ada di halaman web ke dalam database.</p></div>
+<div class="desc"><p>Fungsi untuk menyimpan table yang ada di halaman web ke dalam database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_connection</code></strong> :&ensp;<code>pymysql.Connection</code></dt>
+<dd>Koneksi database MySQL</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL halaman</dd>
+<dt><strong><code>table</code></strong> :&ensp;<code>str</code></dt>
+<dd>Table halaman</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_page_table(self, db_connection, url, table):
-    &#34;&#34;&#34;Fungsi untuk menyimpan table yang ada di halaman web ke dalam database.&#34;&#34;&#34;
+<pre><code class="python">def insert_page_table(self, db_connection: pymysql.Connection, url: str, table: str) -&gt; None:
+    &#34;&#34;&#34;
+    Fungsi untuk menyimpan table yang ada di halaman web ke dalam database.
+
+    Args:
+        db_connection (pymysql.Connection): Koneksi database MySQL
+        url (str): URL halaman
+        table (str): Table halaman
+    &#34;&#34;&#34;
     db_connection.ping()
     db_cursor = db_connection.cursor()
     query = &#34;INSERT INTO `page_tables` (`url`, `table_str`) VALUES (%s, %s)&#34;
@@ -455,16 +903,32 @@ class PageContent:
 </details>
 </dd>
 <dt id="search-engine.src.crawling.page_content.PageContent.set_hot_url"><code class="name flex">
-<span>def <span class="ident">set_hot_url</span></span>(<span>self, db_connection, url, hot_link)</span>
+<span>def <span class="ident">set_hot_url</span></span>(<span>self, db_connection: pymysql.connections.Connection, url: str, hot_link: bool) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk menandakan hot URL pada halaman web ke dalam database.</p></div>
+<div class="desc"><p>Fungsi untuk menandakan hot URL pada halaman web ke dalam database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_connection</code></strong> :&ensp;<code>pymysql.Connection</code></dt>
+<dd>Koneksi database MySQL</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL halaman</dd>
+<dt><strong><code>hot_link</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Hot URL, 1 jika ya, 0 jika tidak</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_hot_url(self, db_connection, url, hot_link):
-    &#34;&#34;&#34;Fungsi untuk menandakan hot URL pada halaman web ke dalam database.&#34;&#34;&#34;
+<pre><code class="python">def set_hot_url(self, db_connection: pymysql.Connection, url: str, hot_link: bool) -&gt; None:
+    &#34;&#34;&#34;
+    Fungsi untuk menandakan hot URL pada halaman web ke dalam database.
+
+    Args:
+        db_connection (pymysql.Connection): Koneksi database MySQL
+        url (str): URL halaman
+        hot_link (bool): Hot URL, 1 jika ya, 0 jika tidak
+    &#34;&#34;&#34;
     db_connection.ping()
     db_cursor = db_connection.cursor()
     query = &#34;UPDATE `page_information` SET `hot_url` = %s WHERE `url` = %s&#34;
@@ -473,16 +937,32 @@ class PageContent:
 </details>
 </dd>
 <dt id="search-engine.src.crawling.page_content.PageContent.update_crawling"><code class="name flex">
-<span>def <span class="ident">update_crawling</span></span>(<span>self, db_connection, crawl_id, total_page)</span>
+<span>def <span class="ident">update_crawling</span></span>(<span>self, db_connection: pymysql.connections.Connection, crawl_id: int, total_page: int) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk memperbarui data crawling ke dalam database.</p></div>
+<div class="desc"><p>Fungsi untuk memperbarui data crawling ke dalam database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_connection</code></strong> :&ensp;<code>pymysql.Connection</code></dt>
+<dd>Koneksi database MySQL</dd>
+<dt><strong><code>crawl_id</code></strong> :&ensp;<code>int</code></dt>
+<dd>ID crawling</dd>
+<dt><strong><code>total_page</code></strong> :&ensp;<code>int</code></dt>
+<dd>Jumlah halaman</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def update_crawling(self, db_connection, crawl_id, total_page):
-    &#34;&#34;&#34;Fungsi untuk memperbarui data crawling ke dalam database.&#34;&#34;&#34;
+<pre><code class="python">def update_crawling(self, db_connection: pymysql.Connection, crawl_id: int, total_page: int) -&gt; None:
+    &#34;&#34;&#34;
+    Fungsi untuk memperbarui data crawling ke dalam database.
+
+    Args:
+        db_connection (pymysql.Connection): Koneksi database MySQL
+        crawl_id (int): ID crawling
+        total_page (int): Jumlah halaman
+    &#34;&#34;&#34;
     db_connection.ping()
     db_cursor = db_connection.cursor()
     query = &#34;UPDATE `crawling` SET `total_page` = %s WHERE `id_crawling` = %s&#34;

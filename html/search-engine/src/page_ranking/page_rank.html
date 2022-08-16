@@ -59,7 +59,6 @@ class PageRank:
         db_connection = self.db.connect()
         N = self.db.count_rows(db_connection, &#34;page_information&#34;)
         initial_pr = 1 / N
-        self.db.close_connection(db_connection)
 
         for iteration in range(self.max_iterations):
             pr_change_sum = 0
@@ -76,7 +75,7 @@ class PageRank:
                 if is_exist:
                     current_pagerank = is_exist[&#34;pagerank_score&#34;]
                 else:
-                    current_pagerank = 0
+                    current_pagerank = initial_pr
                 new_pagerank = 0
                 backlink_urls = set()
 
@@ -156,7 +155,6 @@ class PageRank:
         db_connection = self.db.connect()
         N = self.db.count_rows(db_connection, &#34;page_information&#34;)
         initial_pr = 1 / N
-        self.db.close_connection(db_connection)
 
         for iteration in range(self.max_iterations):
             pr_change_sum = 0
@@ -173,7 +171,7 @@ class PageRank:
                 if is_exist:
                     current_pagerank = is_exist[&#34;pagerank_score&#34;]
                 else:
-                    current_pagerank = 0
+                    current_pagerank = initial_pr
                 new_pagerank = 0
                 backlink_urls = set()
 
@@ -224,7 +222,6 @@ class PageRank:
     db_connection = self.db.connect()
     N = self.db.count_rows(db_connection, &#34;page_information&#34;)
     initial_pr = 1 / N
-    self.db.close_connection(db_connection)
 
     for iteration in range(self.max_iterations):
         pr_change_sum = 0
@@ -241,7 +238,7 @@ class PageRank:
             if is_exist:
                 current_pagerank = is_exist[&#34;pagerank_score&#34;]
             else:
-                current_pagerank = 0
+                current_pagerank = initial_pr
             new_pagerank = 0
             backlink_urls = set()
 

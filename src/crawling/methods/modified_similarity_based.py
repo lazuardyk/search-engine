@@ -1,3 +1,4 @@
+from typing import Any
 from matplotlib.pyplot import hot
 from src.database.database import Database
 from src.crawling.page_content import PageContent
@@ -14,9 +15,29 @@ import re
 
 
 class ModifiedSimilarityBased:
-    """Kelas yang digunakan untuk melakukan crawling dengan metode Modified Similarity Based Crawling."""
+    """
+    Kelas yang digunakan untuk melakukan crawling dengan metode Modified Similarity Based Crawling.
 
-    def __init__(self, crawl_id, url_queue, visited_urls, list_urls, keyword, duration_sec, max_threads):
+    Args:
+        crawl_id (int): ID crawling (table crawling di database)
+        url_queue (queue.Queue): Kumpulan URL antrian
+        visited_urls (list): Kumpulan URL yang sudah dikunjungi
+        list_urls (list): Kumpulan outgoing URL untuk keperluan reorder di MSB
+        keyword (str): Keyword yang digunakan untuk prioritas antrian MSB
+        duration_sec (int): Durasi MSB crawler dalam detik
+        max_threads (int): Maksimal threads yang akan digunakan
+    """
+
+    def __init__(
+        self,
+        crawl_id: int,
+        url_queue: queue.Queue,
+        visited_urls: list,
+        list_urls: list,
+        keyword: str,
+        duration_sec: int,
+        max_threads: int,
+    ) -> None:
         self.crawl_id = crawl_id
         self.visited_urls = visited_urls
         self.keyword = keyword
@@ -31,8 +52,10 @@ class ModifiedSimilarityBased:
         self.hot_queue = queue.Queue()
         self.url_queue = self.reorder_queue(url_queue)
 
-    def run(self):
-        """Fungsi utama yang berfungsi untuk menjalankan proses crawling MSB."""
+    def run(self) -> None:
+        """
+        Fungsi utama yang berfungsi untuk menjalankan proses crawling MSB.
+        """
         executor = ThreadPoolExecutor(max_workers=self.max_threads)
 
         futures = []
@@ -69,8 +92,13 @@ class ModifiedSimilarityBased:
         executor._threads.clear()
         concurrent.futures.thread._threads_queues.clear()
 
-    def scrape_page(self, url):
-        """Fungsi untuk menyimpan konten yang ada pada suatu halaman ke database."""
+    def scrape_page(self, url: str) -> None:
+        """
+        Fungsi untuk menyimpan konten yang ada pada suatu halaman ke database.
+
+        Args:
+            url (str): URL halaman yang ingin discrape
+        """
         try:
             response = self.util.get_page(url)
             if response and response.status_code == 200:
@@ -198,8 +226,13 @@ class ModifiedSimilarityBased:
             print(e, "~ Error in thread")
             return
 
-    def tag_visible(self, element):
-        """Fungsi untuk merapihkan konten teks."""
+    def tag_visible(self, element: Any) -> bool:
+        """
+        Fungsi untuk merapihkan konten teks.
+
+        Args:
+            element (Any): Elemen HTML
+        """
         if element.parent.name in ["style", "script", "head", "title", "meta", "[document]"]:
             return False
         if isinstance(element, bs4.element.Comment):
@@ -208,8 +241,16 @@ class ModifiedSimilarityBased:
             return False
         return True
 
-    def reorder_queue(self, q):
-        """Fungsi untuk melakukan mengurutkan ulang antrian link pada crawler"""
+    def reorder_queue(self, q: queue.Queue) -> queue.Queue:
+        """
+        Fungsi untuk melakukan mengurutkan ulang antrian link pada crawler.
+
+        Args:
+            q (queue.Queue): Queue yang ingin diurutkan
+
+        Returns:
+            queue.Queue: Queue yang sudah diurutkan
+        """
         value_backlink = []
         for u in list(q.queue):
             # menentukan nilai backlink_count

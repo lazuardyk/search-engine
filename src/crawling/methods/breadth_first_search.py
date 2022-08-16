@@ -1,3 +1,4 @@
+from typing import Any
 from src.database.database import Database
 from src.crawling.page_content import PageContent
 from src.crawling.util import Util
@@ -13,9 +14,20 @@ import re
 
 
 class BreadthFirstSearch:
-    """Kelas yang digunakan untuk melakukan crawling dengan metode Breadth First Search."""
+    """
+    Kelas yang digunakan untuk melakukan crawling dengan metode Breadth First Search.
 
-    def __init__(self, crawl_id, url_queue, visited_urls, duration_sec, max_threads):
+    Args:
+        crawl_id (int): ID crawling (table crawling di database)
+        url_queue (queue.Queue): Kumpulan URL antrian
+        visited_urls (list): Kumpulan URL yang sudah dikunjungi
+        duration_sec (int): Durasi BFS crawler dalam detik
+        max_threads (int): Maksimal threads yang akan digunakan
+    """
+
+    def __init__(
+        self, crawl_id: int, url_queue: queue.Queue, visited_urls: list, duration_sec: int, max_threads: int
+    ) -> None:
         self.crawl_id = crawl_id
         self.url_queue = url_queue
         self.visited_urls = visited_urls
@@ -28,8 +40,10 @@ class BreadthFirstSearch:
         self.start_time = time.time()
         self.list_urls = []
 
-    def run(self):
-        """Fungsi utama yang berfungsi untuk menjalankan proses crawling BFS."""
+    def run(self) -> None:
+        """
+        Fungsi utama yang berfungsi untuk menjalankan proses crawling BFS.
+        """
         executor = ThreadPoolExecutor(max_workers=self.max_threads)
 
         futures = []
@@ -60,8 +74,13 @@ class BreadthFirstSearch:
         executor._threads.clear()
         concurrent.futures.thread._threads_queues.clear()
 
-    def scrape_page(self, url):
-        """Fungsi untuk menyimpan konten yang ada pada suatu halaman ke database."""
+    def scrape_page(self, url: str) -> None:
+        """
+        Fungsi untuk menyimpan konten yang ada pada suatu halaman ke database.
+
+        Args:
+            url (str): URL halaman yang ingin discrape
+        """
         try:
             response = self.util.get_page(url)
             if response and response.status_code == 200:
@@ -182,8 +201,13 @@ class BreadthFirstSearch:
             print(e, "~ Error in thread")
             return
 
-    def tag_visible(self, element):
-        """Fungsi untuk merapihkan konten teks."""
+    def tag_visible(self, element: Any) -> bool:
+        """
+        Fungsi untuk merapihkan konten teks.
+
+        Args:
+            element (Any): Elemen HTML
+        """
         if element.parent.name in ["style", "script", "head", "title", "meta", "[document]"]:
             return False
         if isinstance(element, bs4.element.Comment):

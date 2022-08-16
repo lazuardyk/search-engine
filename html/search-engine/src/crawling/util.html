@@ -26,23 +26,53 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from urllib.parse import urlparse
+<pre><code class="python">from typing import Any
+from urllib.parse import urlparse
 import requests
 
 
 class Util:
-    def count_keyword_in_text(self, text, keyword):
-        &#34;&#34;&#34;Fungsi untuk menghitung keyword yang muncul dalam suatu teks.&#34;&#34;&#34;
+    &#34;&#34;&#34;
+    Kelas yang berisi fungsi-fungsi utilitas crawler.
+    &#34;&#34;&#34;
+
+    def count_keyword_in_text(self, text: str, keyword: str) -&gt; int:
+        &#34;&#34;&#34;
+        Fungsi untuk menghitung keyword yang muncul dalam suatu teks.
+
+        Args:
+            text (str): Input teks
+            keyword (str): Keyword yang ingin dihitung
+
+        Returns:
+            int: Jumlah keyword yang ada di dalam teks
+        &#34;&#34;&#34;
         count_keyword = text.count(keyword)
         return count_keyword
 
-    def is_valid_url(self, url):
-        &#34;&#34;&#34;Fungsi untuk mengecek apakah sebuah URL valid atau tidak.&#34;&#34;&#34;
+    def is_valid_url(self, url: str) -&gt; bool:
+        &#34;&#34;&#34;
+        Fungsi untuk mengecek apakah sebuah URL valid atau tidak.
+
+        Args:
+            url (str): URL halaman
+
+        Returns:
+            bool: True jika URL valid, False jika tidak
+        &#34;&#34;&#34;
         parsed = urlparse(url)
         return parsed.scheme in [&#34;http&#34;, &#34;https&#34;] and bool(parsed.netloc)
 
-    def get_page(self, url):
-        &#34;&#34;&#34;Fungsi untuk melakukan permintaan (request) ke URL.&#34;&#34;&#34;
+    def get_page(self, url: str) -&gt; Any:
+        &#34;&#34;&#34;
+        Fungsi untuk melakukan permintaan (request) ke URL.
+
+        Args:
+            url (str): URL halaman
+
+        Returns:
+            Any: Respons dari halaman. None jika error
+        &#34;&#34;&#34;
         try:
             res = requests.get(url, verify=False, timeout=300)
             res.raise_for_status()
@@ -51,8 +81,16 @@ class Util:
             print(e)
             return
 
-    def running_thread_count(self, futures):
-        &#34;&#34;&#34;Fungsi untuk menghitung berapa threads yang sedang berjalan.&#34;&#34;&#34;
+    def running_thread_count(self, futures: list) -&gt; int:
+        &#34;&#34;&#34;
+        Fungsi untuk menghitung berapa threads yang sedang berjalan.
+
+        Args:
+            futures (list): Kumpulan objek future
+
+        Returns:
+            int: Jumlah threads yang sedang berjalan
+        &#34;&#34;&#34;
         r = 0
         for future in futures:
             if future.running():
@@ -74,24 +112,53 @@ class Util:
 <span>class <span class="ident">Util</span></span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Kelas yang berisi fungsi-fungsi utilitas crawler.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Util:
-    def count_keyword_in_text(self, text, keyword):
-        &#34;&#34;&#34;Fungsi untuk menghitung keyword yang muncul dalam suatu teks.&#34;&#34;&#34;
+    &#34;&#34;&#34;
+    Kelas yang berisi fungsi-fungsi utilitas crawler.
+    &#34;&#34;&#34;
+
+    def count_keyword_in_text(self, text: str, keyword: str) -&gt; int:
+        &#34;&#34;&#34;
+        Fungsi untuk menghitung keyword yang muncul dalam suatu teks.
+
+        Args:
+            text (str): Input teks
+            keyword (str): Keyword yang ingin dihitung
+
+        Returns:
+            int: Jumlah keyword yang ada di dalam teks
+        &#34;&#34;&#34;
         count_keyword = text.count(keyword)
         return count_keyword
 
-    def is_valid_url(self, url):
-        &#34;&#34;&#34;Fungsi untuk mengecek apakah sebuah URL valid atau tidak.&#34;&#34;&#34;
+    def is_valid_url(self, url: str) -&gt; bool:
+        &#34;&#34;&#34;
+        Fungsi untuk mengecek apakah sebuah URL valid atau tidak.
+
+        Args:
+            url (str): URL halaman
+
+        Returns:
+            bool: True jika URL valid, False jika tidak
+        &#34;&#34;&#34;
         parsed = urlparse(url)
         return parsed.scheme in [&#34;http&#34;, &#34;https&#34;] and bool(parsed.netloc)
 
-    def get_page(self, url):
-        &#34;&#34;&#34;Fungsi untuk melakukan permintaan (request) ke URL.&#34;&#34;&#34;
+    def get_page(self, url: str) -&gt; Any:
+        &#34;&#34;&#34;
+        Fungsi untuk melakukan permintaan (request) ke URL.
+
+        Args:
+            url (str): URL halaman
+
+        Returns:
+            Any: Respons dari halaman. None jika error
+        &#34;&#34;&#34;
         try:
             res = requests.get(url, verify=False, timeout=300)
             res.raise_for_status()
@@ -100,8 +167,16 @@ class Util:
             print(e)
             return
 
-    def running_thread_count(self, futures):
-        &#34;&#34;&#34;Fungsi untuk menghitung berapa threads yang sedang berjalan.&#34;&#34;&#34;
+    def running_thread_count(self, futures: list) -&gt; int:
+        &#34;&#34;&#34;
+        Fungsi untuk menghitung berapa threads yang sedang berjalan.
+
+        Args:
+            futures (list): Kumpulan objek future
+
+        Returns:
+            int: Jumlah threads yang sedang berjalan
+        &#34;&#34;&#34;
         r = 0
         for future in futures:
             if future.running():
@@ -112,31 +187,70 @@ class Util:
 <h3>Methods</h3>
 <dl>
 <dt id="search-engine.src.crawling.util.Util.count_keyword_in_text"><code class="name flex">
-<span>def <span class="ident">count_keyword_in_text</span></span>(<span>self, text, keyword)</span>
+<span>def <span class="ident">count_keyword_in_text</span></span>(<span>self, text: str, keyword: str) ‑> int</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk menghitung keyword yang muncul dalam suatu teks.</p></div>
+<div class="desc"><p>Fungsi untuk menghitung keyword yang muncul dalam suatu teks.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>Input teks</dd>
+<dt><strong><code>keyword</code></strong> :&ensp;<code>str</code></dt>
+<dd>Keyword yang ingin dihitung</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Jumlah keyword yang ada di dalam teks</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def count_keyword_in_text(self, text, keyword):
-    &#34;&#34;&#34;Fungsi untuk menghitung keyword yang muncul dalam suatu teks.&#34;&#34;&#34;
+<pre><code class="python">def count_keyword_in_text(self, text: str, keyword: str) -&gt; int:
+    &#34;&#34;&#34;
+    Fungsi untuk menghitung keyword yang muncul dalam suatu teks.
+
+    Args:
+        text (str): Input teks
+        keyword (str): Keyword yang ingin dihitung
+
+    Returns:
+        int: Jumlah keyword yang ada di dalam teks
+    &#34;&#34;&#34;
     count_keyword = text.count(keyword)
     return count_keyword</code></pre>
 </details>
 </dd>
 <dt id="search-engine.src.crawling.util.Util.get_page"><code class="name flex">
-<span>def <span class="ident">get_page</span></span>(<span>self, url)</span>
+<span>def <span class="ident">get_page</span></span>(<span>self, url: str) ‑> Any</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk melakukan permintaan (request) ke URL.</p></div>
+<div class="desc"><p>Fungsi untuk melakukan permintaan (request) ke URL.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL halaman</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code></dt>
+<dd>Respons dari halaman. None jika error</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_page(self, url):
-    &#34;&#34;&#34;Fungsi untuk melakukan permintaan (request) ke URL.&#34;&#34;&#34;
+<pre><code class="python">def get_page(self, url: str) -&gt; Any:
+    &#34;&#34;&#34;
+    Fungsi untuk melakukan permintaan (request) ke URL.
+
+    Args:
+        url (str): URL halaman
+
+    Returns:
+        Any: Respons dari halaman. None jika error
+    &#34;&#34;&#34;
     try:
         res = requests.get(url, verify=False, timeout=300)
         res.raise_for_status()
@@ -147,31 +261,67 @@ class Util:
 </details>
 </dd>
 <dt id="search-engine.src.crawling.util.Util.is_valid_url"><code class="name flex">
-<span>def <span class="ident">is_valid_url</span></span>(<span>self, url)</span>
+<span>def <span class="ident">is_valid_url</span></span>(<span>self, url: str) ‑> bool</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk mengecek apakah sebuah URL valid atau tidak.</p></div>
+<div class="desc"><p>Fungsi untuk mengecek apakah sebuah URL valid atau tidak.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL halaman</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True jika URL valid, False jika tidak</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def is_valid_url(self, url):
-    &#34;&#34;&#34;Fungsi untuk mengecek apakah sebuah URL valid atau tidak.&#34;&#34;&#34;
+<pre><code class="python">def is_valid_url(self, url: str) -&gt; bool:
+    &#34;&#34;&#34;
+    Fungsi untuk mengecek apakah sebuah URL valid atau tidak.
+
+    Args:
+        url (str): URL halaman
+
+    Returns:
+        bool: True jika URL valid, False jika tidak
+    &#34;&#34;&#34;
     parsed = urlparse(url)
     return parsed.scheme in [&#34;http&#34;, &#34;https&#34;] and bool(parsed.netloc)</code></pre>
 </details>
 </dd>
 <dt id="search-engine.src.crawling.util.Util.running_thread_count"><code class="name flex">
-<span>def <span class="ident">running_thread_count</span></span>(<span>self, futures)</span>
+<span>def <span class="ident">running_thread_count</span></span>(<span>self, futures: list) ‑> int</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Fungsi untuk menghitung berapa threads yang sedang berjalan.</p></div>
+<div class="desc"><p>Fungsi untuk menghitung berapa threads yang sedang berjalan.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>futures</code></strong> :&ensp;<code>list</code></dt>
+<dd>Kumpulan objek future</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Jumlah threads yang sedang berjalan</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def running_thread_count(self, futures):
-    &#34;&#34;&#34;Fungsi untuk menghitung berapa threads yang sedang berjalan.&#34;&#34;&#34;
+<pre><code class="python">def running_thread_count(self, futures: list) -&gt; int:
+    &#34;&#34;&#34;
+    Fungsi untuk menghitung berapa threads yang sedang berjalan.
+
+    Args:
+        futures (list): Kumpulan objek future
+
+    Returns:
+        int: Jumlah threads yang sedang berjalan
+    &#34;&#34;&#34;
     r = 0
     for future in futures:
         if future.running():

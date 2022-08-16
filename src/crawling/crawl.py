@@ -13,9 +13,20 @@ import warnings
 
 
 class Crawl:
-    """Kelas utama untuk melakukan proses crawling."""
+    """
+    Kelas utama untuk melakukan proses crawling.
 
-    def __init__(self, start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword):
+    Args:
+        start_urls (list): Kumpulan URL awal yang ingin dicrawl
+        max_threads (str): Maksimal threads yang akan digunakan
+        bfs_duration_sec (str): Durasi untuk crawler BFS dalam detik
+        msb_duration_sec (str): Durasi untuk crawler MSB dalam detik
+        msb_keyword (str): Keyword yang digunakan untuk crawler MSB
+    """
+
+    def __init__(
+        self, start_urls: list, max_threads: str, bfs_duration_sec: str, msb_duration_sec: str, msb_keyword: str
+    ) -> None:
         self.start_urls = start_urls
         self.max_threads = int(max_threads)
         self.bfs_duration_sec = int(bfs_duration_sec)
@@ -27,8 +38,13 @@ class Crawl:
         self.process = psutil.Process(os.getpid())
         warnings.filterwarnings("ignore", message="Unverified HTTPS request")
 
-    def scrape_links_for_resume(self, urls):
-        """Fungsi untuk mengambil semua link pada halaman yang dilakukan pada saat resume proses crawling."""
+    def scrape_links_for_resume(self, urls: list) -> None:
+        """
+        Fungsi untuk mengambil semua link pada halaman yang dilakukan pada saat resume proses crawling.
+
+        Args:
+            urls (list): Kumpulan URL halaman yang akan diekstrak linknya
+        """
         for url in urls:
             result = self.util.get_page(url)
             if result and result.status_code == 200:
@@ -39,8 +55,10 @@ class Crawl:
                     if self.util.is_valid_url(complete_url) and complete_url not in self.visited_urls:
                         self.url_queue.put(complete_url)
 
-    def run(self):
-        """Fungsi utama yang berfungsi untuk menjalankan proses crawling."""
+    def run(self) -> None:
+        """
+        Fungsi utama yang berfungsi untuk menjalankan proses crawling.
+        """
         self.url_queue = queue.Queue()
         self.start_time = time.time()
 
