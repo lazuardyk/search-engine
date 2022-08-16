@@ -167,7 +167,7 @@ class BreadthFirstSearch:
                     # Complete relative URLs and strip trailing slash
                     complete_url = urljoin(url, i["href"]).rstrip("/")
 
-                    # self.list_urls.append(complete_url) # Disable Modified Similarity Based Crawler
+                    self.list_urls.append(complete_url)  # For  MSB
                     self.page_content.insert_page_linking(db_connection, self.crawl_id, url, complete_url)
 
                     self.lock.acquire()

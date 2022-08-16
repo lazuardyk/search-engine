@@ -1,8 +1,8 @@
 from src.database.database import Database
-from src.crawling.modified_similarity_based import ModifiedSimilarityBased
+from src.crawling.methods.modified_similarity_based import ModifiedSimilarityBased
 from src.crawling.page_content import PageContent
 from src.crawling.util import Util
-from src.crawling.breadth_first_search import BreadthFirstSearch
+from src.crawling.methods.breadth_first_search import BreadthFirstSearch
 import queue
 import time
 import bs4
@@ -75,11 +75,19 @@ class Crawl:
 
         # Disable Modified Similarity Based Crawler
 
-        # print(len(bfs.list_urls))
-        # print("Running modified similarity based crawler...")
-        # msb = ModifiedSimilarityBased(crawl_id, bfs.url_queue, bfs.visited_urls, bfs.list_urls, self.msb_keyword, self.msb_duration_sec, self.max_threads)
-        # msb.run()
-        # print("Finished modified similarity based crawler...")
+        print(len(bfs.list_urls))
+        print("Running modified similarity based crawler...")
+        msb = ModifiedSimilarityBased(
+            crawl_id,
+            bfs.url_queue,
+            bfs.visited_urls,
+            bfs.list_urls,
+            self.msb_keyword,
+            self.msb_duration_sec,
+            self.max_threads,
+        )
+        msb.run()
+        print("Finished modified similarity based crawler...")
 
         db_connection = self.db.connect()
         self.page_count_end = self.db.count_rows(db_connection, "page_information")
