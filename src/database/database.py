@@ -1,11 +1,14 @@
+from typing import Any
 import pymysql
 import os
 
 
 class Database:
-    """Kelas yang digunakan untuk melakukan pengoperasian database."""
+    """
+    Kelas yang digunakan untuk melakukan pengoperasian database.
+    """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.host = os.getenv("DB_HOST")
         self.username = os.getenv("DB_USERNAME")
         self.password = os.getenv("DB_PASSWORD")
@@ -14,22 +17,43 @@ class Database:
         self.create_tables(db_connection)
         self.close_connection(db_connection)
 
-    def connect(self):
-        """Fungsi untuk melakukan koneksi ke database."""
+    def connect(self) -> pymysql.Connection:
+        """
+        Fungsi untuk melakukan koneksi ke database.
+
+        Returns:
+            pymysql.Connection: Koneksi database MySQL
+        """
         connection = pymysql.connect(
             host=self.host, user=self.username, passwd=self.password, db=self.db_name, autocommit=True
         )
         return connection
 
-    def close_connection(self, connection):
-        """Fungsi untuk menutup koneksi ke database."""
+    def close_connection(self, connection: pymysql.Connection) -> None:
+        """
+        Fungsi untuk menutup koneksi ke database.
+
+        Args:
+            connection (pymysql.Connection): Koneksi database MySQL
+        """
         try:
             connection.close()
         except:
             pass
 
-    def check_value_in_table(self, connection, table_name, column_name, value):
-        """Fungsi yang berfungsi untuk mengecek keberadaan suatu nilai di dalam tabel dan kolom."""
+    def check_value_in_table(self, connection: pymysql.Connection, table_name: str, column_name: str, value: Any):
+        """
+        Fungsi yang berfungsi untuk mengecek keberadaan suatu nilai di dalam tabel dan kolom.
+
+        Args:
+            connection (pymysql.Connection): Koneksi database MySQL
+            table_name (str): Nama tabel
+            column_name (str): Nama kolom
+            value (Any): Nilai yang ingin dicek
+
+        Returns:
+            bool: True jika ada, False jika tidak ada
+        """
         connection.ping()
         db_cursor = connection.cursor()
         db_cursor.execute(
@@ -44,8 +68,17 @@ class Database:
             return False
         return True
 
-    def count_rows(self, connection, table_name):
-        """Fungsi untuk menghitung jumlah baris pada tabel."""
+    def count_rows(self, connection: pymysql.Connection, table_name: str):
+        """
+        Fungsi untuk menghitung jumlah baris pada tabel.
+
+        Args:
+            connection (pymysql.Connection): Koneksi database MySQL
+            table_name (str): Nama tabel
+
+        Returns:
+            int: Jumlah baris dari tabel
+        """
         connection.ping()
         db_cursor = connection.cursor()
         db_cursor.execute("SELECT COUNT(*) FROM {table}".format(table=table_name))
@@ -53,15 +86,26 @@ class Database:
         db_cursor.close()
         return row_count
 
-    def exec_query(self, connection, query):
-        """Fungsi untuk eksekusi query pada database."""
+    def exec_query(self, connection: pymysql.Connection, query: str):
+        """
+        Fungsi untuk eksekusi query pada database.
+
+        Args:
+            connection (pymysql.Connection): Koneksi database MySQL
+            query (str): Kueri MySQL
+        """
         connection.ping()
         db_cursor = connection.cursor()
         db_cursor.execute(query)
         db_cursor.close()
 
-    def create_tables(self, connection):
-        """Fungsi untuk membuat tabel-tabel yang diperlukan di database."""
+    def create_tables(self, connection: pymysql.Connection):
+        """
+        Fungsi untuk membuat tabel-tabel yang diperlukan di database.
+
+        Args:
+            connection (pymysql.Connection): Koneksi database MySQL
+        """
         self.exec_query(
             connection,
             "CREATE TABLE IF NOT EXISTS crawling (id_crawling INT PRIMARY KEY AUTO_INCREMENT, start_url TEXT, keyword TEXT, total_page INT, duration_crawl TIME, created_at TIMESTAMP)",
