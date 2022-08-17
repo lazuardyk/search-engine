@@ -1,0 +1,9 @@
+beautifulsoup4
+requests
+pandas
+pymysql
+python-dotenv
+psutil
+sklearn
+numpy
+pdoc3
