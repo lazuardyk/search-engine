@@ -144,7 +144,7 @@ class Database:
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS tf_idf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, ranking INT, tfidf_score DOUBLE)",
+            "CREATE TABLE IF NOT EXISTS tf_idf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, tfidf_score DOUBLE)",
         )
         self.exec_query(
             connection,

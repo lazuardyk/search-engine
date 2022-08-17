@@ -13,12 +13,12 @@ class TfIdf:
     def __init__(self):
         self.db = Database()
 
-    def search(self, tfidf_matrix, model, request, top_n=5):
+    def search(self, tfidf_matrix, model, request):
         """Fungsi untuk mengambil hasil dengan bobot tertinggi."""
         request_transform = model.transform([request])
         similarity = np.dot(request_transform, np.transpose(tfidf_matrix))
         x = np.array(similarity.toarray()[0])
-        indices = np.argsort(x)[-top_n:][::-1]
+        indices = np.argsort(x)[::][::-1]
         score = x[indices]
 
         return [indices, score]
@@ -30,12 +30,12 @@ class TfIdf:
         for i in indices:
             print("id = {0:5d} - title = {1} - url = {2}".format(i, X["title"].loc[i], X["url"].loc[i]))
 
-    def save_tfidf(self, db_connection, keyword, url, ranking, tfidf):
+    def save_tfidf(self, db_connection, keyword, url, tfidf):
         """Fungsi untuk menyimpan ranking dan nilai TF IDF yang sudah dihitung ke dalam database."""
         db_connection.ping()
         db_cursor = db_connection.cursor()
-        query = "INSERT INTO `tf_idf` (`keyword`, `url`, `ranking`, `tfidf_score`) VALUES (%s, %s, %s, %s)"
-        db_cursor.execute(query, (keyword, url, ranking, tfidf))
+        query = "INSERT INTO `tf_idf` (`keyword`, `url`, `tfidf_score`) VALUES (%s, %s, %s)"
+        db_cursor.execute(query, (keyword, url, tfidf))
         db_cursor.close()
 
     def get_saved_tfidf(self, db_connection, keyword):
@@ -65,7 +65,7 @@ class TfIdf:
             )
             tfidf = vector.fit_transform(text_content)
 
-            result_indices, result_score = self.search(tfidf, vector, keyword, 100)
+            result_indices, result_score = self.search(tfidf, vector, keyword)
 
             urls = []
             for ind in result_indices:
@@ -74,8 +74,7 @@ class TfIdf:
             for i in range(len(urls)):
                 url = urls[i]
                 score = result_score[i]
-                ranking = i + 1
-                self.save_tfidf(db_connection, keyword, url, ranking, score)
+                self.save_tfidf(db_connection, keyword, url, score)
 
             saved_data = self.get_saved_tfidf(db_connection, keyword)
             # self.print_result(keyword, result_indices, df)
