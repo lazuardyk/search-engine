@@ -82,6 +82,7 @@ class BreadthFirstSearch:
             url (str): URL halaman yang ingin discrape
         """
         try:
+            page_start_time = time.time()
             response = self.util.get_page(url)
             if response and response.status_code == 200:
                 db_connection = self.db.connect()
@@ -139,20 +140,7 @@ class BreadthFirstSearch:
                 hot_link = 0
 
                 # check if the page information already exist
-                if not self.db.check_value_in_table(db_connection, "page_information", "url", url):
-                    self.page_content.insert_page_information(
-                        db_connection,
-                        url,
-                        self.crawl_id,
-                        html5,
-                        title,
-                        description,
-                        keywords,
-                        complete_text,
-                        hot_link,
-                        "BFS crawling",
-                    )
-                else:
+                if self.db.check_value_in_table(db_connection, "page_information", "url", url):
                     self.db.close_connection(db_connection)
                     return
 
@@ -194,6 +182,20 @@ class BreadthFirstSearch:
                         self.url_queue.put(complete_url)
                     self.lock.release()
 
+                page_duration_crawl = time.time() - page_start_time
+                self.page_content.insert_page_information(
+                    db_connection,
+                    url,
+                    self.crawl_id,
+                    html5,
+                    title,
+                    description,
+                    keywords,
+                    complete_text,
+                    hot_link,
+                    "BFS crawling",
+                    int(page_duration_crawl),
+                )
                 self.db.close_connection(db_connection)
                 return
             return

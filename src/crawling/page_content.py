@@ -49,6 +49,7 @@ class PageContent:
         content_text: str,
         hot_url: bool,
         model_crawl: str,
+        duration_crawl: int,
     ) -> None:
         """
         Fungsi untuk menyimpan konten seperti teks, judul, deskripsi yang ada di halaman web ke dalam database.
@@ -67,9 +68,10 @@ class PageContent:
         """
         db_connection.ping()
         db_cursor = db_connection.cursor()
-        query = "INSERT INTO `page_information` (`url`, `crawl_id`, `html5`, `title`, `description`, `keywords`, `content_text`, `hot_url`, `model_crawl`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        query = "INSERT INTO `page_information` (`url`, `crawl_id`, `html5`, `title`, `description`, `keywords`, `content_text`, `hot_url`, `model_crawl`, `duration_crawl`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, SEC_TO_TIME(%s))"
         db_cursor.execute(
-            query, (url, crawl_id, html5, title, description, keywords, content_text, hot_url, model_crawl)
+            query,
+            (url, crawl_id, html5, title, description, keywords, content_text, hot_url, model_crawl, duration_crawl),
         )
         db_cursor.close()
 
