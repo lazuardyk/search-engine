@@ -91,7 +91,7 @@ class Crawl:
         bfs.run()
         print("Finished breadth first search crawler...")
 
-        # Disable Modified Similarity Based Crawler
+        # Modified Similarity Based Crawler
 
         print(len(bfs.list_urls))
         print("Running modified similarity based crawler...")
