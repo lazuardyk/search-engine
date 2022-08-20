@@ -144,9 +144,13 @@ class Database:
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS tf_idf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, tfidf_score DOUBLE)",
+            "CREATE TABLE IF NOT EXISTS tfidf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, tfidf_score DOUBLE)",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS page_rank (id_pagerank INT PRIMARY KEY AUTO_INCREMENT, url TEXT, pagerank_score DOUBLE)",
+            "CREATE TABLE IF NOT EXISTS tfidf_log (id_tfidf_log INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, duration_call TIME, created_at TIMESTAMP)",
+        )
+        self.exec_query(
+            connection,
+            "CREATE TABLE IF NOT EXISTS pagerank (id_pagerank INT PRIMARY KEY AUTO_INCREMENT, url TEXT, pagerank_score DOUBLE)",
         )

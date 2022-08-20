@@ -5,6 +5,7 @@ import pymysql
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
+import time
 
 
 class TfIdf:
@@ -34,21 +35,29 @@ class TfIdf:
         """Fungsi untuk menyimpan ranking dan nilai TF IDF yang sudah dihitung ke dalam database."""
         db_connection.ping()
         db_cursor = db_connection.cursor()
-        query = "INSERT INTO `tf_idf` (`keyword`, `url`, `tfidf_score`) VALUES (%s, %s, %s)"
+        query = "INSERT INTO `tfidf` (`keyword`, `url`, `tfidf_score`) VALUES (%s, %s, %s)"
         db_cursor.execute(query, (keyword, url, tfidf))
+        db_cursor.close()
+
+    def save_call_log(self, db_connection, keyword, duration_call):
+        db_connection.ping()
+        db_cursor = db_connection.cursor()
+        query = "INSERT INTO `tfidf_log` (`keyword`, `duration_call`) VALUES (%s, SEC_TO_TIME(%s))"
+        db_cursor.execute(query, (keyword, duration_call))
         db_cursor.close()
 
     def get_saved_tfidf(self, db_connection, keyword):
         """Fungsi untuk mengambil data TF IDF dari database jika suatu keyword sudah pernah dihitung."""
         db_connection.ping()
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        db_cursor.execute("SELECT * FROM `tf_idf` WHERE `keyword` = %s", (keyword))
+        db_cursor.execute("SELECT * FROM `tfidf` WHERE `keyword` = %s", (keyword))
         rows = db_cursor.fetchall()
         db_cursor.close()
         return rows
 
     def run(self, keyword):
         """Fungsi utama yang digunakan untuk melakukan perangkingan dokumen TF-IDF."""
+        start_time_call = time.time()
         db_connection = self.db.connect()
 
         saved_data = self.get_saved_tfidf(db_connection, keyword)
@@ -80,4 +89,6 @@ class TfIdf:
             # self.print_result(keyword, result_indices, df)
 
         print(saved_data)
+        duration_call = time.time() - start_time_call
+        self.save_call_log(db_connection, keyword, int(duration_call))
         self.db.close_connection(db_connection)

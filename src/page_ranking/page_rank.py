@@ -17,7 +17,7 @@ class PageRank:
         db_connection.ping()
         db_cursor = db_connection.cursor()
 
-        query = "UPDATE `page_rank` SET `pagerank_score` = %s WHERE `url` = %s"
+        query = "UPDATE `pagerank` SET `pagerank_score` = %s WHERE `url` = %s"
         db_cursor.execute(query, (pagerank, url))
 
         db_cursor.close()
@@ -41,11 +41,11 @@ class PageRank:
         for page_row in pages:
             url = page_row["url"]
 
-            if not self.db.check_value_in_table(db_connection, "page_rank", "url", url):
-                query = "INSERT INTO `page_rank` (`url`, `pagerank_score`) VALUES (%s, %s)"
+            if not self.db.check_value_in_table(db_connection, "pagerank", "url", url):
+                query = "INSERT INTO `pagerank` (`url`, `pagerank_score`) VALUES (%s, %s)"
                 db_cursor.execute(query, (url, initial_pr))
             else:
-                query = "UPDATE `page_rank` SET `pagerank_score` = %s WHERE `url` = %s"
+                query = "UPDATE `pagerank` SET `pagerank_score` = %s WHERE `url` = %s"
                 db_cursor.execute(query, (initial_pr, url))
 
         db_cursor.close()
@@ -54,7 +54,7 @@ class PageRank:
         db_connection.ping()
 
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        db_cursor.execute("SELECT pagerank_score FROM `page_rank` WHERE `url` = %s", (url))
+        db_cursor.execute("SELECT pagerank_score FROM `pagerank` WHERE `url` = %s", (url))
         row = db_cursor.fetchone()
 
         db_cursor.close()
