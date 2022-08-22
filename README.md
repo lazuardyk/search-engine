@@ -32,10 +32,30 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 <details>
 <summary><b>Get Document Ranking</b></summary>
 
-- **URL**
-  `/api/v1/visitors`
+- **URL**: `/api/v1.0/document_ranking/tf_idf?keyword=rumah`
 
-- **Method**
-  `POST`
+- **Method**: `GET`
 
+- **Response**:
+
+```json
+{
+  "data": [
+    {
+      "id_tfidf": 3378,
+      "keyword": "barcelona",
+      "tfidf_score": 0.3666888423866252,
+      "url": "https://www.indosport.com/sepakbola/20220818/kejam-demi-bisa-daftarkan-pemain-baru-barcelona-bakal-phk-2-pemain-terbuangnya"
+    },
+    {
+      "id_tfidf": 3379,
+      "keyword": "barcelona",
+      "tfidf_score": 0.3543321877907969,
+      "url": "https://www.indosport.com/tag/194/barcelona"
+    }
+  ],
+  "message": "Sukses",
+  "ok": true
+}
+```
 </details>
