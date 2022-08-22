@@ -99,8 +99,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 <details>
 <summary><b>Get Crawled Pages</b></summary>
 
-- **URL**: `/api/v1.0/crawling/pages`
-- **URL**: `/api/v1.0/crawling/pages?start=0&end=999`
+- **URL**: `/api/v1.0/crawling/pages` or `/api/v1.0/crawling/pages?start=0&end=999`
 
 - **Method**: `GET`
 
