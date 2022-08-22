@@ -88,7 +88,7 @@ class TfIdf:
             saved_data = self.get_saved_tfidf(db_connection, keyword)
             # self.print_result(keyword, result_indices, df)
 
-        print(saved_data)
         duration_call = time.time() - start_time_call
         self.save_call_log(db_connection, keyword, int(duration_call))
         self.db.close_connection(db_connection)
+        return saved_data
