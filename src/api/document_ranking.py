@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from src.document_ranking.tf_idf import TfIdf
+import json
 
 bp_document_ranking = Blueprint(
     "document_ranking",
@@ -14,18 +15,21 @@ def get_tf_idf_ranks():
 
         tf_idf = TfIdf()
         if keyword == "":
-            return {
+            response = {
                 "ok": False,
                 "message": "Keyword tidak ada. Masukkan keyword pada url seperti '?keyword=barcelona'",
                 "data": [],
             }
         else:
             data = tf_idf.run(keyword)
-            return {
+            response = {
                 "ok": True,
                 "message": "Sukses",
                 "data": data,
             }
+        json_obj = json.dumps(response, indent=4, default=str)
+        return json.loads(json_obj), 200
+
     except Exception as e:
         return {
             "ok": False,

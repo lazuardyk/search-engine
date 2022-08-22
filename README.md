@@ -95,3 +95,52 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 ```
 
 </details>
+
+<details>
+<summary><b>Get Crawled Pages</b></summary>
+
+- **URL**: `/api/v1.0/crawling/pages`
+- **URL**: `/api/v1.0/crawling/pages?start=0&end=999`
+
+- **Method**: `GET`
+
+- **Response**:
+
+```json
+{
+  "data": [
+    {
+      "content_text": "Anies Siapkan Hunian Kelas Menengah,Alaspadu dan Rumapadu,",
+      "crawl_id": 1,
+      "created_at": "2022-08-20 02:41:49",
+      "description": "CNNIndonesia.com menyajikan berita Terbaru, Terkini Indonesia seputar nasional, politik, ekonomi, internasional, olahraga, teknologi, hiburan, gaya hidup.",
+      "duration_crawl": "0:00:00",
+      "hot_url": 0,
+      "html5": 1,
+      "id_information": 2682,
+      "keywords": "cnn, cnn indonesia, indonesia, berita, berita terbaru, berita terkini, berita indonesia, berita dunia, berita nasional, berita politik, berita ekonomi, berita internasional, berita olahraga",
+      "model_crawl": "BFS crawling",
+      "title": "CNN Indonesia | Berita Terbaru, Terkini Indonesia, Dunia",
+      "url": "https://www.cnnindonesia.com/features"
+    },
+    {
+      "content_text": "Anies Siapkan Hunian Kelas Menengah,Alaspadu dan Rumapadu,",
+      "crawl_id": 1,
+      "created_at": "2022-08-20 02:41:50",
+      "description": "CNNIndonesia.com menyajikan berita terbaru, terkini Indonesia, dunia, seputar politik, hukum kriminal, peristiwa",
+      "duration_crawl": "0:00:01",
+      "hot_url": 0,
+      "html5": 1,
+      "id_information": 2683,
+      "keywords": "berita nasional terbaru, berita politik nasional, Berita Terkini, Berita Hari Ini, Breaking News, News Today, News, Hot News, Berita Nasional, Berita politik, Berita kriminal, Berita Hukum, Berita Pemerintahan, Berita Harian, Berita Akurat, Berita Tepercaya",
+      "model_crawl": "BFS crawling",
+      "title": "CNN Indonesia | Berita Terkini Nasional",
+      "url": "https://www.cnnindonesia.com/nasional"
+    }
+  ],
+  "message": "Sukses",
+  "ok": true
+}
+```
+
+</details>
