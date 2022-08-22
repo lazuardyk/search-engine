@@ -30,9 +30,9 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 ## :page_facing_up: Dokumentasi API
 
 <details>
-<summary><b>Get Document Ranking</b></summary>
+<summary><b>Get **TF-IDF** Document Ranking</b></summary>
 
-- **URL**: `/api/v1.0/document_ranking/tf_idf?keyword=rumah`
+- **URL**: `/api/v1.0/document_ranking/tf_idf?keyword=barcelona`
 
 - **Method**: `GET`
 
@@ -58,4 +58,5 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
   "ok": true
 }
 ```
+
 </details>
