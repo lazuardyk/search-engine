@@ -11,8 +11,13 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 
 ## :package: Perintah
 
+`General`
+
+- `Python api.py` untuk menjalankan REST API
+
+`Background Services`
+
 - `Python crawl.py` untuk menjalankan crawler
-- `Python search.py` untuk menjalankan document ranking
 - `Python rank.py` untuk menjalankan page ranking
 
 ## :file_folder: Struktur Direktori
@@ -52,6 +57,36 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
       "keyword": "barcelona",
       "tfidf_score": 0.3543321877907969,
       "url": "https://www.indosport.com/tag/194/barcelona"
+    }
+  ],
+  "message": "Sukses",
+  "ok": true
+}
+```
+
+</details>
+
+<details>
+<summary><b>Get Page-Rank Page Ranking</b></summary>
+
+- **URL**: `/api/v1.0/page_ranking/page_rank`
+
+- **Method**: `GET`
+
+- **Response**:
+
+```json
+{
+  "data": [
+    {
+      "id_pagerank": 1,
+      "pagerank_score": 0.0017783111027720113,
+      "url": "https://www.indosport.com"
+    },
+    {
+      "id_pagerank": 256,
+      "pagerank_score": 0.0002961208172934557,
+      "url": "https://www.curiouscuisiniere.com/about/privacy-policy"
     }
   ],
   "message": "Sukses",

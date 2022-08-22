@@ -1,7 +1,5 @@
 from flask import Blueprint, request
-from src.database.database import Database
 from src.document_ranking.tf_idf import TfIdf
-import pymysql
 
 bp_document_ranking = Blueprint(
     "document_ranking",
@@ -34,8 +32,3 @@ def get_tf_idf_ranks():
             "message": e,
             "data": [],
         }
-
-
-@bp_document_ranking.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"

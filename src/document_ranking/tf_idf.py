@@ -50,7 +50,7 @@ class TfIdf:
         """Fungsi untuk mengambil data TF IDF dari database jika suatu keyword sudah pernah dihitung."""
         db_connection.ping()
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        db_cursor.execute("SELECT * FROM `tfidf` WHERE `keyword` = %s", (keyword))
+        db_cursor.execute("SELECT * FROM `tfidf` WHERE `keyword` = %s ORDER BY `tfidf_score` DESC", (keyword))
         rows = db_cursor.fetchall()
         db_cursor.close()
         return rows

@@ -50,6 +50,15 @@ class PageRank:
 
         db_cursor.close()
 
+    def get_all_pagerank(self):
+        db_connection = self.db.connect()
+        db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
+        db_cursor.execute("SELECT * FROM `pagerank` ORDER BY `pagerank_score` DESC")
+        rows = db_cursor.fetchall()
+        db_cursor.close()
+        self.db.close_connection(db_connection)
+        return rows
+
     def get_pagerank(self, db_connection, url):
         db_connection.ping()
 
