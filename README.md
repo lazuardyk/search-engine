@@ -20,6 +20,9 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 - `Python crawl.py` untuk menjalankan crawler atau gunakan `crawl.service` sebagai background di systemd
 - `Python page_rank.py` untuk menjalankan page rank atau gunakan `page_rank.service` sebagai background di systemd
 
+**HTML Documentation**
+- `pdoc --html .` untuk auto generate dokumentasi yang ada di kodingan ke dalam folder html
+
 ## :file_folder: Struktur Direktori
 
     .
@@ -32,7 +35,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
     │   ├── document_ranking    # Berisi kode untuk perankingan dokumen dan metodenya seperti tf idf
     │   └── page_ranking        # Berisi kode untuk perankingan halaman dan metodenya seperti page rank
 
-## :page_facing_up: Dokumentasi API
+## :wrench: Dokumentasi API
 
 <details>
 <summary><b>Get TF-IDF Document Ranking</b></summary>
@@ -143,3 +146,8 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 ```
 
 </details>
+
+## :page_facing_up: Referensi
+- [Cara set up background service di systemd](https://medium.com/codex/setup-a-python-script-as-a-service-through-systemctl-systemd-f0cc55a42267)
+- [Contoh kodingan TF-IDF untuk mencari artikel yang mirip sesuai keyword](https://www.kaggle.com/code/yclaudel/find-similar-articles-with-tf-idf)
+- [Contoh kodingan Page Rank](https://github.com/nicholaskajoh/devsearch/blob/f6d51fc478e5bae68e4ba32f3299ab20c0ffa033/devsearch/pagerank.py)
