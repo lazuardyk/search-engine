@@ -5,17 +5,17 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 ## :zap: Cara Penggunaan
 
 1. Pastikan komputer/server sudah terinstall Python 3.6+ dan MySQL
-2. Buka file `.env` dan ubah konfigurasi sesuai keinginan (akses database, konfigurasi crawler, dll)
+2. Buka file `.env` dan ubah konfigurasinya dengan benar (akses database, konfigurasi crawler, dll)
 3. Install library python yang diperlukan dengan menjalankan `pip install -r requirements.txt`
-4. Jalankan program dengan kumpulan perintah di bawah
+4. Jalankan program sesuai dengan perintah di bawah
 
 ## :package: Perintah
 
 **General**
 
-- `Python api.py` untuk menjalankan REST API
 - `Python crawl.py` untuk menjalankan crawler
 - `Python page_rank.py` untuk menjalankan page rank
+- `Python api.py` untuk menjalankan REST API
 
 **HTML Documentation**
 - `pdoc --html .` untuk auto generate dokumentasi yang ada di kodingan ke dalam folder html
