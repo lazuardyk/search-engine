@@ -5,23 +5,23 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 ## :zap: Cara Penggunaan
 
 1. Pastikan komputer/server sudah terinstall Python 3.6+ dan MySQL
-2. Buka file `.env` dan ubah konfigurasi sesuai keinginan (akses database, konfigurasi crawler, dll)
+2. Buka file `.env` dan ubah konfigurasinya dengan benar (akses database, konfigurasi crawler, dll)
 3. Install library python yang diperlukan dengan menjalankan `pip install -r requirements.txt`
-4. Jalankan program dengan kumpulan perintah di bawah
+4. Jalankan program sesuai dengan perintah di bawah
 
 ## :package: Perintah
 
 **General**
 
+- `Python crawl.py` untuk menjalankan crawler
+- `Python page_rank.py` untuk menjalankan page rank
 - `Python api.py` untuk menjalankan REST API
-
-**Background Services**
-
-- `Python crawl.py` untuk menjalankan crawler atau gunakan `crawl.service` sebagai background di systemd
-- `Python page_rank.py` untuk menjalankan page rank atau gunakan `page_rank.service` sebagai background di systemd
 
 **HTML Documentation**
 - `pdoc --html .` untuk auto generate dokumentasi yang ada di kodingan ke dalam folder html
+
+**Background Services**
+- Gunakan `crawl.service` di folder services untuk menjalankan crawler dan pagerank di background [menggunakan systemd](https://medium.com/codex/setup-a-python-script-as-a-service-through-systemctl-systemd-f0cc55a42267)
 
 ## :file_folder: Struktur Direktori
 
@@ -142,6 +142,125 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
   ],
   "message": "Sukses",
   "ok": true
+}
+```
+
+</details>
+
+<details>
+<summary><b>Start Insert Crawled Pages</b></summary>
+
+- **URL**: `/api/v1.0/crawling/start_insert`
+
+- **Method**: `POST`
+
+- **Request Payload**:
+
+```json
+{
+    "start_urls": "https://www.indosport.com https://detik.com https://www.curiouscuisiniere.com",
+    "keyword": "",
+    "duration_crawl": 28800
+}
+```
+
+- **Response**:
+
+```json
+{
+    "data": {
+        "id_crawling": 3
+    },
+    "message": "Sukses",
+    "ok": true
+}
+```
+
+</details>
+
+<details>
+<summary><b>Insert Crawled Page</b></summary>
+
+- **URL**: `/api/v1.0/crawling/insert_page`
+
+- **Method**: `POST`
+
+- **Request Payload**:
+
+```json
+{
+    "page_information": {
+        "crawl_id": 3,
+        "url": "https://www.indosport.com",
+        "html5": 0,
+        "title": "INDOSPORT - Berita Olahraga Terkini dan Sepak Bola Indonesia",
+        "description": "INDOSPORT.com – Portal Berita Olahraga dan Sepakbola. Menyajikan berita bola terkini, hasil pertandingan, prediksi dan jadwal pertandingan, Liga 1, Liga Inggris, Liga Spanyol, Liga Italia, Liga Champions.",
+        "keywords": "Jadwal Pertandingan, Hasil Pertandingan, Klasemen, Prediksi Pertandingan, Liga 1, Liga Inggris, Sepakbola, Liga Champions, Liga Spanyol, Liga Italia, Badminton, Bulutangkis, Link Live Streaming, MotoGP, Berita Sepakbola, Piala Dunia, Tempat Olahraga, Olahraga, Berita Bola, Esport, Basketball.",
+        "content_text": "Jumat,19 Agustus 2022 21:05 WIB 3 Bintang Murah dengan Statistik Lebih Mentereng dari Casemiro yang Bisa Dilirik Man United Jumat,19 Agustus 2022 19:32 WIB 4 Kali Dipecat Termasuk saat Latih Timnas Indonesia,Mampukah Luis Milla Bawa Persib Berprestasi? Jumat,19 Agustus 2022 18:42 WIB Resmi Latih Persib,Ini 3 Prestasi Mentereng Luis 13:45 WIB Potret Kemenangan Dramatis PSM Makassar Atas RANS Nusantara di Liga 1 Liga Indonesia |  Minggu,24 Juli 2022 21:13 WIB Kemegahan dan Fasilitas Mewah Stadion JIS di Hari Launching       Tentang Indosport Redaksi Karir Pedoman Media Siber SOP Perlindungan Wartawan Iklan & Kerjasama RSS Copyright © 2012 - 2022 INDOSPORT. All rights reserved",
+        "hot_url": 0,
+        "model_crawl": "BFS Crawling",
+        "duration_crawl": 28800
+    },
+    "page_forms": [{
+        "url": "https://www.indosport.com",
+        "form": "<form action='https://www.indosport.com/search' method='get'></form>"
+    }, {
+        "url": "https://www.indosport.com",
+        "form": "<form action='https://www.indosport.com/searchv2' method='post'></form>"
+    }],
+    "page_images": [{
+        "url": "https://www.indosport.com",
+        "image": "<img alt='' height='1' src='https://certify.alexametrics.com/atrk.gif?account=/HVtm1akKd607i' style='display:none' width='1'/>"
+    }, {
+        "url": "https://www.indosport.com",
+        "image": "<img alt='' height='1' src='https://sb.scorecardresearch.com/blabla.jpeg' style='display:none' width='1'/>"
+    }],
+    "page_linking": [{
+        "crawl_id": 3,
+        "url": "https://www.indosport.com",
+        "outgoing_link": "https://www.indosport.com/sepakbola"
+    }, {
+        "crawl_id": 1,
+        "url": "https://www.indosport.com",
+        "outgoing_link": "https://www.indosport.com/liga-spanyol"
+    }],
+    "page_list": [{
+        "url": "https://www.indosport.com",
+        "list": "<li class='bc_home'><a href='https://www.indosport.com'><i class='sprite sprite-mobile sprite-icon_home icon-sidebar'></i></li>"
+    }, {
+        "url": "https://www.indosport.com",
+        "list": "<li class='bc_home'><a href='https://www.indosport.com'><i class='sprite sprite-mobile sprite-icon_home icon-sidebar'></i></li>"
+    }],
+    "page_scripts": [{
+        "url": "https://www.indosport.com",
+        "script": "<script type='text/javascript'>window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;</script>"
+    }, {
+        "url": "https://www.indosport.com",
+        "script": "<script type='text/javascript'>window.ga=window.bc||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;</script>"
+    }],
+    "page_styles": [{
+        "url": "https://www.indosport.com",
+        "style": "<style>.bn_skin{z-index: 2 !important;}</style>"
+    }, {
+        "url": "https://www.indosport.com",
+        "style": "<style>.bn_skin{z-index: 115 !important;}</style>"
+    }],
+    "page_tables": [{
+        "url": "https://www.indosport.com",
+        "table_str": "<table class='table'><thead><tr><th class='waktu'>Waktu</th><th class='pertandingan'>Pertandingan</th><th class='tv'>Live TV</th></tr></thead><tbody></tr></tbody></table>"
+    }, {
+        "url": "https://www.indosport.com",
+        "table_str": "<table class='table'><thead><tr><th class='waktu'>Waktu</th><th class='pertandingan'>Pertandingan</th><th class='tv'>Live TV</th></tr></thead><tbody></tr></tbody></table>"
+    }]
+}
+```
+
+- **Response**:
+
+```json
+{
+    "message": "Sukses",
+    "ok": true
 }
 ```
 
