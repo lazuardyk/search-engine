@@ -147,6 +147,125 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 
 </details>
 
+<details>
+<summary><b>Start Insert Crawled Pages</b></summary>
+
+- **URL**: `/api/v1.0/crawling/start_insert`
+
+- **Method**: `POST`
+
+- **Request Payload**:
+
+```json
+{
+    "start_urls": "https://www.indosport.com https://detik.com https://www.curiouscuisiniere.com",
+    "keyword": "",
+    "duration_crawl": 28800
+}
+```
+
+- **Response**:
+
+```json
+{
+    "data": {
+        "id_crawling": 3
+    },
+    "message": "Sukses",
+    "ok": true
+}
+```
+
+</details>
+
+<details>
+<summary><b>Insert Crawled Page</b></summary>
+
+- **URL**: `/api/v1.0/crawling/insert_page`
+
+- **Method**: `POST`
+
+- **Request Payload**:
+
+```json
+{
+    "page_information": {
+        "crawl_id": 3,
+        "url": "https://www.indosport.com",
+        "html5": 0,
+        "title": "INDOSPORT - Berita Olahraga Terkini dan Sepak Bola Indonesia",
+        "description": "INDOSPORT.com – Portal Berita Olahraga dan Sepakbola. Menyajikan berita bola terkini, hasil pertandingan, prediksi dan jadwal pertandingan, Liga 1, Liga Inggris, Liga Spanyol, Liga Italia, Liga Champions.",
+        "keywords": "Jadwal Pertandingan, Hasil Pertandingan, Klasemen, Prediksi Pertandingan, Liga 1, Liga Inggris, Sepakbola, Liga Champions, Liga Spanyol, Liga Italia, Badminton, Bulutangkis, Link Live Streaming, MotoGP, Berita Sepakbola, Piala Dunia, Tempat Olahraga, Olahraga, Berita Bola, Esport, Basketball.",
+        "content_text": "Jumat,19 Agustus 2022 21:05 WIB 3 Bintang Murah dengan Statistik Lebih Mentereng dari Casemiro yang Bisa Dilirik Man United Jumat,19 Agustus 2022 19:32 WIB 4 Kali Dipecat Termasuk saat Latih Timnas Indonesia,Mampukah Luis Milla Bawa Persib Berprestasi? Jumat,19 Agustus 2022 18:42 WIB Resmi Latih Persib,Ini 3 Prestasi Mentereng Luis 13:45 WIB Potret Kemenangan Dramatis PSM Makassar Atas RANS Nusantara di Liga 1 Liga Indonesia |  Minggu,24 Juli 2022 21:13 WIB Kemegahan dan Fasilitas Mewah Stadion JIS di Hari Launching       Tentang Indosport Redaksi Karir Pedoman Media Siber SOP Perlindungan Wartawan Iklan & Kerjasama RSS Copyright © 2012 - 2022 INDOSPORT. All rights reserved",
+        "hot_url": 0,
+        "model_crawl": "BFS Crawling",
+        "duration_crawl": 28800
+    },
+    "page_forms": [{
+        "url": "https://www.indosport.com",
+        "form": "<form action='https://www.indosport.com/search' method='get'></form>"
+    }, {
+        "url": "https://www.indosport.com",
+        "form": "<form action='https://www.indosport.com/searchv2' method='post'></form>"
+    }],
+    "page_images": [{
+        "url": "https://www.indosport.com",
+        "image": "<img alt='' height='1' src='https://certify.alexametrics.com/atrk.gif?account=/HVtm1akKd607i' style='display:none' width='1'/>"
+    }, {
+        "url": "https://www.indosport.com",
+        "image": "<img alt='' height='1' src='https://sb.scorecardresearch.com/blabla.jpeg' style='display:none' width='1'/>"
+    }],
+    "page_linking": [{
+        "crawl_id": 3,
+        "url": "https://www.indosport.com",
+        "outgoing_link": "https://www.indosport.com/sepakbola"
+    }, {
+        "crawl_id": 1,
+        "url": "https://www.indosport.com",
+        "outgoing_link": "https://www.indosport.com/liga-spanyol"
+    }],
+    "page_list": [{
+        "url": "https://www.indosport.com",
+        "list": "<li class='bc_home'><a href='https://www.indosport.com'><i class='sprite sprite-mobile sprite-icon_home icon-sidebar'></i></li>"
+    }, {
+        "url": "https://www.indosport.com",
+        "list": "<li class='bc_home'><a href='https://www.indosport.com'><i class='sprite sprite-mobile sprite-icon_home icon-sidebar'></i></li>"
+    }],
+    "page_scripts": [{
+        "url": "https://www.indosport.com",
+        "script": "<script type='text/javascript'>window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;</script>"
+    }, {
+        "url": "https://www.indosport.com",
+        "script": "<script type='text/javascript'>window.ga=window.bc||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;</script>"
+    }],
+    "page_styles": [{
+        "url": "https://www.indosport.com",
+        "style": "<style>.bn_skin{z-index: 2 !important;}</style>"
+    }, {
+        "url": "https://www.indosport.com",
+        "style": "<style>.bn_skin{z-index: 115 !important;}</style>"
+    }],
+    "page_tables": [{
+        "url": "https://www.indosport.com",
+        "table_str": "<table class='table'><thead><tr><th class='waktu'>Waktu</th><th class='pertandingan'>Pertandingan</th><th class='tv'>Live TV</th></tr></thead><tbody></tr></tbody></table>"
+    }, {
+        "url": "https://www.indosport.com",
+        "table_str": "<table class='table'><thead><tr><th class='waktu'>Waktu</th><th class='pertandingan'>Pertandingan</th><th class='tv'>Live TV</th></tr></thead><tbody></tr></tbody></table>"
+    }]
+}
+```
+
+- **Response**:
+
+```json
+{
+    "message": "Sukses",
+    "ok": true
+}
+```
+
+</details>
+
 ## :page_facing_up: Referensi
 - [Cara set up background service di systemd](https://medium.com/codex/setup-a-python-script-as-a-service-through-systemctl-systemd-f0cc55a42267)
 - [Contoh kodingan TF-IDF untuk mencari artikel yang mirip sesuai keyword](https://www.kaggle.com/code/yclaudel/find-similar-articles-with-tf-idf)
