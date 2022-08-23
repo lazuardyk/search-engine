@@ -1,10 +1,8 @@
 from flask import Flask
-from dotenv import load_dotenv
 import os
 
 
 def run(port=8080):
-    load_dotenv()
     app = Flask(__name__)
 
     from src.api.crawling import bp_crawling

@@ -18,7 +18,6 @@ def get_tf_idf_ranks():
             response = {
                 "ok": False,
                 "message": "Keyword tidak ada. Masukkan keyword pada url seperti '?keyword=barcelona'",
-                "data": [],
             }
         else:
             data = tf_idf.run(keyword)
@@ -34,5 +33,4 @@ def get_tf_idf_ranks():
         return {
             "ok": False,
             "message": e,
-            "data": [],
-        }
+        }, 500

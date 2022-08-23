@@ -22,5 +22,4 @@ def get_page_rank_ranks():
         return {
             "ok": False,
             "message": e,
-            "data": [],
-        }
+        }, 500

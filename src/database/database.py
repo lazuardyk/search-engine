@@ -108,7 +108,7 @@ class Database:
         """
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS crawling (id_crawling INT PRIMARY KEY AUTO_INCREMENT, start_url TEXT, keyword TEXT, total_page INT, duration_crawl TIME, created_at TIMESTAMP)",
+            "CREATE TABLE IF NOT EXISTS crawling (id_crawling INT PRIMARY KEY AUTO_INCREMENT, start_urls TEXT, keyword TEXT, total_page INT, duration_crawl TIME, created_at TIMESTAMP)",
         )
         self.exec_query(
             connection,
