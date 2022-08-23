@@ -20,6 +20,9 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 - `Python crawl.py` untuk menjalankan crawler atau gunakan `crawl.service` sebagai background di systemd
 - `Python page_rank.py` untuk menjalankan page rank atau gunakan `page_rank.service` sebagai background di systemd
 
+**HTML Documentation**
+- `pdoc --html .` untuk auto generate dokumentasi yang ada di kodingan ke dalam folder html
+
 ## :file_folder: Struktur Direktori
 
     .
