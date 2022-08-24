@@ -23,18 +23,42 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 **Background Services**
 - Gunakan `crawl.service` di folder services untuk menjalankan crawler dan pagerank di background [menggunakan systemd](https://medium.com/codex/setup-a-python-script-as-a-service-through-systemctl-systemd-f0cc55a42267)
 
-## :file_folder: Struktur Direktori
+## :file_folder: Struktur Direktori & File
 
     .
-    ├── docs                    # Sebagai tempat dokumentasi file seperti diagram, product backlog, dll
-    ├── html                    # Berisi dokumentasi kode yang di-generate dari library pdoc3
-    ├── services                # Kumpulan konfigurasi background service yang dipakai di systemd/systemctl
-    ├── src                     # Source code search engine yang terdiri dari crawling, document ranking, dan page ranking
-    │   ├── crawling            # Berisi kode yang berhubungan dengan proses crawling dan metodenya
-    │   ├── database            # Berisi kode untuk pengoperasian database seperti koneksi, query, dll
-    │   ├── document_ranking    # Berisi kode untuk perankingan dokumen dan metodenya seperti tf idf
-    │   └── page_ranking        # Berisi kode untuk perankingan halaman dan metodenya seperti page rank
-
+    ├── docs                                          # Sebagai tempat dokumentasi file seperti diagram, product backlog, dll
+    ├── html                                          # Berisi dokumentasi class dan fungsi yang di-generate dari library pdoc3
+    ├── services                                      # Kumpulan konfigurasi background service yang dipakai di systemd/systemctl
+    ├── src                                           # Source code search engine yang terdiri dari crawling, document ranking, dan page ranking
+    │   ├── api                                       # Folder untuk kodingan REST API
+    │   |   ├── app.py                                # Untuk run Flask dan menggabungkan routes
+    │   |   ├── crawling.py                           # Routes dan fungsi API untuk crawling
+    │   |   ├── document_ranking.py                   # Routes dan fungsi API untuk document ranking
+    │   |   └── page_ranking.py                       # Routes dan fungsi API untuk page ranking
+    |   |
+    │   ├── crawling                                  # Folder untuk kodingan crawling
+    │   |   ├── methods                               # Folder untuk berbagai metode crawling
+    │   |   |   ├── breadth_first_search.py           # Fungsi-fungsi crawling metode BFS
+    |   |   |   └── modified_similarity_based.py      # Fungsi-fungsi crawling metode MSB
+    │   |   ├── crawl.py                              # Untuk run crawling dengan menggabungkan metode yang ada
+    │   |   ├── page_content.py                       # Fungsi-fungsi yang menghubungkan ke database dan halaman html
+    │   |   └── util.py                               # Fungsi-fungsi pendukung crawling
+    |   |
+    │   ├── database                                  # Folder untuk kodingan database
+    │   |   └── database.py                           # Berisi kode untuk pengoperasian database seperti koneksi, query, dll
+    |   |
+    │   ├── document_ranking                          # Folder untuk kodingan document ranking
+    │   |   └── tf_idf.py                             # Implementasi dari TF-IDF 
+    |   |
+    │   ├── page_ranking                              # Folder untuk kodingan page ranking
+    │   |   └── page_rank.py                          # Implementasi dari Google PageRank
+    |
+    ├── .env                                          # Konfigurasi credentials database dan crawler
+    ├── api.py                                        # Script utama untuk run REST API
+    ├── crawl.py                                      # Script utama untuk run crawling
+    ├── page_rank.py                                  # Script utama untuk run page rank
+    ├── requirements.txt                              # Berisi list library yang diperlukan
+        
 ## :wrench: Dokumentasi API
 
 <details>
