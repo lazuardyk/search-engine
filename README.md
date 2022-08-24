@@ -38,7 +38,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 ## :wrench: Dokumentasi API
 
 <details>
-<summary><b>Get TF-IDF Document Ranking</b></summary>
+<summary><b>[GET]</b> Get TF-IDF Document Ranking</summary>
 
 - **URL**: `/api/v1.0/document_ranking/tf_idf?keyword=barcelona`
 
@@ -70,7 +70,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 </details>
 
 <details>
-<summary><b>Get Page-Rank Page Ranking</b></summary>
+<summary><b>[GET]</b> Get Page-Rank Page Ranking</summary>
 
 - **URL**: `/api/v1.0/page_ranking/page_rank`
 
@@ -100,7 +100,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 </details>
 
 <details>
-<summary><b>Get Crawled Pages</b></summary>
+<summary><b>[GET]</b> Get Crawled Pages</summary>
 
 - **URL**: `/api/v1.0/crawling/pages` or `/api/v1.0/crawling/pages?start=0&end=999`
 
@@ -148,7 +148,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 </details>
 
 <details>
-<summary><b>Start Insert Crawled Pages</b></summary>
+<summary><b>[POST]</b> Start Insert Crawled Pages</summary>
 
 - **URL**: `/api/v1.0/crawling/start_insert`
 
@@ -179,7 +179,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 </details>
 
 <details>
-<summary><b>Insert Crawled Page</b></summary>
+<summary><b>[POST]</b> Insert Crawled Page</summary>
 
 - **URL**: `/api/v1.0/crawling/insert_page`
 
