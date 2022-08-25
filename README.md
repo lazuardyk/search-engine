@@ -290,6 +290,9 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 
 </details>
 
+## :notebook: Dokumentasi Diagram
+- [Entity Relationship Diagram (ERD)](https://dbdiagram.io/d/62622c031072ae0b6acb52f0)
+
 ## :page_facing_up: Referensi
 - [Cara set up background service di systemd](https://medium.com/codex/setup-a-python-script-as-a-service-through-systemctl-systemd-f0cc55a42267)
 - [Contoh kodingan TF-IDF untuk mencari artikel yang mirip sesuai keyword](https://www.kaggle.com/code/yclaudel/find-similar-articles-with-tf-idf)
