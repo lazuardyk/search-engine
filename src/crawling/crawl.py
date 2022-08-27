@@ -72,14 +72,14 @@ class Crawl:
             for url in self.start_urls:
                 if self.util.is_valid_url(url):
                     self.url_queue.put(url)
-                    urls_string += url + ", "
+                    urls_string += url + " "
         else:
             print("Resuming the crawler from the last urls...")
             last_urls = self.visited_urls[-3:]
             for url in last_urls:
-                urls_string += url + ", "
+                urls_string += url + " "
             self.scrape_links_for_resume(last_urls)
-        urls_string = urls_string[0 : len(urls_string) - 2]
+        urls_string = urls_string[0 : len(urls_string) - 1]
 
         crawl_id = self.page_content.insert_crawling(
             db_connection, urls_string, "", 0, (self.bfs_duration_sec + self.msb_duration_sec)
@@ -91,7 +91,7 @@ class Crawl:
         bfs.run()
         print("Finished breadth first search crawler...")
 
-        # Disable Modified Similarity Based Crawler
+        # Modified Similarity Based Crawler
 
         print(len(bfs.list_urls))
         print("Running modified similarity based crawler...")

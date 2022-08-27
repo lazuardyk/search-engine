@@ -49,6 +49,7 @@ class PageContent:
         content_text: str,
         hot_url: bool,
         model_crawl: str,
+        duration_crawl: int,
     ) -> None:
         """
         Fungsi untuk menyimpan konten seperti teks, judul, deskripsi yang ada di halaman web ke dalam database.
@@ -67,9 +68,10 @@ class PageContent:
         """
         db_connection.ping()
         db_cursor = db_connection.cursor()
-        query = "INSERT INTO `page_information` (`url`, `crawl_id`, `html5`, `title`, `description`, `keywords`, `content_text`, `hot_url`, `model_crawl`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        query = "INSERT INTO `page_information` (`url`, `crawl_id`, `html5`, `title`, `description`, `keywords`, `content_text`, `hot_url`, `model_crawl`, `duration_crawl`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, SEC_TO_TIME(%s))"
         db_cursor.execute(
-            query, (url, crawl_id, html5, title, description, keywords, content_text, hot_url, model_crawl)
+            query,
+            (url, crawl_id, html5, title, description, keywords, content_text, hot_url, model_crawl, duration_crawl),
         )
         db_cursor.close()
 
@@ -167,14 +169,14 @@ class PageContent:
         db_cursor.close()
 
     def insert_crawling(
-        self, db_connection: pymysql.Connection, url: str, keyword: str, total_page: int, duration: int
+        self, db_connection: pymysql.Connection, start_urls: str, keyword: str, total_page: int, duration: int
     ) -> int:
         """
         Fungsi untuk menyimpan data crawling yang sudah dilakukan ke dalam database.
 
         Args:
             db_connection (pymysql.Connection): Koneksi database MySQL
-            url (str): URL halaman
+            start_urls (str): URL awal halaman (dipisahkan dengan koma jika lebih dari satu)
             keyword (str): Keyword yang dipakai
             total_page (int): Jumlah halaman
             duration (int): Total durasi
@@ -184,8 +186,8 @@ class PageContent:
         """
         db_connection.ping()
         db_cursor = db_connection.cursor()
-        query = "INSERT INTO `crawling` (`start_url`, `keyword`, `total_page`, `duration_crawl`) VALUES (%s, %s, %s, SEC_TO_TIME(%s))"
-        db_cursor.execute(query, (url, keyword, total_page, duration))
+        query = "INSERT INTO `crawling` (`start_urls`, `keyword`, `total_page`, `duration_crawl`) VALUES (%s, %s, %s, SEC_TO_TIME(%s))"
+        db_cursor.execute(query, (start_urls, keyword, total_page, duration))
         inserted_id = db_cursor.lastrowid
         db_cursor.close()
         return inserted_id
@@ -224,3 +226,62 @@ class PageContent:
             row_arr.append(row[0])
         db_cursor.close()
         return row_arr
+
+    def get_crawled_pages_api(self, start_index=None, end_index=None):
+        db = Database()
+        db_connection = db.connect()
+        db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
+        if not start_index or not end_index:
+            db_cursor.execute("SELECT * FROM `page_information`")
+        else:
+            db_cursor.execute("SELECT * FROM `page_information` LIMIT %s, %s", (start_index, end_index))
+        rows = db_cursor.fetchall()
+        db_cursor.close()
+        db.close_connection(db_connection)
+        return rows
+
+    def start_insert_api(self, start_urls, keyword, duration_crawl):
+        db = Database()
+        db_connection = db.connect()
+        id_crawling = self.insert_crawling(db_connection, start_urls, keyword, 0, duration_crawl)
+        db.close_connection(db_connection)
+        return id_crawling
+
+    def insert_page_api(
+        self, page_information, page_forms, page_images, page_linking, page_list, page_scripts, page_styles, page_tables
+    ):
+        db = Database()
+        db_connection = db.connect()
+        if db.check_value_in_table(db_connection, "page_information", "url", page_information["url"]):
+            db.close_connection(db_connection)
+            return
+        self.insert_page_information(
+            db_connection,
+            page_information["url"],
+            page_information["crawl_id"],
+            page_information["html5"],
+            page_information["title"],
+            page_information["description"],
+            page_information["keywords"],
+            page_information["content_text"],
+            page_information["hot_url"],
+            page_information["model_crawl"],
+            page_information["duration_crawl"],
+        )
+        for page_form in page_forms:
+            self.insert_page_form(db_connection, page_form["url"], page_form["form"])
+        for page_image in page_images:
+            self.insert_page_image(db_connection, page_image["url"], page_image["image"])
+        for page_linking in page_linking:
+            self.insert_page_linking(
+                db_connection, page_linking["crawl_id"], page_linking["url"], page_linking["outgoing_link"]
+            )
+        for page_list_ in page_list:
+            self.insert_page_list(db_connection, page_list_["url"], page_list_["list"])
+        for page_script in page_scripts:
+            self.insert_page_script(db_connection, page_script["url"], page_script["script"])
+        for page_style in page_styles:
+            self.insert_page_style(db_connection, page_style["url"], page_style["style"])
+        for page_table in page_tables:
+            self.insert_page_table(db_connection, page_table["url"], page_table["table_str"])
+        db.close_connection(db_connection)

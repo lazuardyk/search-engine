@@ -13,16 +13,32 @@ class PageRank:
         self.max_iterations = 20
 
     def save_pagerank(self, db_connection, url, pagerank):
-        """Fungsi untuk menyimpan ranking dan nilai Page Rank yang sudah dihitung ke dalam database."""
+        """
+        Fungsi untuk menyimpan ranking dan nilai Page Rank yang sudah dihitung ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            url (str): Url halaman
+            pagerank (double): Score page rank
+        """
         db_connection.ping()
         db_cursor = db_connection.cursor()
 
-        query = "UPDATE `page_rank` SET `pagerank_score` = %s WHERE `url` = %s"
+        query = "UPDATE `pagerank` SET `pagerank_score` = %s WHERE `url` = %s"
         db_cursor.execute(query, (pagerank, url))
 
         db_cursor.close()
 
     def get_crawled_pages(self, db_connection):
+        """
+        Fungsi untuk mengambil semua halaman yang sudah dicrawl dari database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+
+        Returns:
+            list: List berisi dictionary table page_information yang didapatkan dari fungsi cursor.fetchall(), berisi empty list jika tidak ada datanya
+        """
         db_connection.ping()
 
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
@@ -33,6 +49,13 @@ class PageRank:
         return rows
 
     def save_initial_pagerank(self, db_connection, initial_pr):
+        """
+        Fungsi untuk menyimpan nilai initial pagerank ke database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            initial_pr (double): Initial page rank
+        """
         pages = self.get_crawled_pages(db_connection)
 
         db_connection.ping()
@@ -41,28 +64,50 @@ class PageRank:
         for page_row in pages:
             url = page_row["url"]
 
-            if not self.db.check_value_in_table(db_connection, "page_rank", "url", url):
-                query = "INSERT INTO `page_rank` (`url`, `pagerank_score`) VALUES (%s, %s)"
+            if not self.db.check_value_in_table(db_connection, "pagerank", "url", url):
+                query = "INSERT INTO `pagerank` (`url`, `pagerank_score`) VALUES (%s, %s)"
                 db_cursor.execute(query, (url, initial_pr))
             else:
-                query = "UPDATE `page_rank` SET `pagerank_score` = %s WHERE `url` = %s"
+                query = "UPDATE `pagerank` SET `pagerank_score` = %s WHERE `url` = %s"
                 db_cursor.execute(query, (initial_pr, url))
 
         db_cursor.close()
 
+    def get_all_pagerank(self):
+        """
+        Fungsi untuk mengambil semua data pagerank dari database.
+
+        Returns:
+            list: List berisi dictionary table pagerank yang didapatkan dari fungsi cursor.fetchall(), berisi empty list jika tidak ada datanya
+        """
+        db_connection = self.db.connect()
+        db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
+        db_cursor.execute("SELECT * FROM `pagerank` ORDER BY `pagerank_score` DESC")
+        rows = db_cursor.fetchall()
+        db_cursor.close()
+        self.db.close_connection(db_connection)
+        return rows
+
     def get_pagerank(self, db_connection, url):
+        """
+        Fungsi untuk mengambil skor pagerank dari database untuk satu halaman.
+
+        Returns:
+            double: Berisi nilai skor page rank
+        """
         db_connection.ping()
 
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        db_cursor.execute("SELECT pagerank_score FROM `page_rank` WHERE `url` = %s", (url))
+        db_cursor.execute("SELECT pagerank_score FROM `pagerank` WHERE `url` = %s", (url))
         row = db_cursor.fetchone()
 
         db_cursor.close()
         return row["pagerank_score"]
 
     def run(self):
-        """Fungsi utama yang digunakan untuk melakukan perangkingan halaman Page Rank."""
-
+        """
+        Fungsi utama yang digunakan untuk melakukan perangkingan halaman Page Rank.
+        """
         db_connection = self.db.connect()
         N = self.db.count_rows(db_connection, "page_information")
         initial_pr = 1 / N
@@ -109,5 +154,5 @@ class PageRank:
 
             average_pr_change = pr_change_sum / N
             if average_pr_change < 0.0001:
-                # click.echo(click.style('Converged at iteration: %d' % iteration, fg='blue'))
+                # Convergent
                 break

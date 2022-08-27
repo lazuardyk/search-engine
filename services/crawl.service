@@ -5,5 +5,6 @@ After=multi-user.target
 Type=simple
 Restart=on-failure
 ExecStart=/opt/rh/rh-python38/root/usr/bin/python /root/search-engine/crawl.py
+ExecStartPost=/opt/rh/rh-python38/root/usr/bin/python /root/search-engine/page_rank.py
 [Install]
 WantedBy=multi-user.target
