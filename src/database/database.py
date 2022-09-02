@@ -128,7 +128,7 @@ class Database:
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS page_information (id_information INT PRIMARY KEY AUTO_INCREMENT, crawl_id INT, url TEXT, html5 TINYINT, title TEXT, description TEXT, keywords TEXT, content_text TEXT, hot_url TINYINT, size_bytes BIGINT, duration_crawl TIME, created_at TIMESTAMP)",
+            "CREATE TABLE IF NOT EXISTS page_information (id_information INT PRIMARY KEY AUTO_INCREMENT, crawl_id INT, url TEXT, html5 TINYINT, title TEXT, description TEXT, keywords TEXT, content_text TEXT, hot_url TINYINT, size_bytes BIGINT, model_crawl TEXT, duration_crawl TIME, created_at TIMESTAMP)",
         )
         self.exec_query(
             connection,
