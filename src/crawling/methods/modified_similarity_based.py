@@ -166,6 +166,9 @@ class ModifiedSimilarityBased:
                     self.db.close_connection(db_connection)
                     return
 
+                # size of the page
+                size_bytes = len(response.content)
+
                 # extract style
                 for style in soup.findAll("style"):
                     self.page_content.insert_page_style(db_connection, url, style)
@@ -218,6 +221,7 @@ class ModifiedSimilarityBased:
                     keywords,
                     complete_text,
                     hot_link,
+                    size_bytes,
                     "MSB crawling",
                     int(page_duration_crawl),
                 )
