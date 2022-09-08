@@ -7,3 +7,4 @@ psutil
 sklearn
 numpy
 pdoc3
+matplotlib
