@@ -13,6 +13,7 @@ class Database:
         self.username = os.getenv("DB_USERNAME")
         self.password = os.getenv("DB_PASSWORD")
         self.db_name = os.getenv("DB_NAME")
+        self.db_port = os.getenv("DB_PORT")
         db_connection = self.connect()
         self.create_tables(db_connection)
         self.close_connection(db_connection)
@@ -25,7 +26,12 @@ class Database:
             pymysql.Connection: Koneksi database MySQL
         """
         connection = pymysql.connect(
-            host=self.host, user=self.username, passwd=self.password, db=self.db_name, autocommit=True
+            host=self.host,
+            user=self.username,
+            passwd=self.password,
+            db=self.db_name,
+            port=self.db_port,
+            autocommit=True,
         )
         return connection
 
