@@ -13,7 +13,7 @@ class Database:
         self.username = os.getenv("DB_USERNAME")
         self.password = os.getenv("DB_PASSWORD")
         self.db_name = os.getenv("DB_NAME")
-        self.db_port = os.getenv("DB_PORT")
+        self.db_port = int(os.getenv("DB_PORT"))
         db_connection = self.connect()
         self.create_tables(db_connection)
         self.close_connection(db_connection)
