@@ -48,6 +48,7 @@ class PageContent:
         keywords: str,
         content_text: str,
         hot_url: bool,
+        size_bytes: int,
         model_crawl: str,
         duration_crawl: int,
     ) -> None:
@@ -64,14 +65,27 @@ class PageContent:
             keywords (str): Keyword halaman
             content_text (str): Konten teks halaman
             hot_url (bool): Hot URL, 1 jika ya, 0 jika tidak
+            size_bytes (int): Ukuran halaman dalam bytes
             model_crawl (str): Model crawling yaitu BFS atau MSB
         """
         db_connection.ping()
         db_cursor = db_connection.cursor()
-        query = "INSERT INTO `page_information` (`url`, `crawl_id`, `html5`, `title`, `description`, `keywords`, `content_text`, `hot_url`, `model_crawl`, `duration_crawl`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, SEC_TO_TIME(%s))"
+        query = "INSERT INTO `page_information` (`url`, `crawl_id`, `html5`, `title`, `description`, `keywords`, `content_text`, `hot_url`, `size_bytes`, `model_crawl`, `duration_crawl`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, SEC_TO_TIME(%s))"
         db_cursor.execute(
             query,
-            (url, crawl_id, html5, title, description, keywords, content_text, hot_url, model_crawl, duration_crawl),
+            (
+                url,
+                crawl_id,
+                html5,
+                title,
+                description,
+                keywords,
+                content_text,
+                hot_url,
+                size_bytes,
+                model_crawl,
+                duration_crawl,
+            ),
         )
         db_cursor.close()
 
@@ -265,6 +279,7 @@ class PageContent:
             page_information["keywords"],
             page_information["content_text"],
             page_information["hot_url"],
+            page_information["size_bytes"],
             page_information["model_crawl"],
             page_information["duration_crawl"],
         )
