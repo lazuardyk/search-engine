@@ -8,3 +8,4 @@ sklearn
 numpy
 pdoc3
 matplotlib
+flask
