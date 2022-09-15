@@ -2,11 +2,11 @@ from typing import Any
 from src.database.database import Database
 from src.crawling.page_content import PageContent
 from src.crawling.util import Util
+from src.crawling.util import CustomThreadPoolExecutor
 from datetime import datetime
 from urllib.parse import urljoin
 import bs4
 import threading
-from concurrent.futures import ThreadPoolExecutor
 import concurrent.futures.thread
 import queue
 import time
@@ -44,7 +44,7 @@ class BreadthFirstSearch:
         """
         Fungsi utama yang berfungsi untuk menjalankan proses crawling BFS.
         """
-        executor = ThreadPoolExecutor(max_workers=self.max_threads)
+        executor = CustomThreadPoolExecutor(max_workers=self.max_threads)
 
         futures = []
         while True:
@@ -71,8 +71,7 @@ class BreadthFirstSearch:
                 print(e)
                 continue
 
-        executor._threads.clear()
-        concurrent.futures.thread._threads_queues.clear()
+        executor.shutdown39(wait=False, cancel_futures=True)
 
     def scrape_page(self, url: str) -> None:
         """

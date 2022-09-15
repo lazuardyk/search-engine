@@ -55,9 +55,12 @@ class Crawl:
                     if self.util.is_valid_url(complete_url) and complete_url not in self.visited_urls:
                         self.url_queue.put(complete_url)
 
-    def run(self) -> None:
+    def run(self) -> int:
         """
         Fungsi utama yang berfungsi untuk menjalankan proses crawling.
+
+        Returns:
+            page_count (int): Jumlah halaman yang berhasil dicrawl.
         """
         self.url_queue = queue.Queue()
         self.start_time = time.time()
@@ -93,7 +96,7 @@ class Crawl:
 
         # Modified Similarity Based Crawler
 
-        print(len(bfs.list_urls))
+        # print(len(bfs.list_urls))
         print("Running modified similarity based crawler...")
         msb = ModifiedSimilarityBased(
             crawl_id,
@@ -112,3 +115,5 @@ class Crawl:
         page_count = self.page_count_end - self.page_count_start
         self.page_content.update_crawling(db_connection, crawl_id, page_count)
         db_connection.close()
+
+        return page_count

@@ -64,6 +64,27 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 ## :wrench: Dokumentasi API
 
 <details>
+<summary><b>[GET]</b> Run Crawling</summary>
+
+- **URL**: `/api/v1.0/crawling/crawl?duration=10`
+
+- **Method**: `GET`
+
+- **Response**:
+
+```json
+{
+  "data": {
+    "total_pages": 5
+  },
+  "message": "Sukses",
+  "ok": true
+}
+```
+
+</details>
+
+<details>
 <summary><b>[GET]</b> Get TF-IDF Document Ranking</summary>
 
 - **URL**: `/api/v1.0/document_ranking/tf_idf?keyword=barcelona`
@@ -128,7 +149,8 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 <details>
 <summary><b>[GET]</b> Get Crawled Pages</summary>
 
-- **URL**: `/api/v1.0/crawling/pages` or `/api/v1.0/crawling/pages?start=0&end=999`
+- **URL**: `/api/v1.0/crawling/pages` or  
+  `/api/v1.0/crawling/pages?start=0&length=999`
 
 - **Method**: `GET`
 
@@ -317,6 +339,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 </details>
 
 ## :notebook: Dokumentasi Diagram
+
 - [Entity Relationship Diagram (ERD)](https://dbdiagram.io/d/62622c031072ae0b6acb52f0)
 
 ## :page_facing_up: Referensi
