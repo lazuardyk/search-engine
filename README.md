@@ -64,6 +64,27 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 ## :wrench: Dokumentasi API
 
 <details>
+<summary><b>[GET]</b> Run Crawling</summary>
+
+- **URL**: `http://localhost:8080/api/v1.0/crawling/crawl?start_url=https://www.detik.com/&duration=10&threads=1` or `http://localhost:8080/api/v1.0/crawling/crawl?start_url=https://www.detik.com/&duration=10&threads=1&keyword=barcelona`
+
+- **Method**: `GET`
+
+- **Response**:
+
+```json
+{
+  "data": {
+    "total_pages": 5
+  },
+  "message": "Sukses",
+  "ok": true
+}
+```
+
+</details>
+
+<details>
 <summary><b>[GET]</b> Get TF-IDF Document Ranking</summary>
 
 - **URL**: `/api/v1.0/document_ranking/tf_idf?keyword=barcelona`

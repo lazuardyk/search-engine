@@ -1,8 +1,42 @@
 from flask import Blueprint, request
 from src.crawling.page_content import PageContent
+from src.crawling.crawl import Crawl
 import json
 
 bp_crawling = Blueprint("crawling", __name__)
+
+
+@bp_crawling.route("/crawl")
+def run_crawling():
+    try:
+        crawler_duration_sec = request.args.get("duration", default="", type=str)
+        start_urls = request.args.get("start_url", default="", type=str)
+        max_threads = request.args.get("threads", default="", type=str)
+        msb_keyword = request.args.get("keyword", default="", type=str)
+
+        if msb_keyword != "":
+            bfs_duration_sec = int(crawler_duration_sec) // 2
+            msb_duration_sec = int(crawler_duration_sec) // 2
+        else:
+            bfs_duration_sec = int(crawler_duration_sec)
+            msb_duration_sec = 0
+
+        c = Crawl(start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword)
+        page_count = c.run()
+        data = {"total_pages": page_count}
+        response = {
+            "ok": True,
+            "message": "Sukses",
+            "data": data,
+        }
+        json_obj = json.dumps(response, indent=4, default=str)
+        return json.loads(json_obj), 200
+
+    except Exception as e:
+        return {
+            "ok": False,
+            "message": e,
+        }, 500
 
 
 @bp_crawling.route("/pages")
