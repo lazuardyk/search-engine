@@ -2,6 +2,7 @@ from flask import Blueprint, request
 from src.crawling.page_content import PageContent
 from src.crawling.crawl import Crawl
 import json
+import os
 
 bp_crawling = Blueprint("crawling", __name__)
 
@@ -10,9 +11,12 @@ bp_crawling = Blueprint("crawling", __name__)
 def run_crawling():
     try:
         crawler_duration_sec = request.args.get("duration", default="", type=str)
-        start_urls = request.args.get("start_url", default="", type=str)
-        max_threads = request.args.get("threads", default="", type=str)
-        msb_keyword = request.args.get("keyword", default="", type=str)
+        start_urls = os.getenv("CRAWLER_START_URLS").split()
+        max_threads = os.getenv("CRAWLER_MAX_THREADS")
+        try:
+            msb_keyword = os.getenv("CRAWLER_KEYWORD")
+        except:
+            msb_keyword = ""
 
         if msb_keyword != "":
             bfs_duration_sec = int(crawler_duration_sec) // 2
@@ -23,7 +27,7 @@ def run_crawling():
 
         c = Crawl(start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword)
         page_count = c.run()
-        data = {"total_pages": page_count}
+        data = {"added_pages": page_count}
         response = {
             "ok": True,
             "message": "Sukses",

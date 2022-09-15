@@ -96,7 +96,7 @@ class Crawl:
 
         # Modified Similarity Based Crawler
 
-        print(len(bfs.list_urls))
+        # print(len(bfs.list_urls))
         print("Running modified similarity based crawler...")
         msb = ModifiedSimilarityBased(
             crawl_id,

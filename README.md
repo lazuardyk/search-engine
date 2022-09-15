@@ -66,8 +66,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 <details>
 <summary><b>[GET]</b> Run Crawling</summary>
 
-- **URL**: `/api/v1.0/crawling/crawl?start_url=https://www.detik.com/&duration=10&threads=1` or  
-`/api/v1.0/crawling/crawl?start_url=https://www.detik.com/&duration=10&threads=1&keyword=barcelona`
+- **URL**: `/api/v1.0/crawling/crawl?duration=10`
 
 - **Method**: `GET`
 
@@ -151,7 +150,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 <summary><b>[GET]</b> Get Crawled Pages</summary>
 
 - **URL**: `/api/v1.0/crawling/pages` or  
-`/api/v1.0/crawling/pages?start=0&length=999`
+  `/api/v1.0/crawling/pages?start=0&length=999`
 
 - **Method**: `GET`
 
