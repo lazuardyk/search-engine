@@ -9,7 +9,7 @@ bp_crawling = Blueprint("crawling", __name__)
 def get_crawled_pages():
     try:
         start_index = request.args.get("start", default="", type=str)
-        end_index = request.args.get("end", default="", type=str)
+        end_index = request.args.get("length", default="", type=str)
 
         page_content = PageContent()
         if start_index != "" and end_index != "":

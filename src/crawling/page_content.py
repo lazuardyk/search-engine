@@ -241,14 +241,14 @@ class PageContent:
         db_cursor.close()
         return row_arr
 
-    def get_crawled_pages_api(self, start_index=None, end_index=None):
+    def get_crawled_pages_api(self, start_index=None, length=None):
         db = Database()
         db_connection = db.connect()
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        if not start_index or not end_index:
+        if not start_index or not length:
             db_cursor.execute("SELECT * FROM `page_information`")
         else:
-            db_cursor.execute("SELECT * FROM `page_information` LIMIT %s, %s", (start_index, end_index))
+            db_cursor.execute("SELECT * FROM `page_information` LIMIT %s, %s", (start_index, length))
         rows = db_cursor.fetchall()
         db_cursor.close()
         db.close_connection(db_connection)
