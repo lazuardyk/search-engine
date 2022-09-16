@@ -75,7 +75,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 ```json
 {
   "data": {
-    "total_pages": 5
+    "added_pages": 5
   },
   "message": "Sukses",
   "ok": true
