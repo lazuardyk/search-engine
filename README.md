@@ -341,6 +341,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 ## :notebook: Dokumentasi Diagram
 
 - [Entity Relationship Diagram (ERD)](https://dbdiagram.io/d/62622c031072ae0b6acb52f0)
+- [Class Diagram](docs/class_diagram.png)
 
 ## :page_facing_up: Referensi
 
