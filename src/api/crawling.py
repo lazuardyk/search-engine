@@ -3,6 +3,7 @@ from src.crawling.page_content import PageContent
 from src.crawling.crawl import Crawl
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 
 bp_crawling = Blueprint("crawling", __name__)
 
@@ -25,13 +26,13 @@ def run_crawling():
             bfs_duration_sec = int(crawler_duration_sec)
             msb_duration_sec = 0
 
+        executor = ThreadPoolExecutor(max_workers=1)
         c = Crawl(start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword)
-        page_count = c.run()
-        data = {"added_pages": page_count}
+        executor.submit(c.run)
+
         response = {
             "ok": True,
             "message": "Sukses",
-            "data": data,
         }
         json_obj = json.dumps(response, indent=4, default=str)
         return json.loads(json_obj), 200
