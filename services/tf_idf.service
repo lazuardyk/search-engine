@@ -1,0 +1,9 @@
+[Unit]
+Description=Crawl service
+After=multi-user.target
+[Service]
+Type=simple
+Restart=on-failure
+ExecStart=/opt/rh/rh-python38/root/usr/bin/python /root/search-engine/tf_idf.py
+[Install]
+WantedBy=multi-user.target
