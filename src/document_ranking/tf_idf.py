@@ -111,7 +111,10 @@ class TfIdf:
                     tf_idf = tf_idf_vector[j]
                     tf = tf_idf / idf
 
-                    # print(url, word, tf, idf, tf_idf)
+                    if tf_idf == 0.0:
+                        continue
+
+                    print(url, word, tf, idf, tf_idf)
                     self.save_tfidf(db_connection, word, url, tf, idf, tf_idf)
 
         # Ambil nilai tf idf dari database
