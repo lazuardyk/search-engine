@@ -123,7 +123,7 @@ class TfIdf:
             keywords_array = keywords.split(" ")
             for keyword in keywords_array:
                 tfidf_data = self.get_saved_tfidf(db_connection, keyword)
-                results + tfidf_data
+                results += tfidf_data
 
         # Simpan waktu yang diperlukan saat run TF IDF
         duration_call = time.time() - start_time_call
