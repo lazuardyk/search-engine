@@ -150,6 +150,14 @@ class Database:
         )
         self.exec_query(
             connection,
+            "CREATE TABLE IF NOT EXISTS tf (id_tf INT PRIMARY KEY AUTO_INCREMENT, id_document INT, word TEXT, url TEXT, word_count INT)",
+        )
+        self.exec_query(
+            connection,
+            "CREATE TABLE IF NOT EXISTS idf (id_idf INT PRIMARY KEY AUTO_INCREMENT, word TEXT, document_term INT)",
+        )
+        self.exec_query(
+            connection,
             "CREATE TABLE IF NOT EXISTS tfidf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, tf_score DOUBLE, idf_score DOUBLE, tfidf_score DOUBLE)",
         )
         self.exec_query(

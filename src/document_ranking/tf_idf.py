@@ -15,37 +15,59 @@ class TfIdf:
     def __init__(self):
         self.db = Database()
 
-    def save_tfidf(self, db_connection, keyword, url, tf, idf, tfidf):
+    def save_tf_and_idf(self, db_connection, word, id_information, tf, idf):
+        """
+        Fungsi untuk menyimpan nilai TF dan IDF tiap kata ke dalam database (table tf dan table idf).
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            word (str): Kata (satu kata)
+            id_information (int): Id page information
+            tf (int): Score tf
+            idf (int): Score idf
+        """
+
+        db_connection.ping()
+        db_cursor = db_connection.cursor()
+
+        query = "INSERT INTO `tf` (`id_information`, `word`, `word_count`) VALUES (%s, %s, %s)"
+        db_cursor.execute(query, (id_information, word, tf))
+
+        query = "INSERT INTO `idf` (`word`, `document_term`) VALUES (%s, %s, %s)"
+        db_cursor.execute(query, (word, idf))
+
+        db_cursor.close()
+
+    def save_tfidf_score(self, db_connection, keyword, url, tfidf_score):
         """
         Fungsi untuk menyimpan ranking dan nilai TF IDF yang sudah dihitung ke dalam database.
 
         Args:
             db_connection (pymysql.Connection): Koneksi database MySQL
-            keyword (str): Kata
-            url (str): Url halaman
-            tfidf (double): Score tf idf
+            keyword (str): Kata pencarian (bisa lebih dari satu kata)
+            tfidf_score (double): Score tf idf
         """
         db_connection.ping()
         db_cursor = db_connection.cursor()
-        query = (
-            "INSERT INTO `tfidf` (`keyword`, `url`, `tf_score`, `idf_score`, `tfidf_score`) VALUES (%s, %s, %s, %s, %s)"
-        )
-        db_cursor.execute(query, (keyword, url, tf, idf, tfidf))
+
+        query = "INSERT INTO `tfidf` (`keyword`, `url`, `tfidf_score`) VALUES (%s, %s, %s)"
+        db_cursor.execute(query, (keyword, url, tfidf_score))
+
         db_cursor.close()
 
-    def save_call_log(self, db_connection, keywords, duration_call):
+    def save_call_log(self, db_connection, keyword, duration_call):
         """
         Fungsi untuk menyimpan waktu yang diperlukan saat pemanggilan fungsi TF-DF.
 
         Args:
             db_connection (pymysql.Connection): Koneksi database MySQL
-            keywords (str): Kata pencarian (bisa lebih dari satu kata dipisah dengan spasi)
+            keyword (str): Kata pencarian (bisa lebih dari satu kata dipisah dengan spasi)
             duration_call (int): Waktu yang diperlukan saat pemanggilan fungsi TF IDF dari awal hingga selesai
         """
         db_connection.ping()
         db_cursor = db_connection.cursor()
-        query = "INSERT INTO `tfidf_log` (`keywords`, `duration_call`) VALUES (%s, SEC_TO_TIME(%s))"
-        db_cursor.execute(query, (keywords, duration_call))
+        query = "INSERT INTO `tfidf_log` (`keyword`, `duration_call`) VALUES (%s, SEC_TO_TIME(%s))"
+        db_cursor.execute(query, (keyword, duration_call))
         db_cursor.close()
 
     def get_saved_tfidf(self, db_connection, keyword):
@@ -66,12 +88,12 @@ class TfIdf:
         db_cursor.close()
         return rows
 
-    def run(self, keywords):
+    def run(self, keyword):
         """
         Fungsi utama yang digunakan untuk melakukan perangkingan dokumen TF-IDF.
 
         Args:
-            keywords (str): Kata pencarian (bisa lebih dari satu kata dipisah dengan spasi)
+            keyword (str): Kata pencarian (bisa lebih dari satu kata)
 
         Returns:
             list: List berisi dictionary skor TF IDF yang didapatkan dari fungsi cursor.fetchall()
@@ -104,6 +126,7 @@ class TfIdf:
             for i in range(len(tfidf_matrix_array)):
                 tf_idf_vector = tfidf_matrix_array[i]
                 url = df["url"].loc[i]
+                id_information = df["id_information"]
 
                 for j in range(len(words)):
                     word = words[j]
@@ -111,23 +134,21 @@ class TfIdf:
                     tf_idf = tf_idf_vector[j]
                     tf = tf_idf / idf
 
-                    if tf_idf == 0.0:
-                        continue
-
-                    print(url, word, tf, idf, tf_idf)
-                    self.save_tfidf(db_connection, word, url, tf, idf, tf_idf)
+                    # print(url, word, tf, idf, tf_idf)
+                    self.save_tf_and_idf(db_connection, word, id_information, tf, idf)
+                    # self.save_tfidf(db_connection, word, url, tf, idf, tf_idf)
 
         # Ambil nilai tf idf dari database
-        results = []
-        if keywords:
-            keywords_array = keywords.split(" ")
-            for keyword in keywords_array:
-                tfidf_data = self.get_saved_tfidf(db_connection, keyword)
-                results += tfidf_data
+        # results = []
+        # if keywords:
+        #     keywords_array = keywords.split(" ")
+        #     for keyword in keywords_array:
+        #         tfidf_data = self.get_saved_tfidf(db_connection, keyword)
+        #         results += tfidf_data
 
         # Simpan waktu yang diperlukan saat run TF IDF
         duration_call = time.time() - start_time_call
-        self.save_call_log(db_connection, keywords, int(duration_call))
+        self.save_call_log(db_connection, keyword, int(duration_call))
         self.db.close_connection(db_connection)
 
         return results
