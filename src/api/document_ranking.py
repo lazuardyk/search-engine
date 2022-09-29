@@ -20,7 +20,7 @@ def get_tf_idf_ranks():
                 "message": "Keyword tidak ada. Masukkan keyword pada url seperti '?keyword=barcelona'",
             }
         else:
-            data = tf_idf.run(keyword)
+            data = tf_idf.get_all_tfidf_for_api(keyword)
             response = {
                 "ok": True,
                 "message": "Sukses",
