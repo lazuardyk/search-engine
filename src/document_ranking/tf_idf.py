@@ -101,20 +101,21 @@ class TfIdf:
 
         db_cursor.close()
 
-    def save_one_tfidf(self, db_connection, keyword, url, tfidf_score):
+    def save_one_tfidf(self, db_connection, keyword, url, tfidf_total):
         """
         Fungsi untuk menyimpan nilai total TF IDF terhadap suatu keyword (bisa lebih dari satu kata) ke database pada table "tfidf".
 
         Args:
             db_connection (pymysql.Connection): Koneksi database MySQL
             keyword (str): Kata pencarian (bisa lebih dari satu kata)
-            tfidf_score (double): Score tf idf
+            url (str): Url halaman
+            tfidf_total (double): Score tf idf
         """
         db_connection.ping()
         db_cursor = db_connection.cursor()
 
-        query = "INSERT INTO `tfidf` (`keyword`, `url`, `tfidf_score`) VALUES (%s, %s, %s)"
-        db_cursor.execute(query, (keyword, url, tfidf_score))
+        query = "INSERT INTO `tfidf` (`keyword`, `url`, `tfidf_total`) VALUES (%s, %s, %s)"
+        db_cursor.execute(query, (keyword, url, tfidf_total))
 
         db_cursor.close()
 
@@ -195,7 +196,7 @@ class TfIdf:
         db_cursor.close()
         return rows
 
-    def get_tfidf_for_api(self, keyword):
+    def get_all_tfidf_for_api(self, keyword):
         """
         Fungsi untuk mendapatkan total skor TF-IDF dari suatu keyword (untuk keperluan API).
 
@@ -209,7 +210,7 @@ class TfIdf:
         db_connection = self.db.connect()
 
         # Return data langsung jika total skor pada keyword ini sudah pernah dihitung
-        saved_tfidf = self.get_saved_tfidf(db_connection, keyword)
+        saved_tfidf = self.get_all_saved_tfidf(db_connection, keyword)
         if len(saved_tfidf) > 1:
             return saved_tfidf
 
@@ -231,7 +232,7 @@ class TfIdf:
                 tfidf_score = result["tfidf_score"]
 
                 # Cek pada dictionary, jika sudah ada maka di jumlah
-                if pages_with_total_score[page_id]:
+                if page_id in pages_with_total_score:
                     pages_with_total_score[page_id] = pages_with_total_score[page_id] + tfidf_score
                 else:
                     pages_with_total_score[page_id] = tfidf_score
