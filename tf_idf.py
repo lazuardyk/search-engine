@@ -7,5 +7,4 @@ if __name__ == "__main__":
     db = Database()
 
     tf_idf = TfIdf()
-    res = tf_idf.run("barcelona")
-    print(res)
+    res = tf_idf.run_background_service()

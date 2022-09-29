@@ -9,3 +9,4 @@ numpy
 pdoc3
 matplotlib
 flask
+cryptography

@@ -165,33 +165,6 @@ class ModifiedSimilarityBased:
                     self.db.close_connection(db_connection)
                     return
 
-                # size of the page
-                size_bytes = len(response.content)
-
-                # extract style
-                for style in soup.findAll("style"):
-                    self.page_content.insert_page_style(db_connection, url, style)
-
-                # extract script
-                for script in soup.findAll("script"):
-                    self.page_content.insert_page_script(db_connection, url, script)
-
-                # extract lists
-                for lists in soup.findAll("li"):
-                    self.page_content.insert_page_list(db_connection, url, lists)
-
-                # extract forms
-                for form in soup.findAll("form"):
-                    self.page_content.insert_page_form(db_connection, url, form)
-
-                # extract tables
-                for table in soup.findAll("table"):
-                    self.page_content.insert_page_table(db_connection, url, table)
-
-                # extract images
-                for image in soup.findAll("img"):
-                    self.page_content.insert_page_image(db_connection, url, image)
-
                 # extract outgoing link
                 links = soup.findAll("a", href=True)
                 for i in links:
@@ -208,6 +181,51 @@ class ModifiedSimilarityBased:
                         else:
                             self.url_queue.put(complete_url)
                     self.lock.release()
+
+                # size of the page
+                size_bytes = len(response.content)
+
+                # extract tables
+                try:
+                    for table in soup.findAll("table"):
+                        self.page_content.insert_page_table(db_connection, url, table)
+                except:
+                    pass
+
+                # extract lists
+                try:
+                    for lists in soup.findAll("li"):
+                        self.page_content.insert_page_list(db_connection, url, lists)
+                except:
+                    pass
+
+                # extract forms
+                try:
+                    for form in soup.findAll("form"):
+                        self.page_content.insert_page_form(db_connection, url, form)
+                except:
+                    pass
+
+                try:
+                    # extract images
+                    for image in soup.findAll("img"):
+                        self.page_content.insert_page_image(db_connection, url, image)
+                except:
+                    pass
+
+                try:
+                    # extract style
+                    for style in soup.findAll("style"):
+                        self.page_content.insert_page_style(db_connection, url, style)
+                except:
+                    pass
+
+                try:
+                    # extract script
+                    for script in soup.findAll("script"):
+                        self.page_content.insert_page_script(db_connection, url, script)
+                except:
+                    pass
 
                 page_duration_crawl = time.time() - page_start_time
                 self.page_content.insert_page_information(

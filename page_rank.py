@@ -7,4 +7,4 @@ if __name__ == "__main__":
     db = Database()
 
     page_rank = PageRank()
-    page_rank.run()
+    page_rank.run_background_service()
