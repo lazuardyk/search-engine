@@ -11,8 +11,34 @@ class PageRank:
     def __init__(self):
         self.db = Database()
         self.max_iterations = 20
+        self.damping_factor = 0.85
 
-    def save_pagerank(self, db_connection, url, pagerank):
+    def save_initial_pagerank(self, db_connection, initial_pr):
+        """
+        Fungsi untuk menyimpan nilai initial pagerank ke database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            initial_pr (double): Initial page rank
+        """
+        pages = self.get_all_crawled_pages(db_connection)
+
+        db_connection.ping()
+        db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
+
+        for page_row in pages:
+            url = page_row["url"]
+
+            if not self.db.check_value_in_table(db_connection, "pagerank", "url", url):
+                query = "INSERT INTO `pagerank` (`url`, `pagerank_score`) VALUES (%s, %s)"
+                db_cursor.execute(query, (url, initial_pr))
+            else:
+                query = "UPDATE `pagerank` SET `pagerank_score` = %s WHERE `url` = %s"
+                db_cursor.execute(query, (initial_pr, url))
+
+        db_cursor.close()
+
+    def save_one_pagerank(self, db_connection, url, pagerank):
         """
         Fungsi untuk menyimpan ranking dan nilai Page Rank yang sudah dihitung ke dalam database.
 
@@ -29,7 +55,7 @@ class PageRank:
 
         db_cursor.close()
 
-    def get_crawled_pages(self, db_connection):
+    def get_all_crawled_pages(self, db_connection):
         """
         Fungsi untuk mengambil semua halaman yang sudah dicrawl dari database.
 
@@ -48,47 +74,7 @@ class PageRank:
         db_cursor.close()
         return rows
 
-    def save_initial_pagerank(self, db_connection, initial_pr):
-        """
-        Fungsi untuk menyimpan nilai initial pagerank ke database.
-
-        Args:
-            db_connection (pymysql.Connection): Koneksi database MySQL
-            initial_pr (double): Initial page rank
-        """
-        pages = self.get_crawled_pages(db_connection)
-
-        db_connection.ping()
-        db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-
-        for page_row in pages:
-            url = page_row["url"]
-
-            if not self.db.check_value_in_table(db_connection, "pagerank", "url", url):
-                query = "INSERT INTO `pagerank` (`url`, `pagerank_score`) VALUES (%s, %s)"
-                db_cursor.execute(query, (url, initial_pr))
-            else:
-                query = "UPDATE `pagerank` SET `pagerank_score` = %s WHERE `url` = %s"
-                db_cursor.execute(query, (initial_pr, url))
-
-        db_cursor.close()
-
-    def get_all_pagerank(self):
-        """
-        Fungsi untuk mengambil semua data pagerank dari database.
-
-        Returns:
-            list: List berisi dictionary table pagerank yang didapatkan dari fungsi cursor.fetchall(), berisi empty list jika tidak ada datanya
-        """
-        db_connection = self.db.connect()
-        db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        db_cursor.execute("SELECT * FROM `pagerank` ORDER BY `pagerank_score` DESC")
-        rows = db_cursor.fetchall()
-        db_cursor.close()
-        self.db.close_connection(db_connection)
-        return rows
-
-    def get_pagerank(self, db_connection, url):
+    def get_one_pagerank(self, db_connection, url):
         """
         Fungsi untuk mengambil skor pagerank dari database untuk satu halaman.
 
@@ -104,7 +90,22 @@ class PageRank:
         db_cursor.close()
         return row["pagerank_score"]
 
-    def run(self):
+    def get_all_pagerank_for_api(self):
+        """
+        Fungsi untuk mengambil semua data pagerank dari database (untuk keperluan API).
+
+        Returns:
+            list: List berisi dictionary table pagerank yang didapatkan dari fungsi cursor.fetchall(), berisi empty list jika tidak ada datanya
+        """
+        db_connection = self.db.connect()
+        db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
+        db_cursor.execute("SELECT * FROM `pagerank` ORDER BY `pagerank_score` DESC")
+        rows = db_cursor.fetchall()
+        db_cursor.close()
+        self.db.close_connection(db_connection)
+        return rows
+
+    def run_background_service(self):
         """
         Fungsi utama yang digunakan untuk melakukan perangkingan halaman Page Rank.
         """
@@ -124,7 +125,7 @@ class PageRank:
                 db_connection.ping()
 
                 page_url = page_row["url"]
-                current_pagerank = self.get_pagerank(db_connection, page_url)
+                current_pagerank = self.get_one_pagerank(db_connection, page_url)
 
                 new_pagerank = 0
                 backlink_urls = set()
@@ -141,11 +142,10 @@ class PageRank:
                     new_pagerank += initial_pr / backlink_link_count["COUNT(*)"]
                 db_cursor2.close()
 
-                damping_factor = 0.85
-                new_pagerank = ((1 - damping_factor) / N) + (damping_factor * new_pagerank)
+                new_pagerank = ((1 - self.damping_factor) / N) + (self.damping_factor * new_pagerank)
 
                 print(page_url, new_pagerank)
-                self.save_pagerank(db_connection, page_url, new_pagerank)
+                self.save_one_pagerank(db_connection, page_url, new_pagerank)
 
                 pr_change = abs(new_pagerank - current_pagerank) / current_pagerank
                 pr_change_sum += pr_change
@@ -156,3 +156,5 @@ class PageRank:
             if average_pr_change < 0.0001:
                 # Convergent
                 break
+
+        print("PageRank Background Service - Completed.")

@@ -9,7 +9,7 @@ bp_page_ranking = Blueprint("page_ranking", __name__)
 def get_page_rank_ranks():
     try:
         page_rank = PageRank()
-        data = page_rank.get_all_pagerank()
+        data = page_rank.get_all_pagerank_for_api()
         response = {
             "ok": True,
             "message": "Sukses",

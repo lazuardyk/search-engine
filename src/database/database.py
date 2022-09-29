@@ -150,19 +150,15 @@ class Database:
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS tf (id_tf INT PRIMARY KEY AUTO_INCREMENT, id_document INT, word TEXT, url TEXT, word_count INT)",
+            "CREATE TABLE IF NOT EXISTS tfidf_word (id_word INT PRIMARY KEY AUTO_INCREMENT, word TEXT, page_id INT, tfidf_score DOUBLE)",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS idf (id_idf INT PRIMARY KEY AUTO_INCREMENT, word TEXT, document_term INT)",
+            "CREATE TABLE IF NOT EXISTS tfidf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, tfidf_total DOUBLE)",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS tfidf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, tf_score DOUBLE, idf_score DOUBLE, tfidf_score DOUBLE)",
-        )
-        self.exec_query(
-            connection,
-            "CREATE TABLE IF NOT EXISTS tfidf_log (id_tfidf_log INT PRIMARY KEY AUTO_INCREMENT, keywords TEXT, duration_call TIME, created_at TIMESTAMP)",
+            "CREATE TABLE IF NOT EXISTS tfidf_log (id_log INT PRIMARY KEY AUTO_INCREMENT, keywords TEXT, duration_call TIME, created_at TIMESTAMP)",
         )
         self.exec_query(
             connection,
