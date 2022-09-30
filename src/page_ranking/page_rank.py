@@ -119,7 +119,7 @@ class PageRank:
             pr_change_sum = 0
 
             db_connection = self.db.connect()
-            pages = self.get_crawled_pages(db_connection)
+            pages = self.get_all_crawled_pages(db_connection)
 
             for page_row in pages:
                 db_connection.ping()

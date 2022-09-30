@@ -1,13 +1,11 @@
 from typing import Any
 from src.database.database import Database
-from src.crawling.page_content import PageContent
-from src.crawling.util import Util
-from src.crawling.util import CustomThreadPoolExecutor
+from src.crawling.crawl_utils import CrawlUtils
+from src.crawling.crawl_utils import CustomThreadPoolExecutor
 from datetime import datetime
 from urllib.parse import urljoin
 import bs4
 import threading
-import concurrent.futures.thread
 import queue
 import time
 import re
@@ -34,8 +32,7 @@ class BreadthFirstSearch:
         self.duration_sec = duration_sec
         self.max_threads = max_threads
         self.db = Database()
-        self.page_content = PageContent()
-        self.util = Util()
+        self.crawl_utils = CrawlUtils()
         self.lock = threading.Lock()
         self.start_time = time.time()
         self.list_urls = []
@@ -59,7 +56,7 @@ class BreadthFirstSearch:
                     self.visited_urls.append(target_url)
                     futures.append(executor.submit(self.scrape_page, target_url))
             except queue.Empty:
-                if self.util.running_thread_count(futures) > 0:
+                if self.crawl_utils.running_thread_count(futures) > 0:
                     continue
                 else:
                     print("Stopped because empty queue...")
@@ -82,7 +79,7 @@ class BreadthFirstSearch:
         """
         try:
             page_start_time = time.time()
-            response = self.util.get_page(url)
+            response = self.crawl_utils.get_page(url)
             if response and response.status_code == 200:
                 db_connection = self.db.connect()
                 self.lock.acquire()
@@ -150,10 +147,10 @@ class BreadthFirstSearch:
                     complete_url = urljoin(url, i["href"]).rstrip("/")
 
                     self.list_urls.append(complete_url)  # For  MSB
-                    self.page_content.insert_page_linking(db_connection, self.crawl_id, url, complete_url)
+                    self.crawl_utils.insert_page_linking(db_connection, self.crawl_id, url, complete_url)
 
                     self.lock.acquire()
-                    if self.util.is_valid_url(complete_url) and complete_url not in self.visited_urls:
+                    if self.crawl_utils.is_valid_url(complete_url) and complete_url not in self.visited_urls:
                         self.url_queue.put(complete_url)
                     self.lock.release()
 
@@ -163,47 +160,47 @@ class BreadthFirstSearch:
                 # extract tables
                 try:
                     for table in soup.findAll("table"):
-                        self.page_content.insert_page_table(db_connection, url, table)
+                        self.crawl_utils.insert_page_table(db_connection, url, table)
                 except:
                     pass
 
                 # extract lists
                 try:
                     for lists in soup.findAll("li"):
-                        self.page_content.insert_page_list(db_connection, url, lists)
+                        self.crawl_utils.insert_page_list(db_connection, url, lists)
                 except:
                     pass
 
                 # extract forms
                 try:
                     for form in soup.findAll("form"):
-                        self.page_content.insert_page_form(db_connection, url, form)
+                        self.crawl_utils.insert_page_form(db_connection, url, form)
                 except:
                     pass
 
                 try:
                     # extract images
                     for image in soup.findAll("img"):
-                        self.page_content.insert_page_image(db_connection, url, image)
+                        self.crawl_utils.insert_page_image(db_connection, url, image)
                 except:
                     pass
 
                 try:
                     # extract style
                     for style in soup.findAll("style"):
-                        self.page_content.insert_page_style(db_connection, url, style)
+                        self.crawl_utils.insert_page_style(db_connection, url, style)
                 except:
                     pass
 
                 try:
                     # extract script
                     for script in soup.findAll("script"):
-                        self.page_content.insert_page_script(db_connection, url, script)
+                        self.crawl_utils.insert_page_script(db_connection, url, script)
                 except:
                     pass
 
                 page_duration_crawl = time.time() - page_start_time
-                self.page_content.insert_page_information(
+                self.crawl_utils.insert_page_information(
                     db_connection,
                     url,
                     self.crawl_id,

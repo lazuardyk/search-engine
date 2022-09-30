@@ -13,53 +13,21 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 
 **General**
 
-- `Python crawl.py` untuk menjalankan crawler
-- `Python page_rank.py` untuk menjalankan page rank
-- `Python api.py` untuk menjalankan REST API
-
-**HTML Documentation**
-
-- `pdoc --html .` untuk auto generate dokumentasi yang ada di kodingan ke dalam folder html
+- `Python run_crawl.py` untuk menjalankan crawler
+- `Python run_page_rank.py` untuk menjalankan page rank
+- `Python run_tf_idf.py` untuk menjalankan tf idf
+- `Python run_api.py` untuk menjalankan REST API
 
 **Background Services**
 
-- Gunakan `crawl.service` di folder services untuk menjalankan crawler dan pagerank di background [menggunakan systemd](https://medium.com/codex/setup-a-python-script-as-a-service-through-systemctl-systemd-f0cc55a42267)
+- Gunakan `crawl.service` di folder services untuk menjalankan crawler, page rank, dan tf idf di background [menggunakan systemd](https://medium.com/codex/setup-a-python-script-as-a-service-through-systemctl-systemd-f0cc55a42267) pada server
 
-## :file_folder: Struktur Direktori & File
+## :notebook: File Dokumentasi
 
-    .
-    ├── docs                                          # Sebagai tempat dokumentasi file seperti diagram, product backlog, dll
-    ├── html                                          # Berisi dokumentasi class dan fungsi yang di-generate dari library pdoc3
-    ├── services                                      # Kumpulan konfigurasi background service yang dipakai di systemd/systemctl
-    ├── src                                           # Source code search engine yang terdiri dari crawling, document ranking, dan page ranking
-    │   ├── api                                       # Folder untuk kodingan REST API
-    │   |   ├── app.py                                # Untuk run Flask dan menggabungkan routes
-    │   |   ├── crawling.py                           # Routes dan fungsi API untuk crawling
-    │   |   ├── document_ranking.py                   # Routes dan fungsi API untuk document ranking
-    │   |   └── page_ranking.py                       # Routes dan fungsi API untuk page ranking
-    |   |
-    │   ├── crawling                                  # Folder untuk kodingan crawling
-    │   |   ├── methods                               # Folder untuk berbagai metode crawling
-    │   |   |   ├── breadth_first_search.py           # Fungsi-fungsi crawling metode BFS
-    |   |   |   └── modified_similarity_based.py      # Fungsi-fungsi crawling metode MSB
-    │   |   ├── crawl.py                              # Untuk run crawling dengan menggabungkan metode yang ada
-    │   |   ├── page_content.py                       # Fungsi-fungsi yang menghubungkan ke database dan halaman html
-    │   |   └── util.py                               # Fungsi-fungsi pendukung crawling
-    |   |
-    │   ├── database                                  # Folder untuk kodingan database
-    │   |   └── database.py                           # Berisi kode untuk pengoperasian database seperti koneksi, query, dll
-    |   |
-    │   ├── document_ranking                          # Folder untuk kodingan document ranking
-    │   |   └── tf_idf.py                             # Implementasi dari TF-IDF
-    |   |
-    │   ├── page_ranking                              # Folder untuk kodingan page ranking
-    │   |   └── page_rank.py                          # Implementasi dari Google PageRank
-    |
-    ├── .env                                          # Konfigurasi credentials database dan crawler
-    ├── api.py                                        # Script utama untuk run REST API
-    ├── crawl.py                                      # Script utama untuk run crawling
-    ├── page_rank.py                                  # Script utama untuk run page rank
-    ├── requirements.txt                              # Berisi list library yang diperlukan
+- [Entity Relationship Diagram (ERD)](https://dbdiagram.io/d/62622c031072ae0b6acb52f0)
+- [Class Diagram](docs/class_diagram.png)
+- [API Postman Collection](docs/Search_Engine_API.postman_collection.json)
+- [Routing Table](docs/routing_table.png)
 
 ## :wrench: Dokumentasi API
 
@@ -74,9 +42,6 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 
 ```json
 {
-  "data": {
-    "added_pages": 5
-  },
   "message": "Sukses",
   "ok": true
 }
@@ -97,16 +62,16 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 {
   "data": [
     {
-      "id_tfidf": 3378,
-      "keyword": "barcelona",
-      "tfidf_score": 0.3666888423866252,
-      "url": "https://www.indosport.com/sepakbola/20220818/kejam-demi-bisa-daftarkan-pemain-baru-barcelona-bakal-phk-2-pemain-terbuangnya"
+      "id_tfidf": 18,
+      "keyword": "klub barcelona",
+      "tfidf_total": 0.9,
+      "url": "https://detik.com/barcelona"
     },
     {
-      "id_tfidf": 3379,
-      "keyword": "barcelona",
-      "tfidf_score": 0.3543321877907969,
-      "url": "https://www.indosport.com/tag/194/barcelona"
+      "id_tfidf": 19,
+      "keyword": "klub barcelona",
+      "tfidf_total": 0.8,
+      "url": "https://www.detik.com/?tagfrom=klub"
     }
   ],
   "message": "Sukses",
@@ -129,14 +94,14 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 {
   "data": [
     {
-      "id_pagerank": 1,
-      "pagerank_score": 0.0017783111027720113,
-      "url": "https://www.indosport.com"
+      "id_pagerank": 7,
+      "pagerank_score": 0.006093279237620995,
+      "url": "https://news.detik.com"
     },
     {
-      "id_pagerank": 256,
-      "pagerank_score": 0.0002961208172934557,
-      "url": "https://www.curiouscuisiniere.com/about/privacy-policy"
+      "id_pagerank": 15,
+      "pagerank_score": 0.005689670500678926,
+      "url": "https://news.detik.com/x"
     }
   ],
   "message": "Sukses",
@@ -150,7 +115,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 <summary><b>[GET]</b> Get Crawled Pages</summary>
 
 - **URL**: `/api/v1.0/crawling/pages` or  
-  `/api/v1.0/crawling/pages?start=0&length=999`
+  `/api/v1.0/crawling/pages?start=0&length=10`
 
 - **Method**: `GET`
 
@@ -160,34 +125,34 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 {
   "data": [
     {
-      "content_text": "Anies Siapkan Hunian Kelas Menengah,Alaspadu dan Rumapadu,",
+      "content_text": "",
       "crawl_id": 1,
-      "created_at": "2022-08-20 02:41:49",
-      "description": "CNNIndonesia.com menyajikan berita Terbaru, Terkini Indonesia seputar nasional, politik, ekonomi, internasional, olahraga, teknologi, hiburan, gaya hidup.",
-      "duration_crawl": "0:00:00",
+      "created_at": "2022-09-29 19:39:13",
+      "description": "Indeks berita terkini dan terbaru hari ini dari peristiwa, kecelakaan, kriminal, hukum, berita unik, Politik, dan liputan khusus di Indonesia dan Internasional",
+      "duration_crawl": "0:00:03",
       "hot_url": 0,
-      "size_bytes": 121345,
       "html5": 1,
-      "id_information": 2682,
-      "keywords": "cnn, cnn indonesia, indonesia, berita, berita terbaru, berita terkini, berita indonesia, berita dunia, berita nasional, berita politik, berita ekonomi, berita internasional, berita olahraga",
+      "id_information": 1,
+      "keywords": "berita hari ini, berita terkini, berita terbaru, info berita, peristiwa, kecelakaan, kriminal, hukum, berita unik, Politik, liputan khusus, Indonesia, Internasional",
       "model_crawl": "BFS crawling",
-      "title": "CNN Indonesia | Berita Terbaru, Terkini Indonesia, Dunia",
-      "url": "https://www.cnnindonesia.com/features"
+      "size_bytes": 252595,
+      "title": "detikcom - Informasi Berita Terkini dan Terbaru Hari Ini",
+      "url": "https://detik.com"
     },
     {
-      "content_text": "Anies Siapkan Hunian Kelas Menengah,Alaspadu dan Rumapadu,",
+      "content_text": "",
       "crawl_id": 1,
-      "created_at": "2022-08-20 02:41:50",
-      "description": "CNNIndonesia.com menyajikan berita terbaru, terkini Indonesia, dunia, seputar politik, hukum kriminal, peristiwa",
-      "duration_crawl": "0:00:01",
+      "created_at": "2022-09-29 19:39:16",
+      "description": "Indeks berita terkini dan terbaru hari ini dari peristiwa, kecelakaan, kriminal, hukum, berita unik, Politik, dan liputan khusus di Indonesia dan Internasional",
+      "duration_crawl": "0:00:02",
       "hot_url": 0,
-      "size_bytes": 121345,
       "html5": 1,
-      "id_information": 2683,
-      "keywords": "berita nasional terbaru, berita politik nasional, Berita Terkini, Berita Hari Ini, Breaking News, News Today, News, Hot News, Berita Nasional, Berita politik, Berita kriminal, Berita Hukum, Berita Pemerintahan, Berita Harian, Berita Akurat, Berita Tepercaya",
+      "id_information": 2,
+      "keywords": "berita hari ini, berita terkini, berita terbaru, info berita, peristiwa, kecelakaan, kriminal, hukum, berita unik, Politik, liputan khusus, Indonesia, Internasional",
       "model_crawl": "BFS crawling",
-      "title": "CNN Indonesia | Berita Terkini Nasional",
-      "url": "https://www.cnnindonesia.com/nasional"
+      "size_bytes": 252607,
+      "title": "detikcom - Informasi Berita Terkini dan Terbaru Hari Ini",
+      "url": "https://www.detik.com/?tagfrom=framebar"
     }
   ],
   "message": "Sukses",
@@ -219,7 +184,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 ```json
 {
   "data": {
-    "id_crawling": 3
+    "id_crawling": 6
   },
   "message": "Sukses",
   "ok": true
@@ -338,10 +303,41 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 
 </details>
 
-## :notebook: Dokumentasi Diagram
+## :file_folder: Struktur Direktori & File
 
-- [Entity Relationship Diagram (ERD)](https://dbdiagram.io/d/62622c031072ae0b6acb52f0)
-- [Class Diagram](docs/class_diagram.png)
+    .
+    ├── docs                                          # Sebagai tempat dokumentasi file seperti diagram, product backlog, dll
+    ├── html                                          # Berisi dokumentasi class dan fungsi yang di-generate dari library pdoc3
+    ├── services                                      # Kumpulan konfigurasi background service yang dipakai di systemd/systemctl
+    ├── src                                           # Source code search engine yang terdiri dari crawling, document ranking, dan page ranking
+    │   ├── api                                       # Folder untuk kodingan REST API
+    │   |   ├── app.py                                # Untuk run Flask dan menggabungkan routes
+    │   |   ├── crawling.py                           # Routes dan fungsi API untuk crawling
+    │   |   ├── document_ranking.py                   # Routes dan fungsi API untuk document ranking
+    │   |   └── page_ranking.py                       # Routes dan fungsi API untuk page ranking
+    |   |
+    │   ├── crawling                                  # Folder untuk kodingan crawling
+    │   |   ├── methods                               # Folder untuk berbagai metode crawling
+    │   |   |   ├── breadth_first_search.py           # Fungsi-fungsi crawling metode BFS
+    |   |   |   └── modified_similarity_based.py      # Fungsi-fungsi crawling metode MSB
+    │   |   ├── crawl.py                              # Untuk run crawling dengan menggabungkan metode yang ada
+    │   |   ├── page_content.py                       # Fungsi-fungsi yang menghubungkan ke database dan halaman html
+    │   |   └── util.py                               # Fungsi-fungsi pendukung crawling
+    |   |
+    │   ├── database                                  # Folder untuk kodingan database
+    │   |   └── database.py                           # Berisi kode untuk pengoperasian database seperti koneksi, query, dll
+    |   |
+    │   ├── document_ranking                          # Folder untuk kodingan document ranking
+    │   |   └── tf_idf.py                             # Implementasi dari TF-IDF
+    |   |
+    │   ├── page_ranking                              # Folder untuk kodingan page ranking
+    │   |   └── page_rank.py                          # Implementasi dari Google PageRank
+    |
+    ├── .env                                          # Konfigurasi credentials database dan crawler
+    ├── api.py                                        # Script utama untuk run REST API
+    ├── crawl.py                                      # Script utama untuk run crawling
+    ├── page_rank.py                                  # Script utama untuk run page rank
+    ├── requirements.txt                              # Berisi list library yang diperlukan
 
 ## :page_facing_up: Referensi
 
