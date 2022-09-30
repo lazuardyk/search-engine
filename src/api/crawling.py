@@ -48,11 +48,11 @@ def run_crawling():
 def get_crawled_pages():
     try:
         start_index = request.args.get("start", default="", type=str)
-        end_index = request.args.get("length", default="", type=str)
+        length = request.args.get("length", default="", type=str)
 
         crawl_utils = CrawlUtils()
-        if start_index != "" and end_index != "":
-            data = crawl_utils.get_crawled_pages_api(int(start_index), int(end_index))
+        if start_index != "" and length != "":
+            data = crawl_utils.get_crawled_pages_api(int(start_index), int(length))
         else:
             data = crawl_utils.get_crawled_pages_api()
 

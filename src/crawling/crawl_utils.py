@@ -312,7 +312,7 @@ class CrawlUtils:
         db = Database()
         db_connection = db.connect()
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        if not start_index or not length:
+        if start_index is None or length is None:
             db_cursor.execute("SELECT * FROM `page_information`")
         else:
             db_cursor.execute("SELECT * FROM `page_information` LIMIT %s, %s", (start_index, length))
