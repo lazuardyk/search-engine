@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from src.crawling.crawl import Crawl
+from src.crawling.crawl import CrawlUtils
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor
@@ -49,11 +50,11 @@ def get_crawled_pages():
         start_index = request.args.get("start", default="", type=str)
         end_index = request.args.get("length", default="", type=str)
 
-        page_content = PageContent()
+        crawl_utils = CrawlUtils()
         if start_index != "" and end_index != "":
-            data = page_content.get_crawled_pages_api(int(start_index), int(end_index))
+            data = crawl_utils.get_crawled_pages_api(int(start_index), int(end_index))
         else:
-            data = page_content.get_crawled_pages_api()
+            data = crawl_utils.get_crawled_pages_api()
 
         response = {
             "ok": True,
@@ -76,9 +77,9 @@ def start_insert_pages():
         start_urls = request.json["start_urls"]
         keyword = request.json["keyword"]
         duration_crawl = request.json["duration_crawl"]
-        page_content = PageContent()
+        crawl_utils = CrawlUtils()
 
-        id_crawling = page_content.start_insert_api(start_urls, keyword, duration_crawl)
+        id_crawling = crawl_utils.start_insert_api(start_urls, keyword, duration_crawl)
 
         response = {
             "ok": True,
@@ -105,9 +106,9 @@ def insert_page():
         page_scripts = request.json["page_scripts"]
         page_styles = request.json["page_styles"]
         page_tables = request.json["page_tables"]
-        page_content = PageContent()
+        crawl_utils = CrawlUtils()
 
-        page_content.insert_page_api(
+        crawl_utils.insert_page_api(
             page_information, page_forms, page_images, page_linking, page_list, page_scripts, page_styles, page_tables
         )
 
