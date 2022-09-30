@@ -13,17 +13,14 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 
 **General**
 
-- `Python crawl.py` untuk menjalankan crawler
-- `Python page_rank.py` untuk menjalankan page rank
-- `Python api.py` untuk menjalankan REST API
-
-**HTML Documentation**
-
-- `pdoc --html .` untuk auto generate dokumentasi yang ada di kodingan ke dalam folder html
+- `Python run_crawl.py` untuk menjalankan crawler
+- `Python run_page_rank.py` untuk menjalankan page rank
+- `Python run_tf_idf.py` untuk menjalankan tf idf
+- `Python run_api.py` untuk menjalankan REST API
 
 **Background Services**
 
-- Gunakan `crawl.service` di folder services untuk menjalankan crawler dan pagerank di background [menggunakan systemd](https://medium.com/codex/setup-a-python-script-as-a-service-through-systemctl-systemd-f0cc55a42267)
+- Gunakan `crawl.service` di folder services untuk menjalankan crawler, page rank, dan tf idf di background [menggunakan systemd](https://medium.com/codex/setup-a-python-script-as-a-service-through-systemctl-systemd-f0cc55a42267) pada server
 
 ## :file_folder: Struktur Direktori & File
 
