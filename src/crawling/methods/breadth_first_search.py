@@ -1,13 +1,12 @@
 from typing import Any
 from src.database.database import Database
 from src.crawling.page_content import PageContent
-from src.crawling.util import Util
-from src.crawling.util import CustomThreadPoolExecutor
+from src.crawling.crawl_utils import CrawlUtils
+from src.crawling.crawl_utils import CustomThreadPoolExecutor
 from datetime import datetime
 from urllib.parse import urljoin
 import bs4
 import threading
-import concurrent.futures.thread
 import queue
 import time
 import re
@@ -35,7 +34,7 @@ class BreadthFirstSearch:
         self.max_threads = max_threads
         self.db = Database()
         self.page_content = PageContent()
-        self.util = Util()
+        self.crawl_utils = CrawlUtils()
         self.lock = threading.Lock()
         self.start_time = time.time()
         self.list_urls = []
@@ -59,7 +58,7 @@ class BreadthFirstSearch:
                     self.visited_urls.append(target_url)
                     futures.append(executor.submit(self.scrape_page, target_url))
             except queue.Empty:
-                if self.util.running_thread_count(futures) > 0:
+                if self.crawl_utils.running_thread_count(futures) > 0:
                     continue
                 else:
                     print("Stopped because empty queue...")
@@ -82,7 +81,7 @@ class BreadthFirstSearch:
         """
         try:
             page_start_time = time.time()
-            response = self.util.get_page(url)
+            response = self.crawl_utils.get_page(url)
             if response and response.status_code == 200:
                 db_connection = self.db.connect()
                 self.lock.acquire()
@@ -153,7 +152,7 @@ class BreadthFirstSearch:
                     self.page_content.insert_page_linking(db_connection, self.crawl_id, url, complete_url)
 
                     self.lock.acquire()
-                    if self.util.is_valid_url(complete_url) and complete_url not in self.visited_urls:
+                    if self.crawl_utils.is_valid_url(complete_url) and complete_url not in self.visited_urls:
                         self.url_queue.put(complete_url)
                     self.lock.release()
 

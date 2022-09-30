@@ -1,7 +1,7 @@
 from src.database.database import Database
 from src.crawling.methods.modified_similarity_based import ModifiedSimilarityBased
 from src.crawling.page_content import PageContent
-from src.crawling.util import Util
+from src.crawling.crawl_utils import CrawlUtils
 from src.crawling.methods.breadth_first_search import BreadthFirstSearch
 import queue
 import time
@@ -34,7 +34,7 @@ class Crawl:
         self.msb_keyword = msb_keyword
         self.db = Database()
         self.page_content = PageContent()
-        self.util = Util()
+        self.crawl_utils = CrawlUtils()
         self.process = psutil.Process(os.getpid())
         warnings.filterwarnings("ignore", message="Unverified HTTPS request")
 
@@ -46,13 +46,13 @@ class Crawl:
             urls (list): Kumpulan URL halaman yang akan diekstrak linknya
         """
         for url in urls:
-            result = self.util.get_page(url)
+            result = self.crawl_utils.get_page(url)
             if result and result.status_code == 200:
                 soup = bs4.BeautifulSoup(result.text, "html.parser")
                 links = soup.findAll("a", href=True)
                 for i in links:
                     complete_url = urljoin(url, i["href"]).rstrip("/")
-                    if self.util.is_valid_url(complete_url) and complete_url not in self.visited_urls:
+                    if self.crawl_utils.is_valid_url(complete_url) and complete_url not in self.visited_urls:
                         self.url_queue.put(complete_url)
 
     def run(self) -> int:
@@ -73,7 +73,7 @@ class Crawl:
         if len(self.visited_urls) < 1:
             print("Starting the crawler from the start urls...")
             for url in self.start_urls:
-                if self.util.is_valid_url(url):
+                if self.crawl_utils.is_valid_url(url):
                     self.url_queue.put(url)
                     urls_string += url + " "
         else:

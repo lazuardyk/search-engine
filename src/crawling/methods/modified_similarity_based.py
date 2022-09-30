@@ -2,13 +2,12 @@ from typing import Any
 from matplotlib.pyplot import hot
 from src.database.database import Database
 from src.crawling.page_content import PageContent
-from src.crawling.util import Util
-from src.crawling.util import CustomThreadPoolExecutor
+from src.crawling.crawl_utils import CrawlUtils
+from src.crawling.crawl_utils import CustomThreadPoolExecutor
 from datetime import datetime
 from urllib.parse import urljoin
 import bs4
 import threading
-import concurrent.futures.thread
 import queue
 import time
 import re
@@ -45,7 +44,7 @@ class ModifiedSimilarityBased:
         self.max_threads = max_threads
         self.db = Database()
         self.page_content = PageContent()
-        self.util = Util()
+        self.crawl_utils = CrawlUtils()
         self.lock = threading.Lock()
         self.start_time = time.time()
         self.list_urls = list_urls
@@ -77,7 +76,7 @@ class ModifiedSimilarityBased:
                 self.hot_queue = self.reorder_queue(self.hot_queue)
                 self.url_queue = self.reorder_queue(self.url_queue)
             except queue.Empty:
-                if self.util.running_thread_count(futures) > 0:
+                if self.crawl_utils.running_thread_count(futures) > 0:
                     continue
                 else:
                     print("Stopped because empty queue...")
@@ -100,7 +99,7 @@ class ModifiedSimilarityBased:
         """
         try:
             page_start_time = time.time()
-            response = self.util.get_page(url)
+            response = self.crawl_utils.get_page(url)
             if response and response.status_code == 200:
                 db_connection = self.db.connect()
                 self.lock.acquire()
@@ -155,8 +154,8 @@ class ModifiedSimilarityBased:
 
                 # check hot_url
                 hot_link = 0
-                if (self.util.count_keyword_in_text(complete_text, self.keyword) >= 10) or (
-                    self.util.count_keyword_in_text(title, self.keyword) >= 1
+                if (self.crawl_utils.count_keyword_in_text(complete_text, self.keyword) >= 10) or (
+                    self.crawl_utils.count_keyword_in_text(title, self.keyword) >= 1
                 ):
                     hot_link = 1
 
@@ -175,7 +174,7 @@ class ModifiedSimilarityBased:
                     self.page_content.insert_page_linking(db_connection, self.crawl_id, url, complete_url)
 
                     self.lock.acquire()
-                    if self.util.is_valid_url(complete_url) and complete_url not in self.visited_urls:
+                    if self.crawl_utils.is_valid_url(complete_url) and complete_url not in self.visited_urls:
                         if hot_link == 1 or self.keyword in url:
                             self.hot_queue.put(complete_url)
                         else:

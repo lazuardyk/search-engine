@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 import queue
 
 
-class Util:
+class CrawlUtils:
     """
     Kelas yang berisi fungsi-fungsi utilitas crawler.
     """
