@@ -1,5 +1,4 @@
 from flask import Blueprint, request
-from src.crawling.page_content import PageContent
 from src.crawling.crawl import Crawl
 import json
 import os

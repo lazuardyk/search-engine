@@ -1,6 +1,5 @@
 from src.database.database import Database
 from src.crawling.methods.modified_similarity_based import ModifiedSimilarityBased
-from src.crawling.page_content import PageContent
 from src.crawling.crawl_utils import CrawlUtils
 from src.crawling.methods.breadth_first_search import BreadthFirstSearch
 import queue
@@ -33,7 +32,6 @@ class Crawl:
         self.msb_duration_sec = int(msb_duration_sec)
         self.msb_keyword = msb_keyword
         self.db = Database()
-        self.page_content = PageContent()
         self.crawl_utils = CrawlUtils()
         self.process = psutil.Process(os.getpid())
         warnings.filterwarnings("ignore", message="Unverified HTTPS request")
@@ -66,7 +64,7 @@ class Crawl:
         self.start_time = time.time()
 
         db_connection = self.db.connect()
-        self.visited_urls = self.page_content.get_visited_urls(db_connection)
+        self.visited_urls = self.crawl_utils.get_visited_urls(db_connection)
         self.page_count_start = self.db.count_rows(db_connection, "page_information")
 
         urls_string = ""
@@ -84,7 +82,7 @@ class Crawl:
             self.scrape_links_for_resume(last_urls)
         urls_string = urls_string[0 : len(urls_string) - 1]
 
-        crawl_id = self.page_content.insert_crawling(
+        crawl_id = self.crawl_utils.insert_crawling(
             db_connection, urls_string, "", 0, (self.bfs_duration_sec + self.msb_duration_sec)
         )
         db_connection.close()
@@ -95,8 +93,6 @@ class Crawl:
         print("Finished breadth first search crawler...")
 
         # Modified Similarity Based Crawler
-
-        # print(len(bfs.list_urls))
         print("Running modified similarity based crawler...")
         msb = ModifiedSimilarityBased(
             crawl_id,
@@ -113,7 +109,7 @@ class Crawl:
         db_connection = self.db.connect()
         self.page_count_end = self.db.count_rows(db_connection, "page_information")
         page_count = self.page_count_end - self.page_count_start
-        self.page_content.update_crawling(db_connection, crawl_id, page_count)
+        self.crawl_utils.update_crawling(db_connection, crawl_id, page_count)
         db_connection.close()
 
         return page_count

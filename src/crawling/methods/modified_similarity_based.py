@@ -1,7 +1,6 @@
 from typing import Any
 from matplotlib.pyplot import hot
 from src.database.database import Database
-from src.crawling.page_content import PageContent
 from src.crawling.crawl_utils import CrawlUtils
 from src.crawling.crawl_utils import CustomThreadPoolExecutor
 from datetime import datetime
@@ -43,7 +42,6 @@ class ModifiedSimilarityBased:
         self.duration_sec = duration_sec
         self.max_threads = max_threads
         self.db = Database()
-        self.page_content = PageContent()
         self.crawl_utils = CrawlUtils()
         self.lock = threading.Lock()
         self.start_time = time.time()
@@ -171,7 +169,7 @@ class ModifiedSimilarityBased:
                     complete_url = urljoin(url, i["href"]).rstrip("/")
 
                     self.list_urls.append(complete_url)
-                    self.page_content.insert_page_linking(db_connection, self.crawl_id, url, complete_url)
+                    self.crawl_utils.insert_page_linking(db_connection, self.crawl_id, url, complete_url)
 
                     self.lock.acquire()
                     if self.crawl_utils.is_valid_url(complete_url) and complete_url not in self.visited_urls:
@@ -187,47 +185,47 @@ class ModifiedSimilarityBased:
                 # extract tables
                 try:
                     for table in soup.findAll("table"):
-                        self.page_content.insert_page_table(db_connection, url, table)
+                        self.crawl_utils.insert_page_table(db_connection, url, table)
                 except:
                     pass
 
                 # extract lists
                 try:
                     for lists in soup.findAll("li"):
-                        self.page_content.insert_page_list(db_connection, url, lists)
+                        self.crawl_utils.insert_page_list(db_connection, url, lists)
                 except:
                     pass
 
                 # extract forms
                 try:
                     for form in soup.findAll("form"):
-                        self.page_content.insert_page_form(db_connection, url, form)
+                        self.crawl_utils.insert_page_form(db_connection, url, form)
                 except:
                     pass
 
                 try:
                     # extract images
                     for image in soup.findAll("img"):
-                        self.page_content.insert_page_image(db_connection, url, image)
+                        self.crawl_utils.insert_page_image(db_connection, url, image)
                 except:
                     pass
 
                 try:
                     # extract style
                     for style in soup.findAll("style"):
-                        self.page_content.insert_page_style(db_connection, url, style)
+                        self.crawl_utils.insert_page_style(db_connection, url, style)
                 except:
                     pass
 
                 try:
                     # extract script
                     for script in soup.findAll("script"):
-                        self.page_content.insert_page_script(db_connection, url, script)
+                        self.crawl_utils.insert_page_script(db_connection, url, script)
                 except:
                     pass
 
                 page_duration_crawl = time.time() - page_start_time
-                self.page_content.insert_page_information(
+                self.crawl_utils.insert_page_information(
                     db_connection,
                     url,
                     self.crawl_id,
