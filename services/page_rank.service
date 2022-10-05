@@ -4,6 +4,6 @@ After=multi-user.target
 [Service]
 Type=simple
 Restart=on-failure
-ExecStart=/opt/rh/rh-python38/root/usr/bin/python /root/search-engine/page_rank.py
+ExecStart=/opt/rh/rh-python38/root/usr/bin/python /root/search-engine/run_page_rank.py
 [Install]
 WantedBy=multi-user.target
