@@ -87,7 +87,7 @@ class BreadthFirstSearch:
                 print(url, "| BFS |", now.strftime("%d/%m/%Y %H:%M:%S"))
                 self.lock.release()
                 soup = bs4.BeautifulSoup(response.text, "html.parser")
-                title = soup.title.string
+                title = soup.title.string 
                 article_html5 = soup.find("article")
                 if article_html5 is None:
                     # extract text content from html4
@@ -140,67 +140,10 @@ class BreadthFirstSearch:
                     self.db.close_connection(db_connection)
                     return
 
-                # extract outgoing link
-                links = soup.findAll("a", href=True)
-                for i in links:
-                    # Complete relative URLs and strip trailing slash
-                    complete_url = urljoin(url, i["href"]).rstrip("/")
-
-                    self.list_urls.append(complete_url)  # For  MSB
-                    self.crawl_utils.insert_page_linking(db_connection, self.crawl_id, url, complete_url)
-
-                    self.lock.acquire()
-                    if self.crawl_utils.is_valid_url(complete_url) and complete_url not in self.visited_urls:
-                        self.url_queue.put(complete_url)
-                    self.lock.release()
-
                 # size of the page
                 size_bytes = len(response.content)
 
-                # extract tables
-                try:
-                    for table in soup.findAll("table"):
-                        self.crawl_utils.insert_page_table(db_connection, url, table)
-                except:
-                    pass
-
-                # extract lists
-                try:
-                    for lists in soup.findAll("li"):
-                        self.crawl_utils.insert_page_list(db_connection, url, lists)
-                except:
-                    pass
-
-                # extract forms
-                try:
-                    for form in soup.findAll("form"):
-                        self.crawl_utils.insert_page_form(db_connection, url, form)
-                except:
-                    pass
-
-                try:
-                    # extract images
-                    for image in soup.findAll("img"):
-                        self.crawl_utils.insert_page_image(db_connection, url, image)
-                except:
-                    pass
-
-                try:
-                    # extract style
-                    for style in soup.findAll("style"):
-                        self.crawl_utils.insert_page_style(db_connection, url, style)
-                except:
-                    pass
-
-                try:
-                    # extract script
-                    for script in soup.findAll("script"):
-                        self.crawl_utils.insert_page_script(db_connection, url, script)
-                except:
-                    pass
-
-                page_duration_crawl = time.time() - page_start_time
-                self.crawl_utils.insert_page_information(
+                page_id = self.crawl_utils.insert_page_information(
                     db_connection,
                     url,
                     self.crawl_id,
@@ -212,8 +155,67 @@ class BreadthFirstSearch:
                     hot_link,
                     size_bytes,
                     "BFS crawling",
-                    int(page_duration_crawl),
+                    0,
                 )
+
+                # extract outgoing link
+                links = soup.findAll("a", href=True)
+                for i in links:
+                    # Complete relative URLs and strip trailing slash
+                    complete_url = urljoin(url, i["href"]).rstrip("/")
+
+                    self.list_urls.append(complete_url)  # For  MSB
+                    self.crawl_utils.insert_page_linking(db_connection, page_id, complete_url)
+
+                    self.lock.acquire()
+                    if self.crawl_utils.is_valid_url(complete_url) and complete_url not in self.visited_urls:
+                        self.url_queue.put(complete_url)
+                    self.lock.release()
+
+                # extract tables
+                try:
+                    for table in soup.findAll("table"):
+                        self.crawl_utils.insert_page_table(db_connection, page_id, table)
+                except:
+                    pass
+
+                # extract lists
+                try:
+                    for lists in soup.findAll("li"):
+                        self.crawl_utils.insert_page_list(db_connection, page_id, lists)
+                except:
+                    pass
+
+                # extract forms
+                try:
+                    for form in soup.findAll("form"):
+                        self.crawl_utils.insert_page_form(db_connection, page_id, form)
+                except:
+                    pass
+
+                try:
+                    # extract images
+                    for image in soup.findAll("img"):
+                        self.crawl_utils.insert_page_image(db_connection, page_id, image)
+                except:
+                    pass
+
+                try:
+                    # extract style
+                    for style in soup.findAll("style"):
+                        self.crawl_utils.insert_page_style(db_connection, page_id, style)
+                except:
+                    pass
+
+                try:
+                    # extract script
+                    for script in soup.findAll("script"):
+                        self.crawl_utils.insert_page_script(db_connection, page_id, script)
+                except:
+                    pass
+
+                page_duration_crawl = time.time() - page_start_time
+                self.crawl_utils.update_page_duration_crawl(db_connection, page_id, page_duration_crawl)
                 self.db.close_connection(db_connection)
                 return
             return

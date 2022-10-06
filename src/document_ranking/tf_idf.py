@@ -15,78 +15,6 @@ class TfIdf:
     def __init__(self):
         self.db = Database()
 
-    # def save_one_tf(self, db_connection, page_id, word, tf_score):
-    #     """
-    #     Fungsi untuk menyimpan nilai TF ke dalam table tf pada database.
-
-    #     Args:
-    #         db_connection (pymysql.Connection): Koneksi database MySQL
-    #         word (str): Kata (satu kata)
-    #         page_id (int): Id page atau id page_information
-    #         tf (int): Nilai tf
-    #     """
-    #     db_connection.ping()
-    #     db_cursor = db_connection.cursor()
-
-    #     query = "INSERT INTO `tf` (`page_id`, `word`, `tf_score`) VALUES (%s, %s, %s)"
-    #     db_cursor.execute(query, (page_id, word, tf_score))
-
-    #     db_cursor.close()
-
-    # def save_one_idf(self, db_connection, word, idf_score):
-    #     """
-    #     Fungsi untuk menyimpan nilai IDF ke dalam table idf pada database.
-
-    #     Args:
-    #         db_connection (pymysql.Connection): Koneksi database MySQL
-    #         word (str): Kata (satu kata)
-    #         page_id (int): Id page atau id page_information
-    #         idf (int): Nilai idf
-    #     """
-    #     db_connection.ping()
-    #     db_cursor = db_connection.cursor()
-
-    #     query = "INSERT INTO `idf` (`word`, `idf_score`) VALUES (%s, %s)"
-    #     db_cursor.execute(query, (word, idf_score))
-
-    #     db_cursor.close()
-
-    #     def get_one_saved_idf(self, db_connection, word):
-    #     """
-    #     Fungsi untuk mengambil nilai IDF yang disimpan di database.
-
-    #     Args:
-    #         db_connection (pymysql.Connection): Koneksi database MySQL
-    #         word (str): Kata
-
-    #     Returns:
-    #         double: Berisi nilai idf
-    #     """
-    #     db_connection.ping()
-    #     db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-    #     db_cursor.execute("SELECT document_term FROM `idf` WHERE `word` = %s", (word))
-    #     rows = db_cursor.fetchone()
-    #     db_cursor.close()
-    #     return rows["idf_score"]
-
-    # def get_all_saved_tf(self, db_connection, word):
-    #     """
-    #     Fungsi untuk mengambil nilai IDF yang disimpan di database.
-
-    #     Args:
-    #         db_connection (pymysql.Connection): Koneksi database MySQL
-    #         word (str): Kata
-
-    #     Returns:
-    #         list: List berisi dictionary skor TF IDF yang didapatkan dari fungsi cursor.fetchall(), berisi empty list jika tidak ada datanya
-    #     """
-    #     db_connection.ping()
-    #     db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-    #     db_cursor.execute("SELECT * FROM `idf` WHERE `word` = %s", (word))
-    #     rows = db_cursor.fetchone()
-    #     db_cursor.close()
-    #     return rows
-
     def remove_tfidf_rows(self, db_connection):
         """Fungsi untuk mengosongkan table "tfidf" pada database.
 
@@ -101,21 +29,21 @@ class TfIdf:
 
         db_cursor.close()
 
-    def save_one_tfidf(self, db_connection, keyword, url, tfidf_total):
+    def save_one_tfidf(self, db_connection, keyword, page_id, tfidf_total):
         """
         Fungsi untuk menyimpan nilai total TF IDF terhadap suatu keyword (bisa lebih dari satu kata) ke database pada table "tfidf".
 
         Args:
             db_connection (pymysql.Connection): Koneksi database MySQL
             keyword (str): Kata pencarian (bisa lebih dari satu kata)
-            url (str): Url halaman
+            page_id (int): ID page dari table page_information
             tfidf_total (double): Score tf idf
         """
         db_connection.ping()
         db_cursor = db_connection.cursor()
 
-        query = "INSERT INTO `tfidf` (`keyword`, `url`, `tfidf_total`) VALUES (%s, %s, %s)"
-        db_cursor.execute(query, (keyword, url, tfidf_total))
+        query = "INSERT INTO `tfidf` (`keyword`, `page_id`, `tfidf_total`) VALUES (%s, %s, %s)"
+        db_cursor.execute(query, (keyword, page_id, tfidf_total))
 
         db_cursor.close()
 
@@ -126,7 +54,7 @@ class TfIdf:
         Args:
             db_connection (pymysql.Connection): Koneksi database MySQL
             word (str): Kata
-            page_id (int): ID dari table page_information
+            page_id (int): ID page dari table page_information
             tfidf_score (double): Bobot/skor tf idf
         """
         db_connection.ping()
@@ -146,22 +74,6 @@ class TfIdf:
             db_cursor.execute(query, (tfidf_score, id_word))
 
         db_cursor.close()
-
-    def get_one_url(self, db_connection, page_id):
-        """
-        Fungsi untuk mengambil url dari database untuk satu halaman.
-
-        Args:
-            db_connection (pymysql.Connection): Koneksi database MySQL
-            page_id (int): Page ID
-        """
-        db_connection.ping()
-        db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        db_cursor.execute("SELECT `url` FROM `page_information` WHERE `id_information` = %s", (page_id))
-        row = db_cursor.fetchone()
-
-        db_cursor.close()
-        return row["url"]
 
     def save_call_log(self, db_connection, keyword, duration_call):
         """
@@ -191,7 +103,10 @@ class TfIdf:
         """
         db_connection.ping()
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        db_cursor.execute("SELECT * FROM `tfidf` WHERE `keyword` = %s ORDER BY `tfidf_total` DESC", (keyword))
+        db_cursor.execute(
+            "SELECT `tfidf`.`id_tfidf`,`tfidf`.`keyword`, `tfidf`.`tfidf_total`,`page_information`.`url` FROM `tfidf` INNER JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = %s ORDER BY `tfidf`.`tfidf_total` DESC",
+            (keyword),
+        )
         rows = db_cursor.fetchall()
         db_cursor.close()
         return rows
@@ -238,10 +153,9 @@ class TfIdf:
                     pages_with_total_score[page_id] = tfidf_score
 
         # Simpan hasil perhitungan yang ada di dictionary ke table "tfidf"
-        for key, value in pages_with_total_score.items():
+        for page_id, total_score in pages_with_total_score.items():
             db_connection.ping()
-            url = self.get_one_url(db_connection, key)
-            self.save_one_tfidf(db_connection, keyword, url, value)
+            self.save_one_tfidf(db_connection, keyword, page_id, total_score)
 
         saved_tfidf = self.get_all_saved_tfidf(db_connection, keyword)
         return saved_tfidf
@@ -272,8 +186,7 @@ class TfIdf:
 
         for i in range(len(tfidf_matrix_array)):
             tf_idf_vector = tfidf_matrix_array[i]
-            url = df["url"].loc[i]
-            page_id = df["id_information"].loc[i]
+            page_id = df["id_page"].loc[i]
 
             for j in range(len(words)):
                 word = words[j]
