@@ -112,55 +112,95 @@ class Database:
         Args:
             connection (pymysql.Connection): Koneksi database MySQL
         """
+
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS crawling (id_crawling INT PRIMARY KEY AUTO_INCREMENT, start_urls TEXT, keyword TEXT, total_page INT, duration_crawl TIME, created_at TIMESTAMP)",
+            "CREATE TABLE IF NOT EXISTS `crawling` ( `id_crawling` int PRIMARY KEY AUTO_INCREMENT, `start_urls` text, `keyword` text, `total_page` int, `duration_crawl` time, `created_at` timestamp )",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS page_forms (id_form INT PRIMARY KEY AUTO_INCREMENT, url TEXT, form TEXT)",
+            "CREATE TABLE IF NOT EXISTS `page_information` ( `id_page` int PRIMARY KEY AUTO_INCREMENT, `crawl_id` int, `url` text, `html5` tinyint, `title` text, `description` text, `keywords` text, `content_text` text, `hot_url` tinyint, `size_bytes` bigint, `model_crawl` text, `duration_crawl` time, `created_at` timestamp )",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS page_images (id_image INT PRIMARY KEY AUTO_INCREMENT, url TEXT, image TEXT)",
+            "CREATE TABLE IF NOT EXISTS `page_linking` ( `id_linking` int PRIMARY KEY AUTO_INCREMENT, `page_id` int, `outgoing_link` text )",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS page_linking (id_linking INT PRIMARY KEY AUTO_INCREMENT, crawl_id INT, url TEXT, outgoing_link TEXT)",
+            "CREATE TABLE IF NOT EXISTS `page_images` ( `id_image` int PRIMARY KEY AUTO_INCREMENT, `page_id` int, `image` text )",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS page_list (id_list INT PRIMARY KEY AUTO_INCREMENT, url TEXT, list TEXT)",
+            "CREATE TABLE IF NOT EXISTS `page_tables` ( `id_table` int PRIMARY KEY AUTO_INCREMENT, `page_id` int, `table_str` text )",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS page_information (id_information INT PRIMARY KEY AUTO_INCREMENT, crawl_id INT, url TEXT, html5 TINYINT, title TEXT, description TEXT, keywords TEXT, content_text TEXT, hot_url TINYINT, size_bytes BIGINT, model_crawl TEXT, duration_crawl TIME, created_at TIMESTAMP)",
+            "CREATE TABLE IF NOT EXISTS `page_styles` ( `id_style` int PRIMARY KEY AUTO_INCREMENT, `page_id` int, `style` text )",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS page_scripts (id_script INT PRIMARY KEY AUTO_INCREMENT, url TEXT, script TEXT)",
+            "CREATE TABLE IF NOT EXISTS `page_scripts` ( `id_script` int PRIMARY KEY AUTO_INCREMENT, `page_id` int, `script` text )",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS page_styles (id_style INT PRIMARY KEY AUTO_INCREMENT, url TEXT, style TEXT)",
+            "CREATE TABLE IF NOT EXISTS `page_list` ( `id_list` int PRIMARY KEY AUTO_INCREMENT, `page_id` int, `list` text )",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS page_tables (id_table INT PRIMARY KEY AUTO_INCREMENT, url TEXT, table_str TEXT)",
+            "CREATE TABLE IF NOT EXISTS `page_forms` ( `id_form` int PRIMARY KEY AUTO_INCREMENT, `page_id` int, `form` text )",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS tfidf_word (id_word INT PRIMARY KEY AUTO_INCREMENT, word TEXT, page_id INT, tfidf_score DOUBLE)",
+            "CREATE TABLE IF NOT EXISTS `tfidf` ( `id_tfidf` int PRIMARY KEY AUTO_INCREMENT, `keyword` text, `page_id` int, `tfidf_total` double )",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS tfidf (id_tfidf INT PRIMARY KEY AUTO_INCREMENT, keyword TEXT, url TEXT, tfidf_total DOUBLE)",
+            "CREATE TABLE IF NOT EXISTS `tfidf_word` ( `id_word` int PRIMARY KEY AUTO_INCREMENT, `word` text, `page_id` int, `tfidf_score` double )",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS tfidf_log (id_log INT PRIMARY KEY AUTO_INCREMENT, keywords TEXT, duration_call TIME, created_at TIMESTAMP)",
+            "CREATE TABLE IF NOT EXISTS `tfidf_log` ( `id_log` int PRIMARY KEY AUTO_INCREMENT, `keyword` text, `duration_call` time, `created_at` timestamp )",
         )
         self.exec_query(
             connection,
-            "CREATE TABLE IF NOT EXISTS pagerank (id_pagerank INT PRIMARY KEY AUTO_INCREMENT, url TEXT, pagerank_score DOUBLE)",
+            "CREATE TABLE IF NOT EXISTS `pagerank` ( `id_pagerank` int PRIMARY KEY AUTO_INCREMENT, `page_id` int, `pagerank_score` double )",
+        )
+        self.exec_query(
+            connection,
+            "ALTER TABLE `page_information` ADD FOREIGN KEY (`crawl_id`) REFERENCES `crawling` (`id_crawling`)",
+        )
+        self.exec_query(
+            connection,
+            "ALTER TABLE `page_linking` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+        )
+        self.exec_query(
+            connection,
+            "ALTER TABLE `page_images` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+        )
+        self.exec_query(
+            connection,
+            "ALTER TABLE `page_tables` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+        )
+        self.exec_query(
+            connection,
+            "ALTER TABLE `page_styles` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+        )
+        self.exec_query(
+            connection,
+            "ALTER TABLE `page_scripts` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+        )
+        self.exec_query(
+            connection, "ALTER TABLE `page_list` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)"
+        )
+        self.exec_query(
+            connection, "ALTER TABLE `page_forms` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)"
+        )
+        self.exec_query(
+            connection, "ALTER TABLE `tfidf` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)"
+        )
+        self.exec_query(
+            connection, "ALTER TABLE `tfidf_word` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)"
+        )
+        self.exec_query(
+            connection, "ALTER TABLE `pagerank` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)"
         )

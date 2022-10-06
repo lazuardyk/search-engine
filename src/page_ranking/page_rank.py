@@ -27,31 +27,31 @@ class PageRank:
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
 
         for page_row in pages:
-            url = page_row["url"]
+            page_id = page_row["id_page"]
 
-            if not self.db.check_value_in_table(db_connection, "pagerank", "url", url):
-                query = "INSERT INTO `pagerank` (`url`, `pagerank_score`) VALUES (%s, %s)"
-                db_cursor.execute(query, (url, initial_pr))
+            if not self.db.check_value_in_table(db_connection, "pagerank", "page_id", page_id):
+                query = "INSERT INTO `pagerank` (`page_id`, `pagerank_score`) VALUES (%s, %s)"
+                db_cursor.execute(query, (page_id, initial_pr))
             else:
-                query = "UPDATE `pagerank` SET `pagerank_score` = %s WHERE `url` = %s"
-                db_cursor.execute(query, (initial_pr, url))
+                query = "UPDATE `pagerank` SET `pagerank_score` = %s WHERE `page_id` = %s"
+                db_cursor.execute(query, (initial_pr, page_id))
 
         db_cursor.close()
 
-    def save_one_pagerank(self, db_connection, url, pagerank):
+    def save_one_pagerank(self, db_connection, page_id, pagerank):
         """
         Fungsi untuk menyimpan ranking dan nilai Page Rank yang sudah dihitung ke dalam database.
 
         Args:
             db_connection (pymysql.Connection): Koneksi database MySQL
-            url (str): Url halaman
+            page_id (int): ID page dari table page_information
             pagerank (double): Score page rank
         """
         db_connection.ping()
         db_cursor = db_connection.cursor()
 
-        query = "UPDATE `pagerank` SET `pagerank_score` = %s WHERE `url` = %s"
-        db_cursor.execute(query, (pagerank, url))
+        query = "UPDATE `pagerank` SET `pagerank_score` = %s WHERE `page_id` = %s"
+        db_cursor.execute(query, (pagerank, page_id))
 
         db_cursor.close()
 
@@ -74,7 +74,7 @@ class PageRank:
         db_cursor.close()
         return rows
 
-    def get_one_pagerank(self, db_connection, url):
+    def get_one_pagerank(self, db_connection, page_id):
         """
         Fungsi untuk mengambil skor pagerank dari database untuk satu halaman.
 
@@ -84,7 +84,7 @@ class PageRank:
         db_connection.ping()
 
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        db_cursor.execute("SELECT pagerank_score FROM `pagerank` WHERE `url` = %s", (url))
+        db_cursor.execute("SELECT pagerank_score FROM `pagerank` WHERE `page_id` = %s", (page_id))
         row = db_cursor.fetchone()
 
         db_cursor.close()
@@ -99,7 +99,9 @@ class PageRank:
         """
         db_connection = self.db.connect()
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        db_cursor.execute("SELECT * FROM `pagerank` ORDER BY `pagerank_score` DESC")
+        db_cursor.execute(
+            "SELECT `pagerank`.`id_pagerank`,`pagerank`.`pagerank_score`,`page_information`.`url` FROM `pagerank` INNER JOIN `page_information` ON `pagerank`.`page_id` = `page_information`.`id_page` ORDER BY `pagerank`.`pagerank_score` DESC"
+        )
         rows = db_cursor.fetchall()
         db_cursor.close()
         self.db.close_connection(db_connection)
@@ -124,19 +126,24 @@ class PageRank:
             for page_row in pages:
                 db_connection.ping()
 
+                page_id = page_row["id_page"]
                 page_url = page_row["url"]
-                current_pagerank = self.get_one_pagerank(db_connection, page_url)
+                current_pagerank = self.get_one_pagerank(db_connection, page_id)
 
                 new_pagerank = 0
                 backlink_urls = set()
                 db_cursor2 = db_connection.cursor(pymysql.cursors.DictCursor)
 
-                db_cursor2.execute("SELECT * FROM `page_linking` WHERE `outgoing_link` = %s", (page_url))
+                db_cursor2.execute(
+                    "SELECT `page_information`.`url` FROM `page_linking` INNER JOIN `page_information` ON `page_linking`.`page_id` = `page_information`.`id_page` WHERE `outgoing_link` = %s",
+                    (page_url),
+                )
                 for page_linking_row in db_cursor2.fetchall():
                     backlink_urls.add(page_linking_row["url"])
 
                 db_cursor2.execute(
-                    "SELECT url, COUNT(*) FROM `page_linking` WHERE `url` IN %s GROUP by url", [backlink_urls]
+                    "SELECT `page_information`.`url`, COUNT(*) FROM `page_linking` INNER JOIN `page_information` ON `page_linking`.`page_id` = `page_information`.`id_page` WHERE `page_information`.`url` IN %s GROUP by `page_information`.`url`",
+                    [backlink_urls],
                 )
                 for backlink_link_count in db_cursor2.fetchall():
                     new_pagerank += initial_pr / backlink_link_count["COUNT(*)"]
