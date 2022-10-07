@@ -104,7 +104,7 @@ class TfIdf:
         db_connection.ping()
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
         db_cursor.execute(
-            "SELECT `tfidf`.`id_tfidf`,`tfidf`.`keyword`, `tfidf`.`tfidf_total`,`page_information`.`url` FROM `tfidf` INNER JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = %s ORDER BY `tfidf`.`tfidf_total` DESC",
+            "SELECT `tfidf`.`id_tfidf`,`tfidf`.`keyword`,`tfidf`.`tfidf_total`,`tfidf`.`page_id`,`page_information`.`url` FROM `tfidf` INNER JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = %s ORDER BY `tfidf`.`tfidf_total` DESC",
             (keyword),
         )
         rows = db_cursor.fetchall()
