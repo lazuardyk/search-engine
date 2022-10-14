@@ -32,6 +32,40 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 ## :wrench: Dokumentasi API
 
 <details>
+<summary><b>[GET]</b> Get Similarity Overall Ranking</summary>
+
+- **URL**: `/api/v1.0/overall_ranking/similarity?keyword=barcelona&sort=similarity&start=0&length=10`
+
+- **Method**: `GET`
+
+- **Response**:
+
+```json
+{
+  "data": [
+    {
+      "id_page": 5,
+      "pagerank_score": 0.05263157894736842,
+      "similarity_score": 0.49220540497550275,
+      "tfidf_total": 0.06595637671355718,
+      "url": "https://20.detik.com/live"
+    },
+    {
+      "id_page": 1,
+      "pagerank_score": 0.05263157894736842,
+      "similarity_score": 0.45263157894736844,
+      "tfidf_total": 0.0,
+      "url": "https://detik.com"
+    }
+  ],
+  "message": "Sukses",
+  "ok": true
+}
+```
+
+</details>
+
+<details>
 <summary><b>[GET]</b> Run Crawling</summary>
 
 - **URL**: `/api/v1.0/crawling/crawl?duration=10`
@@ -52,7 +86,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 <details>
 <summary><b>[GET]</b> Get TF-IDF Document Ranking</summary>
 
-- **URL**: `/api/v1.0/document_ranking/tf_idf?keyword=barcelona`
+- **URL**: `/api/v1.0/document_ranking/tf_idf?keyword=barcelona&start=0&length=10`
 
 - **Method**: `GET`
 
@@ -84,7 +118,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 <details>
 <summary><b>[GET]</b> Get Page-Rank Page Ranking</summary>
 
-- **URL**: `/api/v1.0/page_ranking/page_rank`
+- **URL**: `/api/v1.0/page_ranking/page_rank?start=0&length=10`
 
 - **Method**: `GET`
 
@@ -114,8 +148,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 <details>
 <summary><b>[GET]</b> Get Crawled Pages</summary>
 
-- **URL**: `/api/v1.0/crawling/pages` or  
-  `/api/v1.0/crawling/pages?start=0&length=10`
+- **URL**: `/api/v1.0/crawling/pages?start=0&length=10`
 
 - **Method**: `GET`
 
@@ -153,6 +186,49 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
       "size_bytes": 252607,
       "title": "detikcom - Informasi Berita Terkini dan Terbaru Hari Ini",
       "url": "https://www.detik.com/?tagfrom=framebar"
+    }
+  ],
+  "message": "Sukses",
+  "ok": true
+}
+```
+
+</details>
+
+<details>
+<summary><b>[GET]</b> Get Page Information</summary>
+
+- **URL**: `/api/v1.0/crawling/page_information`
+
+- **Method**: `POST`
+
+- **Request Payload**:
+
+```json
+{
+  "id_pages": [1]
+}
+```
+
+- **Response**:
+
+```json
+{
+  "data": [
+    {
+      "content_text": "",
+      "crawl_id": 2,
+      "created_at": "2022-10-06 06:47:17",
+      "description": "Indeks berita terkini dan terbaru hari ini dari peristiwa, kecelakaan, kriminal, hukum, berita unik, Politik, dan liputan khusus di Indonesia dan Internasional",
+      "duration_crawl": "0:00:00",
+      "hot_url": 0,
+      "html5": 1,
+      "id_page": 1,
+      "keywords": "berita hari ini, berita terkini, berita terbaru, info berita, peristiwa, kecelakaan, kriminal, hukum, berita unik, Politik, liputan khusus, Indonesia, Internasional",
+      "model_crawl": "BFS crawling",
+      "size_bytes": 244796,
+      "title": "detikcom - Informasi Berita Terkini dan Terbaru Hari Ini",
+      "url": "https://detik.com"
     }
   ],
   "message": "Sukses",

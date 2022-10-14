@@ -326,24 +326,27 @@ class CrawlUtils:
         db_cursor.close()
         return row_arr
 
-    def get_page_information_api(self, id_page: int) -> dict:
+    def get_page_information_by_ids(self, id_pages: list) -> list:
         """
         Fungsi untuk mendapatkan informasi halaman dari id page (API).
 
         Args:
-            id_page (int): ID page information
+            id_pages (list): Kumpulan ID page
 
         Returns:
-            dict: Data informasi halaman
+            Returns:
+            list: List berisi dictionary page information yang didapatkan dari fungsi cursor.fetchall(), berisi empty list jika tidak ada datanya
         """
         db = Database()
         db_connection = db.connect()
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        db_cursor.execute("SELECT * FROM `page_information` WHERE id_page = %s", (id_page))
-        row = db_cursor.fetchone()
+        id_pages_string = ",".join(map(str, id_pages))
+        query = "SELECT * FROM `page_information` WHERE id_page IN ({})".format(id_pages_string)
+        db_cursor.execute(query)
+        rows = db_cursor.fetchall()
         db_cursor.close()
         db.close_connection(db_connection)
-        return row
+        return rows
 
     def get_crawled_pages_api(self, start=None, length=None) -> list:
         """

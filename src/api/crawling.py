@@ -71,16 +71,13 @@ def get_crawled_pages():
         }, 500
 
 
-@bp_crawling.route("/page_information")
+@bp_crawling.route("/page_information", methods=["POST"])
 def get_page_information():
     try:
-        id_page = request.args.get("id", default="", type=str)
+        id_pages = request.json["id_pages"]
 
         crawl_utils = CrawlUtils()
-        if id_page != "":
-            data = crawl_utils.get_page_information_api(int(id_page))
-        else:
-            data = []
+        data = crawl_utils.get_page_information_by_ids(id_pages)
 
         response = {
             "ok": True,
