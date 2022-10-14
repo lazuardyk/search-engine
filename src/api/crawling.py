@@ -71,6 +71,32 @@ def get_crawled_pages():
         }, 500
 
 
+@bp_crawling.route("/page_information")
+def get_page_information():
+    try:
+        id_page = request.args.get("id", default="", type=str)
+
+        crawl_utils = CrawlUtils()
+        if id_page != "":
+            data = crawl_utils.get_page_information_api(int(id_page))
+        else:
+            data = []
+
+        response = {
+            "ok": True,
+            "message": "Sukses",
+            "data": data,
+        }
+        json_obj = json.dumps(response, indent=4, default=str)
+        return json.loads(json_obj), 200
+
+    except Exception as e:
+        return {
+            "ok": False,
+            "message": e,
+        }, 500
+
+
 @bp_crawling.route("/start_insert", methods=["POST"])
 def start_insert_pages():
     try:

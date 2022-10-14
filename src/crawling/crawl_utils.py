@@ -326,7 +326,36 @@ class CrawlUtils:
         db_cursor.close()
         return row_arr
 
-    def get_crawled_pages_api(self, start_index=None, length=None):
+    def get_page_information_api(self, id_page: int) -> dict:
+        """
+        Fungsi untuk mendapatkan informasi halaman dari id page (API).
+
+        Args:
+            id_page (int): ID page information
+
+        Returns:
+            dict: Data informasi halaman
+        """
+        db = Database()
+        db_connection = db.connect()
+        db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
+        db_cursor.execute("SELECT * FROM `page_information` WHERE id_page = %s", (id_page))
+        row = db_cursor.fetchone()
+        db_cursor.close()
+        db.close_connection(db_connection)
+        return row
+
+    def get_crawled_pages_api(self, start_index=None, length=None) -> list:
+        """
+        Fungsi untuk mendapatkan halaman-halaman yang sudah dicrawl (API).
+
+        Args:
+            start_index (int): Offset / start index halaman-halaman yang ingin diambil
+            length (int): Total page yang ingin diambil
+
+        Returns:
+            list: List berisi dictionary page information yang didapatkan dari fungsi cursor.fetchall(), berisi empty list jika tidak ada datanya
+        """
         db = Database()
         db_connection = db.connect()
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
@@ -339,7 +368,18 @@ class CrawlUtils:
         db.close_connection(db_connection)
         return rows
 
-    def start_insert_api(self, start_urls, keyword, duration_crawl):
+    def start_insert_api(self, start_urls: str, keyword: str, duration_crawl: int) -> int:
+        """
+        Fungsi untuk start crawling dan mendapatkan crawl id (API).
+
+        Args:
+            start_urls (str): URL awal halaman (dipisahkan dengan koma jika lebih dari satu)
+            keyword (str): Keyword yang dipakai
+            duration_crawl (int): Total durasi
+
+        Returns:
+            int: ID crawling dari baris yang disimpan
+        """
         db = Database()
         db_connection = db.connect()
         id_crawling = self.insert_crawling(db_connection, start_urls, keyword, 0, duration_crawl)
@@ -347,8 +387,29 @@ class CrawlUtils:
         return id_crawling
 
     def insert_page_api(
-        self, page_information, page_forms, page_images, page_linking, page_list, page_scripts, page_styles, page_tables
-    ):
+        self,
+        page_information: dict,
+        page_forms: dict,
+        page_images: dict,
+        page_linking: dict,
+        page_list: dict,
+        page_scripts: dict,
+        page_styles: dict,
+        page_tables: dict,
+    ) -> None:
+        """
+        Fungsi untuk menambahkan page yang sudah dicrawl (API).
+
+        Args:
+            page_information (dict): Page information
+            page_forms (list): Page forms
+            page_images (list): Page images
+            page_linking (list): Page linking
+            page_list (list): Page list
+            page_scripts (list): Page scripts
+            page_styles (list): Page styles
+            page_tables (list): Page tables
+        """
         db = Database()
         db_connection = db.connect()
         if db.check_value_in_table(db_connection, "page_information", "url", page_information["url"]):
