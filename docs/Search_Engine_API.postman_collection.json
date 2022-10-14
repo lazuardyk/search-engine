@@ -3,8 +3,7 @@
 		"_postman_id": "4e839d1f-b3dc-4867-88b9-7d09c6fd06a7",
 		"name": "Search Engine API",
 		"description": "Search Engine API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "11687432"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
@@ -37,12 +36,53 @@
 			"response": []
 		},
 		{
+			"name": "Get Similarity Overall Ranking",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1.0/overall_ranking/similarity?keyword=detik&sort=similarity&start=0&length=6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1.0",
+						"overall_ranking",
+						"similarity"
+					],
+					"query": [
+						{
+							"key": "keyword",
+							"value": "detik"
+						},
+						{
+							"key": "sort",
+							"value": "similarity"
+						},
+						{
+							"key": "start",
+							"value": "0"
+						},
+						{
+							"key": "length",
+							"value": "6"
+						}
+					]
+				},
+				"description": "Untuk mendapatkan ranking halaman menggunakan metode TF IDF"
+			},
+			"response": []
+		},
+		{
 			"name": "Get TF-IDF Document Ranking",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/v1.0/document_ranking/tf_idf?keyword=klub barcelona",
+					"raw": "http://localhost:8080/api/v1.0/document_ranking/tf_idf?keyword=detik&start=0&length=5",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -57,7 +97,15 @@
 					"query": [
 						{
 							"key": "keyword",
-							"value": "klub barcelona"
+							"value": "detik"
+						},
+						{
+							"key": "start",
+							"value": "0"
+						},
+						{
+							"key": "length",
+							"value": "5"
 						}
 					]
 				},
@@ -71,7 +119,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/v1.0/page_ranking/page_rank",
+					"raw": "http://localhost:8080/api/v1.0/page_ranking/page_rank?start=0&length=5",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -82,6 +130,16 @@
 						"v1.0",
 						"page_ranking",
 						"page_rank"
+					],
+					"query": [
+						{
+							"key": "start",
+							"value": "0"
+						},
+						{
+							"key": "length",
+							"value": "5"
+						}
 					]
 				},
 				"description": "Untuk mendapatkan ranking halaman menggunakan metode Page Rank"
@@ -118,6 +176,38 @@
 					]
 				},
 				"description": "Untuk mendapatkan data halaman yang sudah dicrawling"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Page Information",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id_pages\": [1, 2, 3]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1.0/crawling/page_information",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1.0",
+						"crawling",
+						"page_information"
+					]
+				},
+				"description": "Untuk mendapatkan detail informasi page dengan id tertentu"
 			},
 			"response": []
 		},
