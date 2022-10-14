@@ -12,6 +12,8 @@ bp_document_ranking = Blueprint(
 def get_tf_idf_ranks():
     try:
         keyword = request.args.get("keyword", default="", type=str)
+        start = request.args.get("start", default="", type=str)
+        length = request.args.get("length", default="", type=str)
 
         tf_idf = TfIdf()
         if keyword == "":
@@ -20,7 +22,10 @@ def get_tf_idf_ranks():
                 "message": "Keyword tidak ada. Masukkan keyword pada url seperti '?keyword=barcelona'",
             }
         else:
-            data = tf_idf.get_all_tfidf_for_api(keyword)
+            if start != "" and length != "":
+                data = tf_idf.get_all_tfidf_for_api(keyword, int(start), int(length))
+            else:
+                data = tf_idf.get_all_tfidf_for_api(keyword)
             response = {
                 "ok": True,
                 "message": "Sukses",

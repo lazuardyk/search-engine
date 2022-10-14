@@ -345,13 +345,13 @@ class CrawlUtils:
         db.close_connection(db_connection)
         return row
 
-    def get_crawled_pages_api(self, start_index=None, length=None) -> list:
+    def get_crawled_pages_api(self, start=None, length=None) -> list:
         """
         Fungsi untuk mendapatkan halaman-halaman yang sudah dicrawl (API).
 
         Args:
-            start_index (int): Offset / start index halaman-halaman yang ingin diambil
-            length (int): Total page yang ingin diambil
+            start (int): Indeks awal (optional, untuk pagination)
+            length (int): Total data (optional, untuk pagination)
 
         Returns:
             list: List berisi dictionary page information yang didapatkan dari fungsi cursor.fetchall(), berisi empty list jika tidak ada datanya
@@ -359,10 +359,10 @@ class CrawlUtils:
         db = Database()
         db_connection = db.connect()
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        if start_index is None or length is None:
+        if start is None or length is None:
             db_cursor.execute("SELECT * FROM `page_information`")
         else:
-            db_cursor.execute("SELECT * FROM `page_information` LIMIT %s, %s", (start_index, length))
+            db_cursor.execute("SELECT * FROM `page_information` LIMIT %s, %s", (start, length))
         rows = db_cursor.fetchall()
         db_cursor.close()
         db.close_connection(db_connection)

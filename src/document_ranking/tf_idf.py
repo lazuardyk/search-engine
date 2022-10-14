@@ -90,7 +90,7 @@ class TfIdf:
         db_cursor.execute(query, (keyword, duration_call))
         db_cursor.close()
 
-    def get_all_saved_tfidf(self, db_connection, keyword):
+    def get_all_saved_tfidf(self, db_connection, keyword, start=None, length=None):
         """
         Fungsi untuk mengambil total skor TF-IDF yang sudah dihitung di dalam database pada table "tfidf".
 
@@ -103,20 +103,29 @@ class TfIdf:
         """
         db_connection.ping()
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        db_cursor.execute(
-            "SELECT `tfidf`.`id_tfidf`,`tfidf`.`keyword`,`tfidf`.`tfidf_total`,`tfidf`.`page_id`,`page_information`.`url` FROM `tfidf` INNER JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = %s ORDER BY `tfidf`.`tfidf_total` DESC",
-            (keyword),
-        )
+
+        if start is None or length is None:
+            db_cursor.execute(
+                "SELECT `tfidf`.`id_tfidf`,`tfidf`.`keyword`,`tfidf`.`tfidf_total`,`tfidf`.`page_id`,`page_information`.`url` FROM `tfidf` INNER JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = %s ORDER BY `tfidf`.`tfidf_total` DESC",
+                (keyword),
+            )
+        else:
+            db_cursor.execute(
+                "SELECT `tfidf`.`id_tfidf`,`tfidf`.`keyword`,`tfidf`.`tfidf_total`,`tfidf`.`page_id`,`page_information`.`url` FROM `tfidf` INNER JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = %s ORDER BY `tfidf`.`tfidf_total` DESC LIMIT %s, %s",
+                (keyword, start, length),
+            )
         rows = db_cursor.fetchall()
         db_cursor.close()
         return rows
 
-    def get_all_tfidf_for_api(self, keyword):
+    def get_all_tfidf_for_api(self, keyword, start=None, length=None):
         """
         Fungsi untuk mendapatkan total skor TF-IDF dari suatu keyword (untuk keperluan API).
 
         Args:
             keyword (str): Kata pencarian (bisa lebih dari satu kata)
+            start (int): Indeks awal (optional, untuk pagination)
+            length (int): Total data (optional, untuk pagination)
 
         Returns:
             list: List berisi dictionary skor TF IDF yang didapatkan dari fungsi cursor.fetchall(), berisi empty list jika tidak ada datanya
@@ -125,7 +134,7 @@ class TfIdf:
         db_connection = self.db.connect()
 
         # Return data langsung jika total skor pada keyword ini sudah pernah dihitung
-        saved_tfidf = self.get_all_saved_tfidf(db_connection, keyword)
+        saved_tfidf = self.get_all_saved_tfidf(db_connection, keyword, start, length)
         if len(saved_tfidf) > 1:
             return saved_tfidf
 
@@ -157,7 +166,7 @@ class TfIdf:
             db_connection.ping()
             self.save_one_tfidf(db_connection, keyword, page_id, total_score)
 
-        saved_tfidf = self.get_all_saved_tfidf(db_connection, keyword)
+        saved_tfidf = self.get_all_saved_tfidf(db_connection, keyword, start, length)
         return saved_tfidf
 
     def run_background_service(self):

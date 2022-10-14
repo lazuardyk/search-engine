@@ -47,12 +47,12 @@ def run_crawling():
 @bp_crawling.route("/pages")
 def get_crawled_pages():
     try:
-        start_index = request.args.get("start", default="", type=str)
+        start = request.args.get("start", default="", type=str)
         length = request.args.get("length", default="", type=str)
 
         crawl_utils = CrawlUtils()
-        if start_index != "" and length != "":
-            data = crawl_utils.get_crawled_pages_api(int(start_index), int(length))
+        if start != "" and length != "":
+            data = crawl_utils.get_crawled_pages_api(int(start), int(length))
         else:
             data = crawl_utils.get_crawled_pages_api()
 
