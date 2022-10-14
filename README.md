@@ -36,6 +36,8 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 
 - **URL**: `/api/v1.0/overall_ranking/similarity?keyword=barcelona&sort=similarity&start=0&length=10`
 
+- **Params Detail**: sort options: `similarity`, `tfidf`, or `pagerank`. start and length are optional.
+
 - **Method**: `GET`
 
 - **Response**:
@@ -70,6 +72,8 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 
 - **URL**: `/api/v1.0/document_ranking/tf_idf?keyword=barcelona&start=0&length=10`
 
+- **Params Detail**: start and length are optional.
+
 - **Method**: `GET`
 
 - **Response**:
@@ -101,6 +105,8 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 <summary><b>[GET]</b> Get Page-Rank Page Ranking</summary>
 
 - **URL**: `/api/v1.0/page_ranking/page_rank?start=0&length=10`
+
+- **Params Detail**: start and length are optional.
 
 - **Method**: `GET`
 
@@ -149,6 +155,8 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 <summary><b>[GET]</b> Get Crawled Pages</summary>
 
 - **URL**: `/api/v1.0/crawling/pages?start=0&length=10`
+
+- **Params Detail**: start and length are optional.
 
 - **Method**: `GET`
 
