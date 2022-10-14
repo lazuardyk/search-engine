@@ -97,6 +97,8 @@ class TfIdf:
         Args:
             db_connection (pymysql.Connection): Koneksi database MySQL
             keyword (str): Kata pencarian (bisa lebih dari satu kata dipisah dengan spasi)
+            start (int): Indeks awal (optional, untuk pagination)
+            length (int): Total data (optional, untuk pagination)
 
         Returns:
             list: List berisi dictionary skor TF IDF yang didapatkan dari fungsi cursor.fetchall(), berisi empty list jika tidak ada datanya
