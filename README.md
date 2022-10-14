@@ -66,24 +66,6 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 </details>
 
 <details>
-<summary><b>[GET]</b> Run Crawling</summary>
-
-- **URL**: `/api/v1.0/crawling/crawl?duration=10`
-
-- **Method**: `GET`
-
-- **Response**:
-
-```json
-{
-  "message": "Sukses",
-  "ok": true
-}
-```
-
-</details>
-
-<details>
 <summary><b>[GET]</b> Get TF-IDF Document Ranking</summary>
 
 - **URL**: `/api/v1.0/document_ranking/tf_idf?keyword=barcelona&start=0&length=10`
@@ -138,6 +120,24 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
       "url": "https://news.detik.com/x"
     }
   ],
+  "message": "Sukses",
+  "ok": true
+}
+```
+
+</details>
+
+<details>
+<summary><b>[GET]</b> Run Crawling</summary>
+
+- **URL**: `/api/v1.0/crawling/crawl?duration=10`
+
+- **Method**: `GET`
+
+- **Response**:
+
+```json
+{
   "message": "Sukses",
   "ok": true
 }
