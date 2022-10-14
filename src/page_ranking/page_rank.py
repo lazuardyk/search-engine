@@ -109,18 +109,28 @@ class PageRank:
         self.db.close_connection(db_connection)
         return rows
 
-    def get_all_pagerank_for_api(self):
+    def get_all_pagerank_for_api(self, start=None, length=None):
         """
         Fungsi untuk mengambil semua data pagerank dari database (untuk keperluan API).
+
+        Args:
+            start (int): Indeks awal (optional, untuk pagination)
+            length (int): Total data (optional, untuk pagination)
 
         Returns:
             list: List berisi dictionary table pagerank yang didapatkan dari fungsi cursor.fetchall(), berisi empty list jika tidak ada datanya
         """
         db_connection = self.db.connect()
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-        db_cursor.execute(
-            "SELECT `pagerank`.`id_pagerank`,`pagerank`.`pagerank_score`,`pagerank`.`page_id`,`page_information`.`url` FROM `pagerank` INNER JOIN `page_information` ON `pagerank`.`page_id` = `page_information`.`id_page` ORDER BY `pagerank`.`pagerank_score` DESC"
-        )
+        if start is None or length is None:
+            db_cursor.execute(
+                "SELECT `pagerank`.`id_pagerank`,`pagerank`.`pagerank_score`,`pagerank`.`page_id`,`page_information`.`url` FROM `pagerank` INNER JOIN `page_information` ON `pagerank`.`page_id` = `page_information`.`id_page` ORDER BY `pagerank`.`pagerank_score` DESC"
+            )
+        else:
+            db_cursor.execute(
+                "SELECT `pagerank`.`id_pagerank`,`pagerank`.`pagerank_score`,`pagerank`.`page_id`,`page_information`.`url` FROM `pagerank` INNER JOIN `page_information` ON `pagerank`.`page_id` = `page_information`.`id_page` ORDER BY `pagerank`.`pagerank_score` DESC LIMIT %s, %s",
+                (start, length),
+            )
         rows = db_cursor.fetchall()
         db_cursor.close()
         self.db.close_connection(db_connection)

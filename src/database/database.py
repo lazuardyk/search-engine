@@ -14,9 +14,6 @@ class Database:
         self.password = os.getenv("DB_PASSWORD")
         self.db_name = os.getenv("DB_NAME")
         self.db_port = int(os.getenv("DB_PORT"))
-        db_connection = self.connect()
-        self.create_tables(db_connection)
-        self.close_connection(db_connection)
 
     def connect(self) -> pymysql.Connection:
         """
@@ -105,13 +102,12 @@ class Database:
         db_cursor.execute(query)
         db_cursor.close()
 
-    def create_tables(self, connection: pymysql.Connection):
+    def create_tables(self):
         """
         Fungsi untuk membuat tabel-tabel yang diperlukan di database.
-
-        Args:
-            connection (pymysql.Connection): Koneksi database MySQL
         """
+
+        connection = self.connect()
 
         self.exec_query(
             connection,
@@ -204,3 +200,5 @@ class Database:
         self.exec_query(
             connection, "ALTER TABLE `pagerank` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)"
         )
+
+        self.close_connection(connection)
