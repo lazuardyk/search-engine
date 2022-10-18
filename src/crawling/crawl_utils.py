@@ -291,7 +291,9 @@ class CrawlUtils:
         db_cursor.execute(query, (duration_crawl, id_page))
         db_cursor.close()
 
-    def update_crawling(self, db_connection: pymysql.Connection, crawl_id: int, total_page: int) -> None:
+    def update_crawling(
+        self, db_connection: pymysql.Connection, crawl_id: int, total_page: int, duration_crawl: int
+    ) -> None:
         """
         Fungsi untuk memperbarui data crawling ke dalam database.
 
@@ -302,8 +304,8 @@ class CrawlUtils:
         """
         db_connection.ping()
         db_cursor = db_connection.cursor()
-        query = "UPDATE `crawling` SET `total_page` = %s WHERE `id_crawling` = %s"
-        db_cursor.execute(query, (total_page, crawl_id))
+        query = "UPDATE `crawling` SET `total_page` = %s, `duration_crawl` = SEC_TO_TIME(%s) WHERE `id_crawling` = %s"
+        db_cursor.execute(query, (total_page, duration_crawl, crawl_id))
         db_cursor.close()
 
     def get_visited_urls(self, db_connection: pymysql.Connection) -> list:
