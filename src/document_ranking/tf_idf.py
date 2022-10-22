@@ -200,9 +200,11 @@ class TfIdf:
             page_id = df["id_page"].loc[i]
 
             for j in range(len(words)):
+                tf_idf = tf_idf_vector[j]
+                if tf_idf == 0.0:
+                    continue
                 word = words[j]
                 idf = idf_vector[j]
-                tf_idf = tf_idf_vector[j]
                 tf = tf_idf / idf
 
                 print(word, page_id, tf_idf)
