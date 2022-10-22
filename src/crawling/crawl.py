@@ -111,7 +111,7 @@ class Crawl:
         page_count = self.page_count_end - self.page_count_start
         time_now = time.time() - self.start_time
         duration_crawl = int(time_now)
-        self.crawl_utils.update_crawling(db_connection, crawl_id, duration_crawl, page_count)
+        self.crawl_utils.update_crawling(db_connection, crawl_id, page_count, duration_crawl)
         db_connection.close()
 
         return page_count
