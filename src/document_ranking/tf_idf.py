@@ -195,11 +195,11 @@ class TfIdf:
         idf_vector = vectorizer.idf_
 
         df_tfidf = pd.DataFrame.sparse.from_spmatrix(tfidf_matrix, columns=words)
-        for index, row in df_tfidf.iterrows():
-            page_id = df["id_page"].loc[index]
+        for i in range(len(df_tfidf)):
+            page_id = df["id_page"].loc[i]
             for j in range(len(words)):
                 word = words[j]
-                tf_idf = row[word]
+                tf_idf = df_tfidf[word].loc[i]
                 if tf_idf == 0.0:
                     continue
                 idf = idf_vector[j]
