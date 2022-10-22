@@ -27,7 +27,9 @@ if __name__ == "__main__":
             continue
         if page_information["url"]:
             search_results_str += page_information["url"].strip() + "\n"
-        if page_information["description"]:
-            search_results_str += page_information["description"].strip() + "\n\n"
+        # if page_information["description"]:
+        #     search_results_str += page_information["description"].strip() + "\n\n"
+        if page_information["content_text"]:
+            search_results_str += page_information["content_text"].strip()[0:100] + "\n\n"
 
     print(search_results_str)
