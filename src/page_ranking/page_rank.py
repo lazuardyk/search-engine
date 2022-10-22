@@ -180,8 +180,8 @@ class PageRank:
 
                 new_pagerank = ((1 - self.damping_factor) / N) + (self.damping_factor * new_pagerank)
 
-                print(page_url, new_pagerank)
-                self.save_one_pagerank(db_connection, page_url, new_pagerank)
+                print(page_url, new_pagerank, "iteration:", iteration)
+                self.save_one_pagerank(db_connection, page_id, new_pagerank)
 
                 pr_change = abs(new_pagerank - current_pagerank) / current_pagerank
                 pr_change_sum += pr_change
