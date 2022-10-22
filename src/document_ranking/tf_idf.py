@@ -191,19 +191,17 @@ class TfIdf:
         )
 
         tfidf_matrix = vectorizer.fit_transform(text_content)
-        tfidf_matrix_array = tfidf_matrix.toarray()
         words = vectorizer.get_feature_names()
         idf_vector = vectorizer.idf_
 
-        for i in range(len(tfidf_matrix_array)):
-            tf_idf_vector = tfidf_matrix_array[i]
-            page_id = df["id_page"].loc[i]
-
+        df_tfidf = pd.DataFrame.sparse.from_spmatrix(tfidf_matrix, columns=words)
+        for index, row in df_tfidf.iterrows():
+            page_id = df["id_page"].loc[index]
             for j in range(len(words)):
-                tf_idf = tf_idf_vector[j]
+                word = words[j]
+                tf_idf = row[word]
                 if tf_idf == 0.0:
                     continue
-                word = words[j]
                 idf = idf_vector[j]
                 tf = tf_idf / idf
 
