@@ -21,8 +21,15 @@ if __name__ == "__main__":
     for i in range(len(similarity_results)):
         similarity_result = similarity_results[i]
         page_information = page_information_list[i]
-        search_results_str += str(i + 1) + ". " + page_information["title"] + "\n"
-        search_results_str += page_information["url"] + "\n"
-        search_results_str += page_information["description"] + "\n\n"
+        if page_information["title"]:
+            search_results_str += str(i + 1) + ". " + page_information["title"].strip() + "\n"
+        else:
+            continue
+        if page_information["url"]:
+            search_results_str += page_information["url"].strip() + "\n"
+        # if page_information["description"]:
+        #     search_results_str += page_information["description"].strip() + "\n\n"
+        if page_information["content_text"]:
+            search_results_str += page_information["content_text"].strip()[0:100] + "\n\n"
 
     print(search_results_str)
