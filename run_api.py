@@ -7,6 +7,6 @@ if __name__ == "__main__":
     load_dotenv()
     db = Database()
     db.create_tables()
-    
+
     api_port = os.getenv("API_PORT")
     run(port=api_port)

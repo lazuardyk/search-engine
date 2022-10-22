@@ -170,13 +170,14 @@ class PageRank:
                 for page_linking_row in db_cursor2.fetchall():
                     backlink_urls.add(page_linking_row["url"])
 
-                db_cursor2.execute(
-                    "SELECT `page_information`.`url`, COUNT(*) FROM `page_linking` INNER JOIN `page_information` ON `page_linking`.`page_id` = `page_information`.`id_page` WHERE `page_information`.`url` IN %s GROUP by `page_information`.`url`",
-                    [backlink_urls],
-                )
-                for backlink_link_count in db_cursor2.fetchall():
-                    new_pagerank += initial_pr / backlink_link_count["COUNT(*)"]
-                db_cursor2.close()
+                if len(backlink_urls) > 0:
+                    db_cursor2.execute(
+                        "SELECT `page_information`.`url`, COUNT(*) FROM `page_linking` INNER JOIN `page_information` ON `page_linking`.`page_id` = `page_information`.`id_page` WHERE `page_information`.`url` IN %s GROUP by `page_information`.`url`",
+                        [backlink_urls],
+                    )
+                    for backlink_link_count in db_cursor2.fetchall():
+                        new_pagerank += initial_pr / backlink_link_count["COUNT(*)"]
+                    db_cursor2.close()
 
                 new_pagerank = ((1 - self.damping_factor) / N) + (self.damping_factor * new_pagerank)
 
