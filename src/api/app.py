@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 import os
 
 
@@ -15,4 +15,9 @@ def run(port=8080):
     app.register_blueprint(bp_page_ranking, url_prefix="/api/" + api_version + "/page_ranking")
     app.register_blueprint(bp_document_ranking, url_prefix="/api/" + api_version + "/document_ranking")
     app.register_blueprint(bp_overall_ranking, url_prefix="/api/" + api_version + "/overall_ranking")
+
+    @app.route("/main")
+    def main_page():
+        return render_template("main.html")
+
     app.run(port=port, debug=True)

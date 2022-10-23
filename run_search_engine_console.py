@@ -20,16 +20,18 @@ if __name__ == "__main__":
     search_results_str = "Hasil pencarian:\n\n"
     for i in range(len(similarity_results)):
         similarity_result = similarity_results[i]
-        page_information = page_information_list[i]
-        if page_information["title"]:
-            search_results_str += str(i + 1) + ". " + page_information["title"].strip() + "\n"
-        else:
-            continue
-        if page_information["url"]:
-            search_results_str += page_information["url"].strip() + "\n"
-        # if page_information["description"]:
-        #     search_results_str += page_information["description"].strip() + "\n\n"
-        if page_information["content_text"]:
-            search_results_str += page_information["content_text"].strip()[0:100] + "\n\n"
+        for page_information in page_information_list:
+            if page_information["id_page"] != similarity_result["id_page"]:
+                continue
+            if page_information["title"]:
+                search_results_str += str(i + 1) + ". " + page_information["title"].strip() + "\n"
+            else:
+                continue
+            if page_information["url"]:
+                search_results_str += page_information["url"].strip() + "\n"
+            # if page_information["description"]:
+            #     search_results_str += page_information["description"].strip() + "\n\n"
+            if page_information["content_text"]:
+                search_results_str += page_information["content_text"].strip()[0:100] + "\n\n"
 
     print(search_results_str)
