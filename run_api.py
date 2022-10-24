@@ -9,4 +9,5 @@ if __name__ == "__main__":
     db.create_tables()
 
     api_port = os.getenv("API_PORT")
-    run(port=api_port)
+    application = run()
+    application.run(port=api_port)

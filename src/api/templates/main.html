@@ -16,7 +16,7 @@
       crossorigin="anonymous"
     />
 
-    <title>Hello, world!</title>
+    <title>Search Engine</title>
   </head>
   <body
     style="
@@ -97,7 +97,7 @@
             data.data.forEach((row) => {
               let strRow = "<tr>";
               strRow += `<td>${row.id_page}</td>`;
-              strRow += `<td style="max-width: 500px;">${row.url}</td>`;
+              strRow += `<td style="max-width: 500px; line-break: anywhere;">${row.url}</td>`;
               strRow += `<td>${row.pagerank_score}</td>`;
               strRow += `<td>${row.tfidf_total}</td>`;
               strRow += `<td>${row.similarity_score}</td>`;
@@ -105,7 +105,6 @@
               $("#results").append(strRow);
             });
           });
-        console.log("test");
       }
     </script>
   </body>
