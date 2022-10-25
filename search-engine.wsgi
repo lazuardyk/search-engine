@@ -5,7 +5,7 @@ import sys
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 sys.path.insert(0, "/var/www/html/search-engine")
-# sys.stdout = open('output.logs', 'w')
+sys.stdout = open("output.logs", "w")
 
 import os
 from dotenv import load_dotenv
