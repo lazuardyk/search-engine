@@ -16,9 +16,7 @@ def run():
     app.register_blueprint(bp_document_ranking, url_prefix="/api/" + api_version + "/document_ranking")
     app.register_blueprint(bp_overall_ranking, url_prefix="/api/" + api_version + "/overall_ranking")
 
-    print("running")
-
-    @app.route("/main")
+    @app.route("/")
     def main_page():
         return render_template("main.html")
 
