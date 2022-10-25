@@ -6,11 +6,16 @@ import sys
 logging.basicConfig(stream=sys.stderr)
 sys.path.insert(0, "/var/www/html/search-engine")
 # sys.stdout = open('output.logs', 'w')
-from src.api.app import run
-from src.database.database import Database
+
+import os
 from dotenv import load_dotenv
 
-load_dotenv()
+dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(dotenv_path)
+
+from src.api.app import run
+from src.database.database import Database
+
 db = Database()
 db.create_tables()
 application = run()
