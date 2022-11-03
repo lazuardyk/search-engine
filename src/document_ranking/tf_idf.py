@@ -75,21 +75,6 @@ class TfIdf:
 
         db_cursor.close()
 
-    def save_call_log(self, db_connection, keyword, duration_call):
-        """
-        Fungsi untuk menyimpan waktu yang diperlukan saat pemanggilan fungsi TF-DF.
-
-        Args:
-            db_connection (pymysql.Connection): Koneksi database MySQL
-            keyword (str): Kata pencarian (bisa lebih dari satu kata dipisah dengan spasi)
-            duration_call (int): Waktu yang diperlukan saat pemanggilan fungsi TF IDF dari awal hingga selesai
-        """
-        db_connection.ping()
-        db_cursor = db_connection.cursor()
-        query = "INSERT INTO `tfidf_log` (`keyword`, `duration_call`) VALUES (%s, SEC_TO_TIME(%s))"
-        db_cursor.execute(query, (keyword, duration_call))
-        db_cursor.close()
-
     def get_all_saved_tfidf(self, db_connection, keyword, start=None, length=None):
         """
         Fungsi untuk mengambil total skor TF-IDF yang sudah dihitung di dalam database pada table "tfidf".

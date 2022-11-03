@@ -156,10 +156,6 @@ class Database:
             )
             self.exec_query(
                 connection,
-                "CREATE TABLE `tfidf_log` ( `id_log` int PRIMARY KEY AUTO_INCREMENT, `keyword` text, `duration_call` time, `created_at` timestamp )",
-            )
-            self.exec_query(
-                connection,
                 "CREATE TABLE `pagerank` ( `id_pagerank` int PRIMARY KEY AUTO_INCREMENT, `page_id` int, `pagerank_score` double )",
             )
             self.exec_query(
