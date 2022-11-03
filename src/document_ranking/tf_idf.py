@@ -205,7 +205,7 @@ class TfIdf:
                 idf = idf_vector[j]
                 tf = tf_idf / idf
 
-                print(word, page_id, tf_idf)
+                print(f"word: {word}, page_id: {page_id}, tfidf score: {tf_idf}")
                 # Simpan setiap bobot/score pada kata ke table "tfidf_word"
                 self.save_one_tfidf_word(db_connection, word, page_id, tf_idf)
 
