@@ -44,10 +44,10 @@ class ModifiedSimilarityBased:
         self.db = Database()
         self.crawl_utils = CrawlUtils()
         self.lock = threading.Lock()
-        self.start_time = time.time()
+        self.start_time: float = time.time()
         self.list_urls = list_urls
         self.hot_queue = queue.Queue()
-        self.url_queue = self.reorder_queue(url_queue)
+        self.url_queue: queue.Queue = self.reorder_queue(url_queue)
 
     def run(self) -> None:
         """

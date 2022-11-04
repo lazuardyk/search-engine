@@ -34,7 +34,7 @@ class BreadthFirstSearch:
         self.db = Database()
         self.crawl_utils = CrawlUtils()
         self.lock = threading.Lock()
-        self.start_time = time.time()
+        self.start_time: float = time.time()
         self.list_urls = []
 
     def run(self) -> None:

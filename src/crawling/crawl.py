@@ -61,7 +61,7 @@ class Crawl:
             page_count (int): Jumlah halaman yang berhasil dicrawl.
         """
         self.url_queue = queue.Queue()
-        self.start_time = time.time()
+        self.start_time: float = time.time()
 
         db_connection = self.db.connect()
         self.visited_urls = self.crawl_utils.get_visited_urls(db_connection)
