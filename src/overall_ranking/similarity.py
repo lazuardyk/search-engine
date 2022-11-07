@@ -1,6 +1,5 @@
 from src.document_ranking.tf_idf import TfIdf
 from src.page_ranking.page_rank import PageRank
-import os
 
 
 class Similarity:
