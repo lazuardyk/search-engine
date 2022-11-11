@@ -394,7 +394,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
     ├── docs                                          # Sebagai tempat dokumentasi file seperti diagram, product backlog, dll
     ├── html                                          # Berisi dokumentasi class dan fungsi yang di-generate dari library pdoc3
     ├── services                                      # Kumpulan konfigurasi background service yang dipakai di systemd/systemctl
-    ├── src                                           # Source code search engine yang terdiri dari crawling, document ranking, dan page ranking
+    ├── source                                           # Source code search engine yang terdiri dari crawling, document ranking, dan page ranking
     │   ├── api                                       # Folder untuk kodingan REST API
     │   |   ├── app.py                                # Untuk run Flask dan menggabungkan routes
     │   |   ├── crawling.py                           # Routes dan fungsi API untuk crawling
@@ -415,13 +415,17 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
     │   ├── document_ranking                          # Folder untuk kodingan document ranking
     │   |   └── tf_idf.py                             # Implementasi dari TF-IDF
     |   |
+    │   ├── overall_ranking                           # Folder untuk kodingan overall ranking
+    │   |   └── similarity.py                         # Implementasi dari similarity score
+    |   |
     │   ├── page_ranking                              # Folder untuk kodingan page ranking
     │   |   └── page_rank.py                          # Implementasi dari Google PageRank
     |
     ├── .env                                          # Konfigurasi credentials database dan crawler
-    ├── api.py                                        # Script utama untuk run REST API
-    ├── crawl.py                                      # Script utama untuk run crawling
-    ├── page_rank.py                                  # Script utama untuk run page rank
+    ├── run_api.py                                    # Script utama untuk run REST API
+    ├── run_crawl.py                                  # Script utama untuk run crawling
+    ├── run_page_rank.py                              # Script utama untuk run page rank
+    ├── run_search_engine_console.py                  # Script utama untuk run search engine console
     ├── requirements.txt                              # Berisi list library yang diperlukan
 
 ## :page_facing_up: Referensi
