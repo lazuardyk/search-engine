@@ -90,7 +90,7 @@
       function getSimilarity() {
         $("#results > tr").remove();
         const query = $("#query").val();
-        const url = `/api/v1.0/overall_ranking/similarity?keyword=${query}&sort=similarity&start=0&length=100`;
+        const url = `{{ url_for('overall_ranking.get_similarity_ranks') }}?keyword=${query}&sort=similarity&start=0&length=100`;
         fetch(url)
           .then((response) => response.json())
           .then((data) => {
