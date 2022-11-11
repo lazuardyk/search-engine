@@ -1,4 +1,4 @@
-#! /usr/local/bin/python3.9
+#! /opt/rh/rh-python38/root/usr/bin/python
 
 import logging
 import sys
