@@ -1,4 +1,4 @@
-#! /opt/rh/rh-python38/root/usr/bin/python
+#! /usr/local/bin/python3.9
 
 import logging
 import sys
@@ -10,7 +10,7 @@ from src.api.app import run
 from src.database.database import Database
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path="/var/www/html/search-engine/.env")
 db = Database()
 db.create_tables()
 application = run()
