@@ -17,6 +17,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 - `Python run_page_rank.py` untuk menjalankan page rank
 - `Python run_tf_idf.py` untuk menjalankan tf idf
 - `Python run_api.py` untuk menjalankan REST API
+- `Python run_search_engine_console.py` untuk menjalankan search engine berbasis console
 
 **Background Services**
 
@@ -26,7 +27,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 
 - [Entity Relationship Diagram (ERD)](https://dbdiagram.io/d/62622c031072ae0b6acb52f0)
 - [Class Diagram](docs/class_diagram.png)
-- [API Postman Collection](docs/Search_Engine_API.postman_collection.json)
+- [API Postman Collection](docs/search-engine.postman_collection)
 - [Routing Table](docs/routing_table.png)
 
 ## :wrench: Dokumentasi API
