@@ -54,6 +54,10 @@
       </div>
     </div>
 
+    <div class="spinner-border mb-3 d-none" role="status" id="loading">
+      <span class="sr-only">Loading...</span>
+    </div>
+
     <div class="row">
       <table class="table mx-3">
         <thead class="thead-dark">
@@ -88,6 +92,7 @@
     ></script>
     <script>
       function getSimilarity() {
+        $("#loading").removeClass("d-none");
         $("#results > tr").remove();
         const query = $("#query").val();
         const url = `{{ url_for('overall_ranking.get_similarity_ranks') }}?keyword=${query}&sort=similarity&start=0&length=100`;
@@ -104,6 +109,7 @@
               strRow += "</tr>";
               $("#results").append(strRow);
             });
+            $("#loading").addClass("d-none");
           });
       }
     </script>
