@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
-from src.crawling.crawl import Crawl
-from src.database.database import Database
+from source.crawling.crawl import Crawl
+from source.database.database import Database
 import os
 
 if __name__ == "__main__":

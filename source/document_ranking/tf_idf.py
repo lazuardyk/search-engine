@@ -1,6 +1,6 @@
 # Referensi: https://www.kaggle.com/code/yclaudel/find-similar-articles-with-tf-idf
 
-from src.database.database import Database
+from source.database.database import Database
 
 import pymysql
 import numpy as np

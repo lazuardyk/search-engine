@@ -1,5 +1,5 @@
-from src.document_ranking.tf_idf import TfIdf
-from src.page_ranking.page_rank import PageRank
+from source.document_ranking.tf_idf import TfIdf
+from source.page_ranking.page_rank import PageRank
 
 
 class Similarity:

@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from src.overall_ranking.similarity import Similarity
+from source.overall_ranking.similarity import Similarity
 import json
 
 bp_overall_ranking = Blueprint(

@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from src.document_ranking.tf_idf import TfIdf
+from source.document_ranking.tf_idf import TfIdf
 import json
 
 bp_document_ranking = Blueprint(

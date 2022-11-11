@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from src.page_ranking.page_rank import PageRank
+from source.page_ranking.page_rank import PageRank
 import json
 
 bp_page_ranking = Blueprint("page_ranking", __name__)

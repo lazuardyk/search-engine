@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
-from src.overall_ranking.similarity import Similarity
-from src.database.database import Database
+from source.overall_ranking.similarity import Similarity
+from source.database.database import Database
 
 if __name__ == "__main__":
     load_dotenv()
