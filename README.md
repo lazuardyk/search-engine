@@ -26,7 +26,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 ## :notebook: File Dokumentasi
 
 - [Entity Relationship Diagram (ERD)](https://dbdiagram.io/d/62622c031072ae0b6acb52f0)
-- [Class Diagram](docs/class_diagram.png)
+- [Class Diagram](docs/class_diagram_simplified.png)
 - [Postman API Documentation](https://documenter.getpostman.com/view/11687432/2s8YerLWtg)
 - [Routing Table](docs/routing_table.png)
 
