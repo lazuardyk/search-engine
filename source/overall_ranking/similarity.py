@@ -1,13 +1,12 @@
-from source.document_ranking.tf_idf import TfIdf
-from source.page_ranking.page_rank import PageRank
+from source.database.database import Database
+import pymysql
 
 
 class Similarity:
     """Kelas yang digunakan untuk melakukan perankingan keseluruhan (similarity score)."""
 
     def __init__(self):
-        self.tf_idf = TfIdf()
-        self.page_rank = PageRank()
+        self.db = Database()
         self.tf_idf_percentage = 0.6
         self.page_rank_percentage = 0.4
 
@@ -25,40 +24,22 @@ class Similarity:
             list: List berisi dictionary yang terdapat url dan total skor keseluruhan, empty list jika tidak ada datanya
         """
 
-        tfidf_results = self.tf_idf.get_all_tfidf_for_api(keyword, start, length)
-
-        if len(tfidf_results) < 1:
-            return []
-
-        page_ids = [res["page_id"] for res in tfidf_results]
-        page_rank_results = self.page_rank.get_all_pagerank_by_page_ids(page_ids)
-
-        similarity_scores = []
-        for i in range(len(tfidf_results)):
-            page_id = page_ids[i]
-            url = tfidf_results[i]["url"]
-            tfidf_total = tfidf_results[i]["tfidf_total"]
-
-            for page_rank_result in page_rank_results:
-                if page_rank_result["page_id"] == page_id:
-                    page_rank_score = page_rank_result["pagerank_score"]
-
-            similarity_score = (self.tf_idf_percentage * tfidf_total) + (self.page_rank_percentage + page_rank_score)
-            similarity_scores.append(
-                {
-                    "id_page": page_id,
-                    "url": url,
-                    "similarity_score": similarity_score,
-                    "tfidf_total": tfidf_total,
-                    "pagerank_score": page_rank_score,
-                }
-            )
-
         if sort == "tfidf":
-            sorted_similarity_scores = sorted(similarity_scores, key=lambda d: d["tfidf_total"], reverse=True)
+            order_by = "`tfidf`.`tfidf_total`"
         elif sort == "pagerank":
-            sorted_similarity_scores = sorted(similarity_scores, key=lambda d: d["pagerank_score"], reverse=True)
+            order_by = "`pagerank`.`pagerank_score`"
         else:
-            sorted_similarity_scores = sorted(similarity_scores, key=lambda d: d["similarity_score"], reverse=True)
+            order_by = "`similarity_score`"
 
-        return sorted_similarity_scores
+        query = f'SELECT `tfidf`.`page_id` AS `id_page`, `page_information`.`url`, ({self.tf_idf_percentage} * `tfidf`.`tfidf_total`) + ({self.page_rank_percentage} * `pagerank`.`pagerank_score`) AS `similarity_score`, `tfidf`.`tfidf_total`, `pagerank`.`pagerank_score` FROM `tfidf` INNER JOIN `pagerank` ON `tfidf`.`page_id` = `pagerank`.`page_id` INNER JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = "{keyword}" ORDER BY {order_by} DESC'
+
+        if start and length:
+            query += f" LIMIT {start}, {length}"
+
+        db_connection = self.db.connect()
+        db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
+        db_cursor.execute(query)
+        rows = db_cursor.fetchall()
+        db_cursor.close()
+
+        return rows
