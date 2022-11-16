@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
-from source.page_ranking.page_rank import PageRank
-from source.database.database import Database
+from src.page_ranking.page_rank import PageRank
+from src.database.database import Database
 
 if __name__ == "__main__":
     load_dotenv()

@@ -1,7 +1,7 @@
-from source.database.database import Database
-from source.crawling.methods.modified_similarity_based import ModifiedSimilarityBased
-from source.crawling.crawl_utils import CrawlUtils
-from source.crawling.methods.breadth_first_search import BreadthFirstSearch
+from src.database.database import Database
+from src.crawling.methods.modified_similarity_based import ModifiedSimilarityBased
+from src.crawling.crawl_utils import CrawlUtils
+from src.crawling.methods.breadth_first_search import BreadthFirstSearch
 import queue
 import time
 import bs4

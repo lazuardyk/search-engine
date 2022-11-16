@@ -1,6 +1,6 @@
 # Reference: https://github.com/nicholaskajoh/devsearch/blob/f6d51fc478e5bae68e4ba32f3299ab20c0ffa033/devsearch/pagerank.py#L2
 
-from source.database.database import Database
+from src.database.database import Database
 
 import pymysql
 

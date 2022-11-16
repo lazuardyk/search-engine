@@ -1,6 +1,6 @@
 from flask import Blueprint, request
-from source.crawling.crawl import Crawl
-from source.crawling.crawl import CrawlUtils
+from src.crawling.crawl import Crawl
+from src.crawling.crawl import CrawlUtils
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor

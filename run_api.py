@@ -1,5 +1,5 @@
-from source.database.database import Database
-from source.api.app import run
+from src.database.database import Database
+from src.api.app import run
 import os
 from dotenv import load_dotenv
 

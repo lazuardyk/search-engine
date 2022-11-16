@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
-from source.document_ranking.tf_idf import TfIdf
-from source.database.database import Database
+from src.document_ranking.tf_idf import TfIdf
+from src.database.database import Database
 
 if __name__ == "__main__":
     load_dotenv()

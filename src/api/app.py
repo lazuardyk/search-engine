@@ -5,10 +5,10 @@ import os
 def run():
     app = Flask(__name__)
 
-    from source.api.crawling import bp_crawling
-    from source.api.page_ranking import bp_page_ranking
-    from source.api.document_ranking import bp_document_ranking
-    from source.api.overall_ranking import bp_overall_ranking
+    from src.api.crawling import bp_crawling
+    from src.api.page_ranking import bp_page_ranking
+    from src.api.document_ranking import bp_document_ranking
+    from src.api.overall_ranking import bp_overall_ranking
 
     api_version = os.getenv("API_VERSION")
     app.register_blueprint(bp_crawling, url_prefix="/api/" + api_version + "/crawling")

@@ -4,7 +4,7 @@ import requests
 from concurrent.futures import ThreadPoolExecutor
 import queue
 import pymysql
-from source.database.database import Database
+from src.database.database import Database
 
 
 class CrawlUtils:
