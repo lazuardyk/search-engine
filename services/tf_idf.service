@@ -4,6 +4,6 @@ After=multi-user.target
 [Service]
 Type=simple
 Restart=on-failure
-ExecStart=/opt/rh/rh-python38/root/usr/bin/python /root/search-engine/run_tf_idf.py
+ExecStart=/opt/rh/rh-python38/root/usr/bin/python /var/www/html/search-engine/run_tf_idf.py
 [Install]
 WantedBy=multi-user.target
