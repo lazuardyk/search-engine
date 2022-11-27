@@ -1,15 +1,21 @@
 from flask import Blueprint, request
 from src.crawling.crawl import Crawl
 from src.crawling.crawl import CrawlUtils
+import multiprocessing
 import json
 import os
-from concurrent.futures import ThreadPoolExecutor
 
 bp_crawling = Blueprint("crawling", __name__)
+processes = []
 
 
-@bp_crawling.route("/crawl")
-def run_crawling():
+def start_crawling_task(start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword):
+    c = Crawl(start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword)
+    c.run()
+
+
+@bp_crawling.route("/start")
+def start_crawling():
     try:
         crawler_duration_sec = request.args.get("duration", default="", type=str)
         start_urls = os.getenv("CRAWLER_START_URLS").split()
@@ -26,9 +32,34 @@ def run_crawling():
             bfs_duration_sec = int(crawler_duration_sec)
             msb_duration_sec = 0
 
-        executor = ThreadPoolExecutor(max_workers=1)
-        c = Crawl(start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword)
-        executor.submit(c.run)
+        process = multiprocessing.Process(
+            target=start_crawling_task, args=(start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword)
+        )
+        process.start()
+        processes.append(process)
+
+        response = {
+            "ok": True,
+            "message": "Sukses",
+        }
+        json_obj = json.dumps(response, indent=4, default=str)
+        return json.loads(json_obj), 200
+
+    except Exception as e:
+        return {
+            "ok": False,
+            "message": e,
+        }, 500
+
+
+@bp_crawling.route("/stop")
+def stop_crawling():
+    try:
+        for process in processes:
+            process.terminate()
+            process.join()
+
+        processes.clear()
 
         response = {
             "ok": True,
