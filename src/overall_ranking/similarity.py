@@ -1,4 +1,5 @@
 from src.database.database import Database
+from src.document_ranking.tf_idf import TfIdf
 import pymysql
 
 
@@ -7,6 +8,7 @@ class Similarity:
 
     def __init__(self):
         self.db = Database()
+        self.tf_idf = TfIdf()
         self.tf_idf_percentage = 0.6
         self.page_rank_percentage = 0.4
 
@@ -30,6 +32,8 @@ class Similarity:
             order_by = "`pagerank`.`pagerank_score`"
         else:
             order_by = "`similarity_score`"
+
+        self.tf_idf.get_all_tfidf_for_api(keyword, start, length)
 
         query = f'SELECT `tfidf`.`page_id` AS `id_page`, `page_information`.`url`, ({self.tf_idf_percentage} * `tfidf`.`tfidf_total`) + ({self.page_rank_percentage} * `pagerank`.`pagerank_score`) AS `similarity_score`, `tfidf`.`tfidf_total`, `pagerank`.`pagerank_score` FROM `tfidf` INNER JOIN `pagerank` ON `tfidf`.`page_id` = `pagerank`.`page_id` INNER JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = "{keyword}" ORDER BY {order_by} DESC'
 

@@ -136,6 +136,15 @@ class PageRank:
         self.db.close_connection(db_connection)
         return rows
 
+    def log_pagerank_change(self, page_id, iteration, pagerank_change):
+        db_connection = self.db.connect()
+        db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
+
+        query = "INSERT INTO `pagerank_changes` (`page_id`, `iteration`, `pagerank_change`) VALUES (%s, %s, %s)"
+        db_cursor.execute(query, (page_id, iteration, pagerank_change))
+
+        db_cursor.close()
+
     def run_background_service(self):
         """
         Fungsi utama yang digunakan untuk melakukan perangkingan halaman Page Rank.
@@ -160,38 +169,41 @@ class PageRank:
                 current_pagerank = self.get_one_pagerank(db_connection, page_id)
 
                 new_pagerank = 0
-                backlink_urls = set()
+                backlink_ids = set()
                 db_cursor2 = db_connection.cursor(pymysql.cursors.DictCursor)
 
                 db_cursor2.execute(
-                    "SELECT `page_information`.`url` FROM `page_linking` INNER JOIN `page_information` ON `page_linking`.`page_id` = `page_information`.`id_page` WHERE `outgoing_link` = %s",
+                    "SELECT `page_id` FROM `page_linking` WHERE `outgoing_link` = %s",
                     (page_url),
                 )
                 for page_linking_row in db_cursor2.fetchall():
-                    backlink_urls.add(page_linking_row["url"])
+                    backlink_ids.add(page_linking_row["page_id"])
 
-                if len(backlink_urls) > 0:
+                if len(backlink_ids) > 0:
                     db_cursor2.execute(
-                        "SELECT `page_information`.`url`, COUNT(*) FROM `page_linking` INNER JOIN `page_information` ON `page_linking`.`page_id` = `page_information`.`id_page` WHERE `page_information`.`url` IN %s GROUP by `page_information`.`url`",
-                        [backlink_urls],
+                        "SELECT `pagerank`.`page_id`, `pagerank`.`pagerank_score`, COUNT(*) FROM `page_linking` INNER JOIN `pagerank` ON `page_linking`.`page_id` = `pagerank`.`page_id` WHERE `pagerank`.`page_id` IN %s GROUP by `pagerank`.`page_id`",
+                        [backlink_ids],
                     )
                     for backlink_link_count in db_cursor2.fetchall():
-                        new_pagerank += initial_pr / backlink_link_count["COUNT(*)"]
+                        new_pagerank += backlink_link_count["pagerank_score"] / backlink_link_count["COUNT(*)"]
                     db_cursor2.close()
 
                 new_pagerank = ((1 - self.damping_factor) / N) + (self.damping_factor * new_pagerank)
 
-                print(f"iteration: {iteration}, page_id: {page_id}, pagerank score: {new_pagerank}, url: {page_url}")
                 self.save_one_pagerank(db_connection, page_id, new_pagerank)
 
                 pr_change = abs(new_pagerank - current_pagerank) / current_pagerank
+                print(
+                    f"iteration: {iteration}, page_id: {page_id}, pagerank score: {new_pagerank}, url: {page_url}, pr_change: {pr_change}"
+                )
+                self.log_pagerank_change(page_id, iteration, pr_change)
                 pr_change_sum += pr_change
 
             self.db.close_connection(db_connection)
 
             average_pr_change = pr_change_sum / N
             if average_pr_change < 0.0001:
-                # Convergent
+                print(f"convergent with average pr change: {average_pr_change}")
                 break
 
         print("PageRank Background Service - Completed.")
