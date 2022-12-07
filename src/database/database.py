@@ -102,6 +102,70 @@ class Database:
         db_cursor.execute(query)
         db_cursor.close()
 
+    def truncate_tables(self):
+        """
+        Fungsi untuk mengosongkan semua table yang ada di database.
+        """
+        connection = self.connect()
+
+        try:
+            self.exec_query(
+                connection,
+                "DELETE FROM `tfidf`",
+            )
+            self.exec_query(
+                connection,
+                "DELETE FROM `tfidf_word`",
+            )
+            self.exec_query(
+                connection,
+                "DELETE FROM `pagerank_changes`",
+            )
+            self.exec_query(
+                connection,
+                "DELETE FROM `pagerank`",
+            )
+            self.exec_query(
+                connection,
+                "DELETE FROM `page_linking`",
+            )
+            self.exec_query(
+                connection,
+                "DELETE FROM `page_images`",
+            )
+            self.exec_query(
+                connection,
+                "DELETE FROM `page_tables`",
+            )
+            self.exec_query(
+                connection,
+                "DELETE FROM `page_styles`",
+            )
+            self.exec_query(
+                connection,
+                "DELETE FROM `page_scripts`",
+            )
+            self.exec_query(
+                connection,
+                "DELETE FROM `page_list`",
+            )
+            self.exec_query(
+                connection,
+                "DELETE FROM `page_forms`",
+            )
+            self.exec_query(
+                connection,
+                "DELETE FROM `page_information`",
+            )
+            self.exec_query(
+                connection,
+                "DELETE FROM `crawling`",
+            )
+        except:
+            return
+
+        self.close_connection(connection)
+
     def create_tables(self):
         """
         Fungsi untuk membuat tabel-tabel yang diperlukan di database.
@@ -160,6 +224,10 @@ class Database:
             )
             self.exec_query(
                 connection,
+                "CREATE TABLE `pagerank_changes` ( `id_change` int PRIMARY KEY AUTO_INCREMENT, `page_id` int, `iteration` int, `pagerank_change` double )",
+            )
+            self.exec_query(
+                connection,
                 "ALTER TABLE `page_information` ADD FOREIGN KEY (`crawl_id`) REFERENCES `crawling` (`id_crawling`)",
             )
             self.exec_query(
@@ -200,6 +268,10 @@ class Database:
             self.exec_query(
                 connection,
                 "ALTER TABLE `pagerank` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+            )
+            self.exec_query(
+                connection,
+                "ALTER TABLE `pagerank_changes` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
             )
         except:
             return

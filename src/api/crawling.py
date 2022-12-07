@@ -33,7 +33,8 @@ def start_crawling():
             msb_duration_sec = 0
 
         process = multiprocessing.Process(
-            target=start_crawling_task, args=(start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword)
+            target=start_crawling_task,
+            args=("resume", start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword),
         )
         process.start()
         processes.append(process)

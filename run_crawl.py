@@ -8,6 +8,7 @@ if __name__ == "__main__":
     db = Database()
     db.create_tables()
 
+    status = os.getenv("CRAWLER_STATUS")
     start_urls = os.getenv("CRAWLER_START_URLS").split()
     max_threads = os.getenv("CRAWLER_MAX_THREADS")
     crawler_duration_sec = os.getenv("CRAWLER_DURATION_SECONDS")
@@ -23,5 +24,5 @@ if __name__ == "__main__":
         bfs_duration_sec = int(crawler_duration_sec)
         msb_duration_sec = 0
 
-    c = Crawl(start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword)
+    c = Crawl(status, start_urls, max_threads, bfs_duration_sec, msb_duration_sec, msb_keyword)
     c.run()

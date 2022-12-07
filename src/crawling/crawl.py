@@ -24,8 +24,9 @@ class Crawl:
     """
 
     def __init__(
-        self, start_urls: list, max_threads: str, bfs_duration_sec: str, msb_duration_sec: str, msb_keyword: str
+        self, status, start_urls: list, max_threads: str, bfs_duration_sec: str, msb_duration_sec: str, msb_keyword: str
     ) -> None:
+        self.status = status
         self.start_urls = start_urls
         self.max_threads = int(max_threads)
         self.bfs_duration_sec = int(bfs_duration_sec)
@@ -64,6 +65,8 @@ class Crawl:
         self.start_time: float = time.time()
 
         db_connection = self.db.connect()
+        if self.status.lower() == "start":
+            self.db.truncate_tables()
         self.visited_urls = self.crawl_utils.get_visited_urls(db_connection)
         self.page_count_start = self.db.count_rows(db_connection, "page_information")
 
