@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from src.document_ranking.tf_idf import TfIdf
+from src.document_ranking.tf_idf import get_all_tfidf_for_api
 import json
 
 bp_document_ranking = Blueprint(
@@ -15,7 +15,6 @@ def get_tf_idf_ranks():
         start = request.args.get("start", default="", type=str)
         length = request.args.get("length", default="", type=str)
 
-        tf_idf = TfIdf()
         if keyword == "":
             response = {
                 "ok": False,
@@ -23,9 +22,9 @@ def get_tf_idf_ranks():
             }
         else:
             if start != "" and length != "":
-                data = tf_idf.get_all_tfidf_for_api(keyword, int(start), int(length))
+                data = get_all_tfidf_for_api(keyword, int(start), int(length))
             else:
-                data = tf_idf.get_all_tfidf_for_api(keyword)
+                data = get_all_tfidf_for_api(keyword)
             response = {
                 "ok": True,
                 "message": "Sukses",

@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from src.page_ranking.page_rank import PageRank
+from src.page_ranking.page_rank import get_all_pagerank_for_api
 import json
 
 bp_page_ranking = Blueprint("page_ranking", __name__)
@@ -11,11 +11,10 @@ def get_page_rank_ranks():
         start = request.args.get("start", default="", type=str)
         length = request.args.get("length", default="", type=str)
 
-        page_rank = PageRank()
         if start != "" and length != "":
-            data = page_rank.get_all_pagerank_for_api(int(start), int(length))
+            data = get_all_pagerank_for_api(int(start), int(length))
         else:
-            data = page_rank.get_all_pagerank_for_api()
+            data = get_all_pagerank_for_api()
         response = {
             "ok": True,
             "message": "Sukses",

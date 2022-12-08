@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from src.overall_ranking.similarity import Similarity
+from src.overall_ranking.similarity import get_all_similarity_for_api
 import json
 
 bp_overall_ranking = Blueprint(
@@ -16,7 +16,6 @@ def get_similarity_ranks():
         start = request.args.get("start", default="", type=str)
         length = request.args.get("length", default="", type=str)
 
-        similarity = Similarity()
         if keyword == "":
             response = {
                 "ok": False,
@@ -24,9 +23,9 @@ def get_similarity_ranks():
             }
         else:
             if start != "" and length != "":
-                data = similarity.get_all_similarity_for_api(keyword, sort, int(start), int(length))
+                data = get_all_similarity_for_api(keyword, sort, int(start), int(length))
             else:
-                data = similarity.get_all_similarity_for_api(keyword, sort)
+                data = get_all_similarity_for_api(keyword, sort)
             response = {
                 "ok": True,
                 "message": "Sukses",
