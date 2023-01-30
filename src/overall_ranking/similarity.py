@@ -29,7 +29,7 @@ def get_all_similarity_for_api(keyword, sort, start=None, length=None):
 
     get_all_tfidf_for_api(keyword, start, length)
 
-    query = f'SELECT `tfidf`.`page_id` AS `id_page`, `page_information`.`url`, ({tf_idf_percentage} * `tfidf`.`tfidf_total`) + ({page_rank_percentage} * `pagerank`.`pagerank_score`) AS `similarity_score`, `tfidf`.`tfidf_total`, `pagerank`.`pagerank_score` FROM `tfidf` LEFT JOIN `pagerank` ON `tfidf`.`page_id` = `pagerank`.`page_id` LEFT JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` LIKE "%{keyword}%" ORDER BY {order_by} DESC'
+    query = f'SELECT `tfidf`.`page_id` AS `id_page`, `page_information`.`url`, ({tf_idf_percentage} * `tfidf`.`tfidf_total`) + ({page_rank_percentage} * `pagerank`.`pagerank_score`) AS `similarity_score`, `tfidf`.`tfidf_total`, `pagerank`.`pagerank_score` FROM `tfidf` LEFT JOIN `pagerank` ON `tfidf`.`page_id` = `pagerank`.`page_id` LEFT JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = "{keyword}" ORDER BY {order_by} DESC'
 
     if start is not None and length is not None:
         query += f" LIMIT {start}, {length}"
