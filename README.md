@@ -394,11 +394,12 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
     ├── docs                                          # Sebagai tempat dokumentasi file seperti diagram, product backlog, dll
     ├── html                                          # Berisi dokumentasi class dan fungsi yang di-generate dari library pdoc3
     ├── services                                      # Kumpulan konfigurasi background service yang dipakai di systemd/systemctl
-    ├── src                                           # Source code search engine yang terdiri dari crawling, document ranking, dan page ranking
+    ├── src                                           # Source code search engine
     │   ├── api                                       # Folder untuk kodingan REST API
     │   |   ├── app.py                                # Untuk run Flask dan menggabungkan routes
     │   |   ├── crawling.py                           # Routes dan fungsi API untuk crawling
     │   |   ├── document_ranking.py                   # Routes dan fungsi API untuk document ranking
+    │   |   ├── overall_ranking.py                    # Routes dan fungsi API untuk overall ranking
     │   |   └── page_ranking.py                       # Routes dan fungsi API untuk page ranking
     |   |
     │   ├── crawling                                  # Folder untuk kodingan crawling
@@ -426,6 +427,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
     ├── run_crawl.py                                  # Script utama untuk run crawling
     ├── run_page_rank.py                              # Script utama untuk run page rank
     ├── run_search_engine_console.py                  # Script utama untuk run search engine console
+    ├── run_tf_idf.py                                 # Script utama untuk run TF IDF
     ├── requirements.txt                              # Berisi list library yang diperlukan
 
 ## :page_facing_up: Referensi
