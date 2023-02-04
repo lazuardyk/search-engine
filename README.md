@@ -205,7 +205,7 @@ Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking,
 </details>
 
 <details>
-<summary><b>[GET]</b> Get Page Information</summary>
+<summary><b>[POST]</b> Get Page Information</summary>
 
 - **URL**: `/api/v1.0/crawling/page_information`
 
