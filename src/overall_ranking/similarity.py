@@ -17,19 +17,9 @@ def get_all_similarity_for_api(keyword, sort, start=None, length=None):
         list: List berisi dictionary yang terdapat url dan total skor keseluruhan, empty list jika tidak ada datanya
     """
 
-    tf_idf_percentage = 0.6
-    page_rank_percentage = 0.4
-
-    if sort == "tfidf":
-        order_by = "`tfidf`.`tfidf_total`"
-    elif sort == "pagerank":
-        order_by = "`pagerank`.`pagerank_score`"
-    else:
-        order_by = "`similarity_score`"
-
     get_all_tfidf_for_api(keyword, start, length)
 
-    query = f'SELECT `tfidf`.`page_id` AS `id_page`, `page_information`.`url`, ({tf_idf_percentage} * `tfidf`.`tfidf_total`) + ({page_rank_percentage} * `pagerank`.`pagerank_score`) AS `similarity_score`, `tfidf`.`tfidf_total`, `pagerank`.`pagerank_score` FROM `tfidf` LEFT JOIN `pagerank` ON `tfidf`.`page_id` = `pagerank`.`page_id` LEFT JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = "{keyword}" ORDER BY {order_by} DESC'
+    query = f'SELECT `tfidf`.`page_id` AS `id_page`, `page_information`.`url`, `tfidf`.`tfidf_total`, `pagerank`.`pagerank_score` FROM `tfidf` LEFT JOIN `pagerank` ON `tfidf`.`page_id` = `pagerank`.`page_id` LEFT JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = "{keyword}"'
 
     if start is not None and length is not None:
         query += f" LIMIT {start}, {length}"
@@ -39,5 +29,15 @@ def get_all_similarity_for_api(keyword, sort, start=None, length=None):
     db_cursor.execute(query)
     rows = db_cursor.fetchall()
     db_cursor.close()
+
+    for row in rows:
+        row["similarity_score"] = row["tfidf_total"] + row["pagerank_score"]
+
+    if sort == "tfidf":
+        rows = sorted(rows, key=lambda x: x["tfidf_total"], reverse=True)
+    elif sort == "pagerank":
+        rows = sorted(rows, key=lambda x: x["pagerank_score"], reverse=True)
+    else:
+        rows = sorted(rows, key=lambda x: x["similarity_score"], reverse=True)
 
     return rows
