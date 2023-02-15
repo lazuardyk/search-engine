@@ -228,50 +228,51 @@ class Database:
             )
             self.exec_query(
                 connection,
-                "ALTER TABLE `page_information` ADD FOREIGN KEY (`crawl_id`) REFERENCES `crawling` (`id_crawling`)",
+                "ALTER TABLE `page_information` ADD CONSTRAINT `pageinfo_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawling` (`id_crawling`) ON DELETE CASCADE",
             )
             self.exec_query(
                 connection,
-                "ALTER TABLE `page_linking` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+                "ALTER TABLE `page_linking` ADD CONSTRAINT `pagelink_pageinfo` FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`) ON DELETE CASCADE",
             )
             self.exec_query(
                 connection,
-                "ALTER TABLE `page_images` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+                "ALTER TABLE `page_images` ADD CONSTRAINT `pageimage_pageinfo` FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`) ON DELETE CASCADE",
             )
             self.exec_query(
                 connection,
-                "ALTER TABLE `page_tables` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+                "ALTER TABLE `page_tables` ADD CONSTRAINT `pagetable_pageinfo` FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`) ON DELETE CASCADE",
             )
             self.exec_query(
                 connection,
-                "ALTER TABLE `page_styles` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+                "ALTER TABLE `page_styles` ADD CONSTRAINT `pagestyle_pageinfo` FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`) ON DELETE CASCADE",
             )
             self.exec_query(
                 connection,
-                "ALTER TABLE `page_scripts` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+                "ALTER TABLE `page_scripts` ADD CONSTRAINT `pagescript_pageinfo` FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`) ON DELETE CASCADE",
             )
             self.exec_query(
                 connection,
-                "ALTER TABLE `page_list` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+                "ALTER TABLE `page_list` ADD CONSTRAINT `pagelist_pageinfo` FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`) ON DELETE CASCADE",
             )
             self.exec_query(
                 connection,
-                "ALTER TABLE `page_forms` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
-            )
-            self.exec_query(
-                connection, "ALTER TABLE `tfidf` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)"
+                "ALTER TABLE `page_forms` ADD CONSTRAINT `pageform_pageinfo` FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`) ON DELETE CASCADE",
             )
             self.exec_query(
                 connection,
-                "ALTER TABLE `tfidf_word` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+                "ALTER TABLE `tfidf` ADD CONSTRAINT `tfidf_pageinfo` FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`) ON DELETE CASCADE",
             )
             self.exec_query(
                 connection,
-                "ALTER TABLE `pagerank` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+                "ALTER TABLE `tfidf_word` ADD CONSTRAINT `tfidfw_pageinfo` FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`) ON DELETE CASCADE",
             )
             self.exec_query(
                 connection,
-                "ALTER TABLE `pagerank_changes` ADD FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`)",
+                "ALTER TABLE `pagerank` ADD CONSTRAINT `pagerank_pageinfo` FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`) ON DELETE CASCADE",
+            )
+            self.exec_query(
+                connection,
+                "ALTER TABLE `pagerank_changes` ADD CONSTRAINT `pagerankc_pageinfo` FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`) ON DELETE CASCADE",
             )
         except:
             return
