@@ -6,6 +6,7 @@ import pymysql
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 import time
 
 
@@ -197,3 +198,33 @@ def run_background_service():
     remove_tfidf_rows(db_connection)
 
     print("TFIDF Background Service - Completed.")
+
+
+def get_cosine_similarity(keyword):
+
+    # Ambil semua data halaman yang sudah di crawl ke dalam pandas dataframe
+    db_connection = Database().connect()
+    query = "SELECT * FROM `page_information`"
+    df = pd.read_sql(query, db_connection)
+    text_content = df["content_text"]  # Konten teks dari halaman yang sudah dicrawl
+
+    # Buat model menggunakan TfidfVectorizer
+    vectorizer = TfidfVectorizer(
+        lowercase=True,  # Untuk konversi ke lower case
+        use_idf=True,  # Untuk memakai idf
+        norm="l2",  # Normalisasi
+        smooth_idf=True,  # Untuk mencegah divide-by-zero errors
+    )
+
+    tfidf_matrix = vectorizer.fit_transform(text_content)
+    words = vectorizer.get_feature_names()
+    idf_vector = vectorizer.idf_
+
+    query_tfidf_matrix = vectorizer.transform([keyword])
+    cosine_similarities = cosine_similarity(query_tfidf_matrix, tfidf_matrix).flatten()
+    page_with_cosine = {}
+    for i in range(len(cosine_similarities)):
+        page_id = df["id_page"].loc[i]
+        page_with_cosine[page_id] = cosine_similarities[i]
+
+    return page_with_cosine
