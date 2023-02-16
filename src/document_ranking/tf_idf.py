@@ -180,6 +180,8 @@ def run_background_service():
     idf_vector = vectorizer.idf_
 
     df_tfidf = pd.DataFrame.sparse.from_spmatrix(tfidf_matrix, columns=words)
+
+    data_tfidf = []
     for i in range(len(df_tfidf)):
         page_id = df["id_page"].loc[i]
         for j in range(len(words)):
@@ -193,6 +195,18 @@ def run_background_service():
             print(f"word: {word}, page_id: {page_id}, tfidf score: {tf_idf}")
             # Simpan setiap bobot/score pada kata ke table "tfidf_word"
             save_one_tfidf_word(db_connection, word, page_id, tf_idf)
+            data_tfidf.append(
+                {
+                    "kata": word,
+                    "page_id": page_id,
+                    "tf": tf,
+                    "idf": idf,
+                    "tfidf": tf_idf,
+                }
+            )
+
+    new_df = pd.DataFrame(data_tfidf)
+    new_df.to_excel("output.xlsx")
 
     # Hapus semua hasil keyword yang sudah pernah dihitung sebelumnya pada table tfidf (keperluan API), karena bobot pada tiap kata berubah
     remove_tfidf_rows(db_connection)
@@ -221,10 +235,14 @@ def get_cosine_similarity(keyword):
     idf_vector = vectorizer.idf_
 
     query_tfidf_matrix = vectorizer.transform([keyword])
+
+    print(query_tfidf_matrix)
     cosine_similarities = cosine_similarity(query_tfidf_matrix, tfidf_matrix).flatten()
     page_with_cosine = {}
     for i in range(len(cosine_similarities)):
         page_id = df["id_page"].loc[i]
         page_with_cosine[page_id] = cosine_similarities[i]
+
+    print(page_with_cosine)
 
     return page_with_cosine
