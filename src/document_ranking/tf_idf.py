@@ -206,7 +206,7 @@ def run_background_service():
             )
 
     new_df = pd.DataFrame(data_tfidf)
-    new_df.to_excel("output.xlsx")
+    # new_df.to_excel("output.xlsx")
 
     # Hapus semua hasil keyword yang sudah pernah dihitung sebelumnya pada table tfidf (keperluan API), karena bobot pada tiap kata berubah
     remove_tfidf_rows(db_connection)
