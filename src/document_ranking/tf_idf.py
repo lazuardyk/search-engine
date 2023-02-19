@@ -236,13 +236,13 @@ def get_cosine_similarity(keyword):
 
     query_tfidf_matrix = vectorizer.transform([keyword])
 
-    print(query_tfidf_matrix)
+    # print(query_tfidf_matrix)
     cosine_similarities = cosine_similarity(query_tfidf_matrix, tfidf_matrix).flatten()
     page_with_cosine = {}
     for i in range(len(cosine_similarities)):
         page_id = df["id_page"].loc[i]
         page_with_cosine[page_id] = cosine_similarities[i]
 
-    print(page_with_cosine)
+    # print(page_with_cosine)
 
     return page_with_cosine

@@ -1,6 +1,7 @@
 from src.database.database import Database
-from src.document_ranking.tf_idf import get_all_tfidf_for_api
+from src.document_ranking.tf_idf import get_all_tfidf_for_api, get_cosine_similarity
 import pymysql
+import os
 
 
 def get_all_similarity_for_api(keyword, sort, start=None, length=None):
@@ -18,20 +19,39 @@ def get_all_similarity_for_api(keyword, sort, start=None, length=None):
     """
 
     get_all_tfidf_for_api(keyword, start, length)
+    use_cosine = os.getenv("USE_COSINE_SIMILARITY")
 
-    query = f'SELECT `tfidf`.`page_id` AS `id_page`, `page_information`.`url`, `tfidf`.`tfidf_total`, `pagerank`.`pagerank_score` FROM `tfidf` LEFT JOIN `pagerank` ON `tfidf`.`page_id` = `pagerank`.`page_id` LEFT JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = "{keyword}"'
+    if use_cosine == "true":
+        page_with_cosine = get_cosine_similarity(keyword)
+        query = f'SELECT `tfidf`.`page_id` AS `id_page`, `page_information`.`url`, `pagerank`.`pagerank_score` FROM `tfidf` LEFT JOIN `pagerank` ON `tfidf`.`page_id` = `pagerank`.`page_id` LEFT JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = "{keyword}"'
 
-    if start is not None and length is not None:
-        query += f" LIMIT {start}, {length}"
+        if start is not None and length is not None:
+            query += f" LIMIT {start}, {length}"
 
-    db_connection = Database().connect()
-    db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
-    db_cursor.execute(query)
-    rows = db_cursor.fetchall()
-    db_cursor.close()
+        db_connection = Database().connect()
+        db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
+        db_cursor.execute(query)
+        rows = db_cursor.fetchall()
+        db_cursor.close()
 
-    for row in rows:
-        row["similarity_score"] = row["tfidf_total"] + row["pagerank_score"]
+        for row in rows:
+            row["tfidf_total"] = page_with_cosine[row["id_page"]]
+            row["similarity_score"] = page_with_cosine[row["id_page"]] + row["pagerank_score"]
+
+    else:
+        tf_idf_percentage = 0.6
+        page_rank_percentage = 0.4
+
+        query = f'SELECT `tfidf`.`page_id` AS `id_page`, `page_information`.`url`, ({tf_idf_percentage} * `tfidf`.`tfidf_total`) + ({page_rank_percentage} * `pagerank`.`pagerank_score`) AS `similarity_score`, `tfidf`.`tfidf_total`, `pagerank`.`pagerank_score` FROM `tfidf` LEFT JOIN `pagerank` ON `tfidf`.`page_id` = `pagerank`.`page_id` LEFT JOIN `page_information` ON `tfidf`.`page_id` = `page_information`.`id_page` WHERE `tfidf`.`keyword` = "{keyword}"'
+
+        if start is not None and length is not None:
+            query += f" LIMIT {start}, {length}"
+
+        db_connection = Database().connect()
+        db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
+        db_cursor.execute(query)
+        rows = db_cursor.fetchall()
+        db_cursor.close()
 
     if sort == "tfidf":
         rows = sorted(rows, key=lambda x: x["tfidf_total"], reverse=True)
