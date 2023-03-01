@@ -9,6 +9,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import time
 
+import Sastrawi
+import nltk
+import string
+from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+from nltk.tokenize import word_tokenize
 
 def remove_tfidf_rows(db_connection):
     """Fungsi untuk mengosongkan table "tfidf" pada database.
@@ -117,6 +123,11 @@ def get_all_tfidf_for_api(keyword, start=None, length=None):
         list: List berisi dictionary skor TF IDF yang didapatkan dari fungsi cursor.fetchall(), berisi empty list jika tidak ada datanya
     """
 
+    stopword_factory = StopWordRemoverFactory()
+    stopword = stopword_factory.create_stop_word_remover()
+    stemmer_factory = StemmerFactory()
+    stemmer = stemmer_factory.create_stemmer()
+
     db_connection = Database().connect()
 
     # Return data langsung jika total skor pada keyword ini sudah pernah dihitung
@@ -127,8 +138,15 @@ def get_all_tfidf_for_api(keyword, start=None, length=None):
     # Buat dictionary dengan page id sebagai keynya dan valuenya adalah total score tf idf
     pages_with_total_score = {}
 
-    keyword_arr = keyword.split(" ")
-    for word in keyword_arr:
+    # keyword_arr = keyword.split(" ")
+
+    keyword = keyword.translate(str.maketrans('','',string.punctuation)).lower()
+    keyword = keyword.translate(str.maketrans('','',string.digits))
+    keyword = stopword.remove(keyword)
+    keyword = stemmer.stem(keyword)
+    keywords = word_tokenize(keyword)
+
+    for word in keywords:
         db_connection.ping()
         db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
 
