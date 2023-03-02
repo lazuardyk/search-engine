@@ -9,6 +9,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import time
 
+import Sastrawi
+import nltk
+import string
+from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+from nltk.tokenize import word_tokenize
 
 def remove_tfidf_rows(db_connection):
     """Fungsi untuk mengosongkan table "tfidf" pada database.
@@ -155,53 +161,71 @@ def get_all_tfidf_for_api(keyword, start=None, length=None):
     saved_tfidf = get_all_saved_tfidf(db_connection, keyword, start, length)
     return saved_tfidf
 
+def calcDocWithWord(word, docs):
+    docWithWord = 0
+    for doc in docs:
+        if word in doc:
+            docWithWord += 1
+    return docWithWord
+
 
 def run_background_service():
     """
     Fungsi utama yang digunakan untuk melakukan pembobotan kata pada dokumen menggunakan metode TF-IDF.
     """
+    stopword_factory = StopWordRemoverFactory()
+    stopword = stopword_factory.create_stop_word_remover()
+    stemmer_factory = StemmerFactory()
+    stemmer = stemmer_factory.create_stemmer()
+
     db_connection = Database().connect()
+    db_connection.ping()
+    db_cursor = db_connection.cursor(pymysql.cursors.DictCursor)
 
     # Ambil semua data halaman yang sudah di crawl ke dalam pandas dataframe
     query = "SELECT * FROM `page_information`"
-    df = pd.read_sql(query, db_connection)
+    db_cursor.execute(query)
+    df = db_cursor.fetchall()
     text_content = df["content_text"]  # Konten teks dari halaman yang sudah dicrawl
+    page_id = df["id_page"]
 
-    # Buat model menggunakan TfidfVectorizer
-    vectorizer = TfidfVectorizer(
-        lowercase=True,  # Untuk konversi ke lower case
-        use_idf=True,  # Untuk memakai idf
-        norm="l2",  # Normalisasi
-        smooth_idf=True,  # Untuk mencegah divide-by-zero errors
-    )
+    for x in text_content:
+    # konversi tuple ke dalam string
+        x = ''.join([str(value) for value in x])
+    # menghilangkan tanda baca dan menjadikan dokumen lowercase
+        x = x.translate(str.maketrans('','',string.punctuation)).lower()
+    # menghilangkan angka pada dokumen
+        x = x.translate(str.maketrans('','',string.digits))
+    # menghilangkan stopword pada dokumen
+        x = stopword.remove(x)
+    # menghilangkan imbuhan pada kata di dalam dokumen
+        x = stemmer.stem(x) 
 
-    tfidf_matrix = vectorizer.fit_transform(text_content)
-    words = vectorizer.get_feature_names()
-    idf_vector = vectorizer.idf_
+docWithWord = 0
+for i in range(len(text_content)):  
+    sentences = text_content[i]
+    index_page_id = page_id[i]
+    for j in range(len(sentences)):
+        tf_value = sentences.count(sentences[j])
+        
+        doc_with_word = calcDocWithWord(sentences[j], text_content)
+        
+        if doc_with_word != 0:
+            idf_value = math.log(float(len(text_content)/doc_with_word))
+        else:
+            idfValue = float(0)
+        tf_idf_value = tf_value*idf_value
 
-    df_tfidf = pd.DataFrame.sparse.from_spmatrix(tfidf_matrix, columns=words)
-
-    data_tfidf = []
-    for i in range(len(df_tfidf)):
-        page_id = df["id_page"].loc[i]
-        for j in range(len(words)):
-            word = words[j]
-            tf_idf = df_tfidf[word].loc[i]
-            if tf_idf == 0.0:
-                continue
-            idf = idf_vector[j]
-            tf = tf_idf / idf
-
-            print(f"word: {word}, page_id: {page_id}, tfidf score: {tf_idf}")
+            print(f"word: {sentences[j]}, page_id: {index_page_id}, tfidf score: {tf_idf_value}")
             # Simpan setiap bobot/score pada kata ke table "tfidf_word"
-            save_one_tfidf_word(db_connection, word, page_id, tf_idf)
+            save_one_tfidf_word(db_connection, sentences[j], index_page_id, tf_idf_value)
             data_tfidf.append(
                 {
-                    "kata": word,
-                    "page_id": page_id,
-                    "tf": tf,
-                    "idf": idf,
-                    "tfidf": tf_idf,
+                    "kata": sentences[j],
+                    "page_id": index_page_id,
+                    "tf": tf_value,
+                    "idf": idf_value,
+                    "tfidf": tf_idf_value,
                 }
             )
 
