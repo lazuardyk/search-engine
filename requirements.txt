@@ -4,9 +4,10 @@ pandas
 pymysql
 python-dotenv
 psutil
-sklearn
+scikit-learn
 numpy
 pdoc3
 matplotlib
 flask
 cryptography
+anytree
