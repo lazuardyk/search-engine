@@ -1,4 +1,5 @@
 from anytree import *
+from src.database.database import Database
 import pymysql.cursors
 import re
 import pickle
@@ -7,13 +8,7 @@ import time
 
 def getTitle():
     # Connect ke title database
-    connection = pymysql.connect(host='localhost',
-                                 user='root',
-                                 password='',
-                                 database='crawl3',
-                                 charset='utf8mb4',
-                                 cursorclass=pymysql.cursors.DictCursor,
-                                 autocommit=True)
+    connection = Database().connect()
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(
@@ -29,35 +24,31 @@ def getTitle():
 
 def getResult(result):
     # connect ke database
-    connection = pymysql.connect(host='localhost',
-                                 user='root',
-                                 password='',
-                                 database='crawl3',
-                                 charset='utf8mb4',
-                                 cursorclass=pymysql.cursors.DictCursor,
-                                 autocommit=True)
+    connection = Database().connect()
     with connection:
+        data = []
         for page in result:
             with connection.cursor() as cursor:
                 cursor.execute(
                     "SELECT id_page, title, url FROM page_information WHERE id_page = %s", (page["index"]))
-                data = cursor.fetchall()
-                # tampilkan data ke terminal
-                print("query: " + page["query"])
-                print("count: " + str(page["count"]))
-                print(str(result.index(page)+1) + ". " + data[0]["title"])
-                print(data[0]["url"])
-                print("\n")
+                res = cursor.fetchall()
+                pageResult = {
+                    "id_page": res[0][0],
+                    "title": res[0][1],
+                    "url": res[0][2]
+                }
+                data.append(pageResult)
+        return data
+        # tampilkan data ke terminal
+        # print("query: " + page["query"])
+        # print("count: " + str(page["count"]))
+        # print(str(result.index(page)+1) + ". " + data[0]["title"])
+        # print(data[0]["url"])
+        # print("\n")
 
 
 def getPage():
-    connection = pymysql.connect(host='localhost',
-                                 user='root',
-                                 password='',
-                                 database='crawl2',
-                                 charset='utf8mb4',
-                                 cursorclass=pymysql.cursors.DictCursor,
-                                 autocommit=True)
+    connection = Database().connect()
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(
@@ -317,25 +308,39 @@ def loadData():
     return db
 
 
-def main():
+def main(query):
     # getTitle()
     # gst = makeTree(getTitle())
     # store = storeData(gst)
     read = loadData()
-    kata = input("masukkan kata yang ingin dicari: ")
+    # kata = input("masukkan kata yang ingin dicari: ")
     start = time.perf_counter()
-    if (kata == ""):
-        print("Query tidak boleh kosong")
-        main()
-    traverse, searchResult = searchTree(read, kata)
+    if (query == ""):
+        response = {
+            "success": False,
+            "message": "Query kosong",
+            "data": {}
+        }
+        return response
+    traverse, searchResult = searchTree(read, query)
     rankedResult = rankResult(searchResult)
+    finalResult = getResult(rankedResult)
     done = time.perf_counter()
-    print(f"Waktu pencarian: {done - start:0.4f} detik")
-    print("Hasil pencarian: \n")
-    getResult(rankedResult)
+    queryTime = done - start
+    response = {
+        "ok": True,
+        "message": "Query berhasil",
+        "data": {
+            "query": query,
+            "queryTime": queryTime,
+            "result": finalResult
+        }
+    }
+    return response
+    # print("Hasil pencarian: \n")
 
 
-main()
+# main()
 
 # def nodeToString(node):
 #     node = str(node)
